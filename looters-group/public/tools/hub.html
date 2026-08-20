@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Looters Hub</title>
+  <style>
+    :root {
+      --bg: #0f0c15;
+      --card: #1a1525;
+      --card-hover: #241c35;
+      --purple: #8b5cf6;
+      --purple-dim: #6d28d9;
+      --red: #e74c3c;
+      --gold: #f39c12;
+      --text: #f0eaf8;
+      --muted: #a89bbf;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 20px;
+      overflow-x: hidden;
+    }
+
+    /* Background glow */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -40%;
+      left: -20%;
+      width: 70%;
+      height: 70%;
+      background: radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -30%;
+      right: -15%;
+      width: 60%;
+      height: 60%;
+      background: radial-gradient(circle, rgba(231,76,60,0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hub {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 920px;
+      text-align: center;
+    }
+
+    .logo-area {
+      margin-bottom: 36px;
+    }
+    .logo-area h1 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      background: linear-gradient(135deg, #c4b5fd, #a78bfa, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px;
+    }
+    .logo-area p {
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(139,92,246,0.25);
+      border-radius: 16px;
+      padding: 28px 20px;
+      cursor: pointer;
+      transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 180px;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(139,92,246,0.08));
+      opacity: 0;
+      transition: opacity 0.35s;
+    }
+
+    .card:hover {
+      transform: translateY(-10px) scale(1.03);
+      background: var(--card-hover);
+      border-color: var(--purple);
+      box-shadow:
+        0 20px 40px rgba(0,0,0,0.4),
+        0 0 30px rgba(139,92,246,0.25);
+    }
+    .card:hover::before { opacity: 1; }
+
+    .card:active {
+      transform: translateY(-4px) scale(0.98);
+    }
+
+    .card .icon {
+      font-size: 2.6rem;
+      margin-bottom: 14px;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+    }
+    .card:hover .icon {
+      transform: scale(1.18) rotate(-6deg);
+    }
+
+    .card h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: -0.3px;
+    }
+    .card p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    /* Accent colours per card */
+    .card.trademe:hover { border-color: #00a0e3; box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 28px rgba(0,160,227,0.3); }
+    .card.tradevine:hover { border-color: #2ecc71; box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 28px rgba(46,204,113,0.3); }
+    .card.printables:hover { border-color: #8b5cf6; box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 28px rgba(139,92,246,0.35); }
+    .card.design:hover { border-color: #e74c3c; box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 28px rgba(231,76,60,0.3); }
+
+    .card.disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .card.disabled:hover {
+      transform: none;
+      box-shadow: none;
+      border-color: rgba(139,92,246,0.25);
+    }
+
+    .badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 3px 8px;
+      border-radius: 20px;
+      background: rgba(139,92,246,0.25);
+      color: #c4b5fd;
+    }
+    .badge.live { background: rgba(46,204,113,0.25); color: #6ee7b7; }
+    .badge.soon { background: rgba(243,156,18,0.2); color: #fbbf24; }
+
+    footer {
+      color: var(--muted);
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+
+    /* Sound toggle */
+    .sound-toggle {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 10;
+      background: var(--card);
+      border: 1px solid rgba(139,92,246,0.3);
+      color: var(--text);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+    .sound-toggle:hover { background: var(--card-hover); }
+
+    @media (max-width: 500px) {
+      .logo-area h1 { font-size: 2rem; }
+      .grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .card { min-height: 150px; padding: 20px 12px; }
+      .card .icon { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+  <button class="sound-toggle" id="soundBtn" onclick="toggleSound()">🔊 Sound On</button>
+
+  <div class="hub">
+    <div class="logo-area">
+      <h1>LOOTERS</h1>
+      <p>Computas · Apparels · Tools</p>
+    </div>
+
+    <div class="grid">
+      <!-- TradeMe -->
+      <a class="card trademe" href="https://www.trademe.co.nz" target="_blank" rel="noopener" onclick="playClick()" data-sound="hover">
+        <span class="badge live">Live</span>
+        <div class="icon">🛒</div>
+        <h2>TradeMe</h2>
+        <p>Listings, orders &amp; shipping tools</p>
+      </a>
+
+      <!-- Tradevine -->
+      <a class="card tradevine" href="https://www.tradevine.co.nz" target="_blank" rel="noopener" onclick="playClick()" data-sound="hover">
+        <span class="badge live">Live</span>
+        <div class="icon">📦</div>
+        <h2>Tradevine</h2>
+        <p>Inventory &amp; multi-channel</p>
+      </a>
+
+      <!-- Printables (Order Docs) -->
+      <a class="card printables" href="looters-order-docs.html" onclick="playClick()" data-sound="hover">
+        <span class="badge live">Live</span>
+        <div class="icon">🖨️</div>
+        <h2>Printables</h2>
+        <p>Invoice + Packing Slip generator</p>
+      </a>
+
+      <!-- Images / Design -->
+      <a class="card design" href="looters-overlay-tool.html" onclick="return handleDesignClick(event)" data-sound="hover">
+        <span class="badge soon">Soon</span>
+        <div class="icon">🎨</div>
+        <h2>Images / Design</h2>
+        <p>Overlay tool &amp; graphics</p>
+      </a>
+    </div>
+
+    <footer>
+      Looters Hub · Select a tool to continue
+    </footer>
+  </div>
+
+  <script>
+    // ----- Sound engine (Web Audio API) -----
+    let audioCtx = null;
+    let soundEnabled = true;
+
+    function getCtx() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      return audioCtx;
+    }
+
+    function playTone(freq, duration, type = 'sine', vol = 0.08) {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(vol, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function playHover() {
+      playTone(520, 0.07, 'sine', 0.05);
+    }
+
+    function playClick() {
+      playTone(780, 0.09, 'triangle', 0.09);
+      setTimeout(() => playTone(980, 0.07, 'triangle', 0.06), 40);
+    }
+
+    function playDenied() {
+      playTone(180, 0.15, 'sawtooth', 0.06);
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('soundBtn').textContent = soundEnabled ? '🔊 Sound On' : '🔇 Sound Off';
+      if (soundEnabled) playClick();
+    }
+
+    // Hover sounds
+    document.querySelectorAll('.card[data-sound="hover"]').forEach(card => {
+      card.addEventListener('mouseenter', () => {
+        if (!card.classList.contains('disabled')) playHover();
+      });
+    });
+
+    function handleClick(e, name) {
+      e.preventDefault();
+      playDenied();
+      return false;
+    }
+
+    function handleDesignClick(e) {
+      // Try to open the overlay tool; if missing show a note
+      playClick();
+      // Let the browser try the link. If file doesn't exist it will 404.
+      // User can place looters-overlay-tool.html in the same folder.
+      return true;
+    }
+
+    // Resume audio context on first interaction (browser policy)
+    document.body.addEventListener('click', () => {
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    }, { once: true });
+  </script>
+</body>
+</html>

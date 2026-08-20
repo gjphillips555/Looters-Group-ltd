@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Looters Order Documents Generator</title>
+  <style>
+    :root {
+      --primary: #5b2c8a;
+      --primary-dark: #3d1a5c;
+      --accent: #f39c12;
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --muted: #666;
+      --border: #e0e0e0;
+      --success: #27ae60;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 20px;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 22px 26px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(91,44,138,0.3);
+    }
+    header h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; }
+    header p { opacity: 0.9; font-size: 0.92rem; }
+
+    .controls {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border: 1px solid var(--border);
+    }
+    .controls h2 {
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      color: var(--primary);
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.88rem;
+      margin-bottom: 5px;
+      color: #333;
+    }
+
+    textarea, input[type="text"], select {
+      width: 100%;
+      padding: 9px 11px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.92rem;
+      font-family: inherit;
+      margin-bottom: 14px;
+    }
+    textarea:focus, input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(91,44,138,0.15); }
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.82rem;
+    }
+
+    /* Brand Toggle Switch */
+    .brand-toggle-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 16px;
+      padding: 14px;
+      background: #f8f5fc;
+      border-radius: 10px;
+      border: 1px solid #e8d9f5;
+    }
+    .brand-label {
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: -0.3px;
+      min-width: 140px;
+      text-align: center;
+      transition: color 0.2s, opacity 0.2s;
+    }
+    .brand-label.computas { color: #5b2c8a; }
+    .brand-label.apparels { color: #c0392b; }
+    .brand-label.inactive { opacity: 0.35; }
+
+    .toggle-switch {
+      position: relative;
+      width: 64px;
+      height: 32px;
+      flex-shrink: 0;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #5b2c8a;
+      border-radius: 32px;
+      transition: 0.25s;
+    }
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 24px;
+      width: 24px;
+      left: 4px;
+      bottom: 4px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.25s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+    }
+    .toggle-switch input:checked + .toggle-slider {
+      background: #c0392b;
+    }
+    .toggle-switch input:checked + .toggle-slider:before {
+      transform: translateX(32px);
+    }
+
+    .logo-computas { color: #5b2c8a; }
+    .logo-apparels { color: #c0392b; }
+
+    .option-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding: 10px 12px;
+      background: #f8f5fc;
+      border-radius: 8px;
+      border: 1px solid #e8d9f5;
+    }
+    .option-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+    .option-row label {
+      margin: 0;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.92rem;
+    }
+    .option-row .hint {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 400;
+      margin-left: 4px;
+    }
+
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 11px 20px;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    button:hover { background: var(--primary-dark); }
+    button:active { transform: scale(0.98); }
+    button.secondary { background: #555; }
+    button.secondary:hover { background: #333; }
+    button.print-btn { background: var(--success); }
+    button.print-btn:hover { background: #1e8449; }
+
+    .docs-area { display: none; }
+    .docs-area.visible { display: block; }
+
+    .doc-card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 26px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      border: 1px solid var(--border);
+      position: relative;
+    }
+
+    .doc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border);
+    }
+    .company-logo { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.8px; }
+    .company-logo.computas { color: #5b2c8a; }
+    .company-logo.apparels { color: #c0392b; }
+    .company-details { font-size: 0.82rem; color: var(--muted); text-align: right; line-height: 1.35; }
+    .doc-title { font-size: 1.3rem; font-weight: 700; color: var(--primary); margin-bottom: 3px; }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .meta-block h3 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .meta-block p { font-size: 0.9rem; }
+
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); }
+    th {
+      background: #f8f5fc;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--primary);
+    }
+    td.num, th.num { text-align: right; }
+
+    .totals { margin-left: auto; width: 260px; margin-top: 8px; }
+    .totals-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.9rem; }
+    .totals-row.grand {
+      font-weight: 700;
+      font-size: 1.05rem;
+      border-top: 2px solid var(--primary);
+      margin-top: 4px;
+      padding-top: 8px;
+      color: var(--primary);
+    }
+
+    .warranty-box {
+      background: #f8f5fc;
+      border-left: 4px solid var(--primary);
+      padding: 14px 16px;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+    .warranty-box h3 { margin-bottom: 6px; color: var(--primary); font-size: 0.95rem; }
+    .warranty-box ul { margin: 6px 0 6px 16px; }
+    .warranty-box li { margin-bottom: 3px; }
+
+    .footer-note {
+      margin-top: 20px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-align: center;
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+    }
+
+    .print-actions {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+      justify-content: flex-end;
+    }
+
+    /* ===== COMPACT / MINIMAL PAPER MODE – tuned for single A4 ===== */
+    .compact .doc-card {
+      padding: 8px 10px;
+      margin-bottom: 0;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    .compact .doc-header {
+      margin-bottom: 6px;
+      padding-bottom: 5px;
+      border-bottom-width: 1px;
+    }
+    .compact .company-logo { font-size: 1.05rem; }
+    .compact .doc-title { font-size: 1rem; margin-bottom: 2px; }
+    .compact .meta-grid { gap: 8px; margin-bottom: 6px; }
+    .compact .meta-block h3 { font-size: 0.65rem; margin-bottom: 1px; }
+    .compact .meta-block p { font-size: 0.78rem; line-height: 1.25; }
+    .compact table { margin: 5px 0; }
+    .compact th, .compact td { padding: 3px 6px; font-size: 0.78rem; }
+    .compact th { font-size: 0.65rem; }
+    .compact .totals { width: 200px; margin-top: 4px; }
+    .compact .totals-row { padding: 1px 0; font-size: 0.78rem; }
+    .compact .totals-row.grand { font-size: 0.9rem; padding-top: 3px; margin-top: 2px; }
+    .compact .warranty-box { padding: 7px 9px; font-size: 0.72rem; line-height: 1.3; margin-top: 8px; }
+    .compact .warranty-box h3 { font-size: 0.8rem; margin-bottom: 3px; }
+    .compact .warranty-box ul { margin: 3px 0 3px 14px; }
+    .compact .warranty-box li { margin-bottom: 1px; }
+    .compact .footer-note { margin-top: 6px; font-size: 0.68rem; padding-top: 4px; }
+    .compact .company-details { font-size: 0.7rem; line-height: 1.25; }
+
+    /* Combined single-page document for minimal mode */
+    .combined-doc { display: none; }
+    .compact .combined-doc { display: block; }
+    .compact .separate-docs { display: none !important; }
+
+    @media print {
+      @page {
+        size: A4;
+        margin: 10mm 12mm;
+      }
+      body { background: white; padding: 0; margin: 0; }
+      .controls, .print-actions, header, .no-print { display: none !important; }
+      .doc-card {
+        box-shadow: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+        page-break-after: always;
+      }
+      .compact .doc-card,
+      .compact .combined-doc {
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+        padding: 0;
+        margin: 0;
+        border: none;
+      }
+      .docs-area { display: block !important; }
+    }
+
+    @media (max-width: 700px) {
+      .meta-grid { grid-template-columns: 1fr; }
+      .brand-toggle-wrap { flex-wrap: wrap; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Looters Order Documents</h1>
+      <p>Paste order text → generate Invoice + Packing Slip + legal warranty notice (refurbished / second-life ready)</p>
+    </header>
+
+    <div class="controls no-print">
+      <h2>1. Choose Brand</h2>
+      <div class="brand-toggle-wrap">
+        <span class="brand-label computas" id="labelComputas">LOOTERS COMPUTAS</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="brandToggle" onchange="updateBrandToggle()">
+          <span class="toggle-slider"></span>
+        </label>
+        <span class="brand-label apparels inactive" id="labelApparels">LOOTERS APPARELS</span>
+      </div>
+      <input type="hidden" id="logoValue" value="computas">
+
+      <h2>2. Paste Purchase Summary</h2>
+      <label for="rawText">Raw text from TradeMe / Afterpay / order confirmation</label>
+      <textarea id="rawText" placeholder="Paste the full purchase summary here...">Purchase summary
+Price$29.95Shipping$9.95Total$39.90
+Paid with
+Afterpay fee$1.98Paid$37.92
+Reference
+P251158157
+Buyer
+tomr32 (17
+)
+Email
+rotarola123@gmail.com
+Selected Shipping
+South Island 3-4 days, Standard
+Delivery Address
+thomas rodgerunit6/1163 Goulds Road,RollestonRolleston, 7614</textarea>
+
+      <h2>3. Optional Details</h2>
+      <label for="itemDesc">Item / Product Description</label>
+      <input type="text" id="itemDesc" value="Refurbished / second-life item as per order" placeholder="e.g. Refurbished laptop, GPU, etc.">
+
+      <label for="companyExtra">Company contact line</label>
+      <input type="text" id="companyExtra" value="New Zealand • TradeMe Seller" placeholder="Your address or contact details">
+
+      <div class="option-row">
+        <input type="checkbox" id="minimalPaper" onchange="toggleCompactPreview()">
+        <label for="minimalPaper">
+          Minimal paper usage
+          <span class="hint">— Tax Invoice + Packing Slip on the same A4 page + short legal notice</span>
+        </label>
+      </div>
+
+      <div class="btn-row">
+        <button onclick="generateDocs()">Generate Documents</button>
+        <button class="secondary" onclick="clearAll()">Clear</button>
+      </div>
+    </div>
+
+    <div class="docs-area" id="docsArea">
+
+      <!-- ========== COMBINED: TAX INVOICE + PACKING SLIP (same page) ========== -->
+      <div class="doc-card combined-doc" id="combinedCard">
+        <div class="print-actions no-print">
+          <button class="print-btn" onclick="printSection('combinedCard')">Print Invoice + Packing Slip (1 page)</button>
+        </div>
+
+        <!-- Header -->
+        <div class="doc-header">
+          <div>
+            <div class="company-logo" id="combLogo">LOOTERS COMPUTAS</div>
+            <div style="font-size:0.72rem;color:#666;" id="combTagline">Refurbished / Second-life goods</div>
+          </div>
+          <div class="company-details">
+            Ref: <strong id="combRef"></strong><br>
+            Date: <span id="combDate"></span>
+          </div>
+        </div>
+
+        <!-- TAX INVOICE SECTION -->
+        <div style="margin-bottom:8px;">
+          <div class="doc-title" style="font-size:0.95rem;margin-bottom:4px;">TAX INVOICE</div>
+          <div class="meta-grid">
+            <div class="meta-block">
+              <h3>Bill To</h3>
+              <p id="combBuyerName" style="font-weight:600;"></p>
+              <p id="combAddress" style="white-space:pre-line;"></p>
+              <p id="combEmail"></p>
+            </div>
+            <div class="meta-block">
+              <h3>Order</h3>
+              <p>Buyer: <span id="combBuyerUser"></span></p>
+              <p>Shipping: <span id="combShipping"></span></p>
+              <p>Payment: Afterpay</p>
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Description</th>
+                <th class="num">Qty</th>
+                <th class="num">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td id="combItemDesc"></td>
+                <td class="num">1</td>
+                <td class="num" id="combPrice"></td>
+              </tr>
+              <tr>
+                <td>Shipping</td>
+                <td class="num">1</td>
+                <td class="num" id="combShip"></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="totals">
+            <div class="totals-row"><span>Subtotal</span><span id="combSubtotal"></span></div>
+            <div class="totals-row"><span>Shipping</span><span id="combShipTotal"></span></div>
+            <div class="totals-row"><span>Afterpay fee</span><span id="combFee"></span></div>
+            <div class="totals-row grand"><span>Total Paid</span><span id="combPaid"></span></div>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div style="border-top:1px dashed #bbb; margin:6px 0;"></div>
+
+        <!-- PACKING SLIP SECTION -->
+        <div style="margin-bottom:6px;">
+          <div class="doc-title" style="font-size:0.95rem;margin-bottom:6px;">PACKING SLIP</div>
+          <div style="text-align:center; padding:10px 8px; border:2px solid #222; border-radius:4px; background:#fafafa;">
+            <div style="font-size:0.65rem; text-transform:uppercase; letter-spacing:0.6px; color:#555; margin-bottom:6px;">Deliver To</div>
+            <div id="combPackPostal" style="font-size:1.15rem; font-weight:700; line-height:1.35; white-space:pre-line;"></div>
+          </div>
+          <div style="margin-top:5px; font-size:0.75rem; text-align:center; color:#444;">
+            <span id="combPackShip"></span> &nbsp;·&nbsp; Qty: 1
+          </div>
+        </div>
+
+        <!-- Short legal notice -->
+        <div class="warranty-box">
+          <h3>Consumer Guarantees (NZ) – Refurbished / Second-life</h3>
+          <p>Sold as refurbished/second-life. Under the Consumer Guarantees Act 1993 goods must be of <strong>acceptable quality</strong> (for age, price &amp; condition), <strong>fit for purpose</strong>, and <strong>match description</strong>. Failure = right to repair, replace or refund. These rights cannot be excluded.</p>
+        </div>
+      </div>
+
+      <!-- ========== SEPARATE FULL DOCUMENTS ========== -->
+      <div class="separate-docs">
+
+        <!-- INVOICE -->
+        <div class="doc-card" id="invoiceCard">
+          <div class="print-actions no-print">
+            <button class="print-btn" onclick="printSection('invoiceCard')">Print Invoice</button>
+          </div>
+
+          <div class="doc-header">
+            <div>
+              <div class="company-logo" id="invLogo">LOOTERS COMPUTAS</div>
+              <div style="font-size:0.82rem;color:#666;margin-top:2px;" id="invTagline">Refurbished PCs, parts &amp; tech</div>
+            </div>
+            <div class="company-details" id="invCompanyExtra"></div>
+          </div>
+
+          <div class="doc-title">TAX INVOICE</div>
+          <div style="font-size:0.88rem;color:#666;margin-bottom:14px;">
+            Invoice #: <strong id="invRef"></strong> &nbsp;|&nbsp; Date: <strong id="invDate"></strong>
+          </div>
+
+          <div class="meta-grid">
+            <div class="meta-block">
+              <h3>Bill To</h3>
+              <p id="invBuyerName"></p>
+              <p id="invAddress" style="white-space:pre-line;"></p>
+              <p id="invEmail"></p>
+            </div>
+            <div class="meta-block">
+              <h3>Order Details</h3>
+              <p>Reference: <strong id="invRef2"></strong></p>
+              <p>Buyer: <span id="invBuyerUser"></span></p>
+              <p>Shipping: <span id="invShipping"></span></p>
+              <p>Payment: Afterpay</p>
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Description</th>
+                <th class="num">Qty</th>
+                <th class="num">Unit Price</th>
+                <th class="num">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td id="invItemDesc"></td>
+                <td class="num">1</td>
+                <td class="num" id="invPrice"></td>
+                <td class="num" id="invPrice2"></td>
+              </tr>
+              <tr>
+                <td>Shipping – <span id="invShipMethod"></span></td>
+                <td class="num">1</td>
+                <td class="num" id="invShip"></td>
+                <td class="num" id="invShip2"></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="totals">
+            <div class="totals-row"><span>Subtotal</span><span id="invSubtotal"></span></div>
+            <div class="totals-row"><span>Shipping</span><span id="invShipTotal"></span></div>
+            <div class="totals-row"><span>Afterpay fee</span><span id="invFee"></span></div>
+            <div class="totals-row grand"><span>Total Paid</span><span id="invPaid"></span></div>
+          </div>
+
+          <div class="footer-note">Thank you for your purchase.</div>
+        </div>
+
+        <!-- PACKING SLIP -->
+        <div class="doc-card" id="packingCard">
+          <div class="print-actions no-print">
+            <button class="print-btn" onclick="printSection('packingCard')">Print Packing Slip</button>
+          </div>
+
+          <div class="doc-header">
+            <div>
+              <div class="company-logo" id="packLogo">LOOTERS COMPUTAS</div>
+              <div style="font-size:0.82rem;color:#666;margin-top:2px;" id="packTagline">Refurbished PCs, parts &amp; tech</div>
+            </div>
+            <div class="company-details">
+              <strong>PACKING SLIP</strong><br>
+              Order Ref: <span id="packRef"></span><br>
+              Date: <span id="packDate"></span>
+            </div>
+          </div>
+
+          <div style="text-align:center; padding:18px 14px; border:2px solid #222; border-radius:6px; background:#fafafa; margin-bottom:14px;">
+            <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.6px; color:#555; margin-bottom:8px;">Deliver To</div>
+            <div id="packPostal" style="font-size:1.3rem; font-weight:700; line-height:1.4; white-space:pre-line;"></div>
+          </div>
+
+          <div class="meta-grid">
+            <div class="meta-block">
+              <h3>Shipping Method</h3>
+              <p id="packShipping"></p>
+            </div>
+            <div class="meta-block">
+              <h3>Order</h3>
+              <p>Ref: <span id="packRef2"></span></p>
+              <p>Qty shipped: 1</p>
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Item Description</th>
+                <th class="num">Qty</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td id="packItemDesc"></td>
+                <td class="num">1</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="footer-note">Handle with care. Check contents on arrival.</div>
+        </div>
+
+        <!-- WARRANTY – legally required core only for refurbished/second-life -->
+        <div class="doc-card" id="warrantyCard">
+          <div class="print-actions no-print">
+            <button class="print-btn" onclick="printSection('warrantyCard')">Print Warranty Notice</button>
+          </div>
+
+          <div class="doc-header">
+            <div>
+              <div class="company-logo" id="warLogo">LOOTERS COMPUTAS</div>
+            </div>
+            <div class="company-details">
+              Order Ref: <span id="warRef"></span>
+            </div>
+          </div>
+
+          <div class="doc-title">Consumer Guarantees Notice</div>
+          <div style="font-size:0.85rem;color:#666;margin-bottom:12px;">Refurbished / Second-life goods – New Zealand</div>
+
+          <div class="warranty-box">
+            <h3>Your statutory rights (Consumer Guarantees Act 1993)</h3>
+            <p>These goods are sold as <strong>refurbished or second-life</strong>. The Consumer Guarantees Act still applies. The goods must be:</p>
+            <ul>
+              <li><strong>Of acceptable quality</strong> – taking into account their age, price, and that they are used/refurbished. They must be safe, durable for a reasonable time given their condition, and free from defects that a reasonable buyer would not expect.</li>
+              <li><strong>Fit for purpose</strong> – suitable for the purposes goods of that type are commonly used for, and any particular purpose you told us about.</li>
+              <li><strong>Match their description</strong> – as advertised or described to you.</li>
+            </ul>
+            <p style="margin-top:8px;">If the goods fail any of these guarantees you are entitled to a remedy from us (repair, replacement, or refund). These rights cannot be contracted out of or reduced by any private terms.</p>
+            <p style="margin-top:8px;font-size:0.8rem;color:#555;">
+              This is a summary of the minimum legal requirements only. Full details: Consumer Guarantees Act 1993 and consumerprotection.govt.nz.
+            </p>
+          </div>
+
+          <div class="footer-note">Looters • New Zealand • Statutory rights apply automatically</div>
+        </div>
+      </div>
+
+      <div class="btn-row no-print" style="justify-content:center;margin-top:8px;">
+        <button class="print-btn" onclick="window.print()">Print All Visible Documents</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Brand toggle
+    function updateBrandToggle() {
+      const isApparels = document.getElementById('brandToggle').checked;
+      document.getElementById('logoValue').value = isApparels ? 'apparels' : 'computas';
+      document.getElementById('labelComputas').classList.toggle('inactive', isApparels);
+      document.getElementById('labelApparels').classList.toggle('inactive', !isApparels);
+    }
+
+    function toggleCompactPreview() {
+      // visual feedback only – actual class applied on generate
+    }
+
+    function parseRawText(text) {
+      const data = {
+        price: null, shipping: null, total: null, fee: null, paid: null,
+        reference: null, buyer: null, email: null, shippingMethod: null, addressRaw: null
+      };
+      text = text.replace(/\u00a0/g, ' ').replace(/\s+/g, ' ');
+
+      let m = text.match(/Reference\s*(P?\d+)/i);
+      if (m) data.reference = m[1].trim();
+
+      m = text.match(/Buyer\s*([^\s(]+)/i);
+      if (m) data.buyer = m[1].trim();
+
+      m = text.match(/Email\s*([\w.+\-@]+)/i);
+      if (m) data.email = m[1].trim();
+
+      m = text.match(/Price\s*\$?\s*([\d.]+)/i);
+      if (m) data.price = parseFloat(m[1]);
+
+      m = text.match(/Shipping\s*\$?\s*([\d.]+)/i);
+      if (m) data.shipping = parseFloat(m[1]);
+
+      m = text.match(/Total\s*\$?\s*([\d.]+)/i);
+      if (m) data.total = parseFloat(m[1]);
+
+      m = text.match(/Afterpay fee\s*\$?\s*([\d.]+)/i);
+      if (m) data.fee = parseFloat(m[1]);
+
+      m = text.match(/Paid\s*\$?\s*([\d.]+)/i);
+      if (m) data.paid = parseFloat(m[1]);
+
+      m = text.match(/Selected Shipping\s*(.+?)(?=Delivery Address|$)/i);
+      if (m) data.shippingMethod = m[1].trim().replace(/\s+/g, ' ');
+
+      m = text.match(/Delivery Address\s*(.+)/i);
+      if (m) data.addressRaw = m[1].trim();
+
+      return data;
+    }
+
+    function cleanAddress(raw) {
+      if (!raw) return { name: '', lines: '', postal: '' };
+
+      // Normalise spacing and split jammed words
+      let cleaned = raw
+        .replace(/\u00a0/g, ' ')
+        .replace(/([a-z])([A-Z0-9])/g, '$1 $2')
+        .replace(/([a-zA-Z])(\d)/g, '$1 $2')
+        .replace(/(\d)([a-zA-Z])/g, '$1 $2')
+        .replace(/,/g, ', ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      // Title case
+      cleaned = cleaned.replace(/\b\w+/g, w => {
+        if (/^(nz|nzl)$/i.test(w)) return w.toUpperCase();
+        return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+      });
+
+      // Fix common duplicates
+      cleaned = cleaned.replace(/Rolleston\s*Rolleston/i, 'Rolleston');
+
+      const parts = cleaned.split(' ').filter(Boolean);
+      let name = 'Customer';
+      let street = '';
+      let suburb = '';
+      let city = '';
+      let postcode = '';
+      let country = 'New Zealand';
+
+      // Name = first two words if they look like a name
+      let idx = 0;
+      if (parts.length >= 2 && !/^\d/.test(parts[0]) && !/^(unit|flat|apt|po|box)$/i.test(parts[0])) {
+        name = parts[0] + ' ' + parts[1];
+        idx = 2;
+      }
+
+      // Remaining tokens
+      const rest = parts.slice(idx);
+
+      // Postcode (4 digits NZ style)
+      const pcIdx = rest.findIndex(t => /^\d{4}$/.test(t));
+      if (pcIdx !== -1) {
+        postcode = rest[pcIdx];
+        rest.splice(pcIdx, 1);
+      }
+
+      // Street: everything until a known suburb/city word or end
+      // Simple approach: first chunk with number = street, next = suburb, next = city
+      const streetParts = [];
+      let i = 0;
+      while (i < rest.length) {
+        streetParts.push(rest[i]);
+        // stop street after we hit something that looks like end of street (contains / or digit already taken)
+        if (/\d/.test(rest[i]) || /^(unit|flat|apt|rd|road|st|street|ave|avenue|dr|drive|ln|lane|cres|crescent|pl|place|tce|terrace)$/i.test(rest[i])) {
+          // keep going a bit for "Goulds Road"
+          i++;
+          while (i < rest.length && !/^\d{4}$/.test(rest[i]) && streetParts.length < 5) {
+            // if next looks like suburb (capitalised place name) break
+            if (i + 1 < rest.length && /^(rolleston|christchurch|auckland|wellington|dunedin|hamilton|tauranga|nelson|invercargill)$/i.test(rest[i])) break;
+            if (/^(unit|flat)/i.test(rest[i])) { streetParts.push(rest[i]); i++; continue; }
+            streetParts.push(rest[i]);
+            i++;
+            break;
+          }
+          break;
+        }
+        i++;
+      }
+
+      street = streetParts.join(' ').replace(/,/g, '').trim();
+      const afterStreet = rest.slice(streetParts.length).filter(t => t !== postcode);
+
+      if (afterStreet.length >= 1) suburb = afterStreet[0].replace(/,/g, '');
+      if (afterStreet.length >= 2) city = afterStreet[1].replace(/,/g, '');
+      // if suburb and city same (e.g. Rolleston Rolleston) keep one
+      if (suburb && city && suburb.toLowerCase() === city.toLowerCase()) city = '';
+
+      // Build postal block
+      const postalLines = [name];
+      if (street) postalLines.push(street);
+      if (suburb) postalLines.push(suburb + (postcode ? ' ' + postcode : ''));
+      else if (postcode) postalLines.push(postcode);
+      if (city && city.toLowerCase() !== (suburb || '').toLowerCase()) postalLines.push(city);
+      postalLines.push(country);
+
+      const postal = postalLines.filter(Boolean).join('\n');
+      const lines = [street, suburb + (postcode ? ' ' + postcode : ''), city].filter(Boolean).join('\n');
+
+      return { name, lines, postal };
+    }
+
+    function formatMoney(n) {
+      if (n == null || isNaN(n)) return '—';
+      return '$' + n.toFixed(2);
+    }
+
+    function todayStr() {
+      return new Date().toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function generateDocs() {
+      const raw = document.getElementById('rawText').value;
+      const data = parseRawText(raw);
+      const addr = cleanAddress(data.addressRaw);
+      const itemDesc = document.getElementById('itemDesc').value || 'Refurbished / second-life item as per order';
+      const companyExtra = document.getElementById('companyExtra').value;
+      const logoType = document.getElementById('logoValue').value;
+      const minimal = document.getElementById('minimalPaper').checked;
+
+      const isComputas = logoType === 'computas';
+      const brandName = isComputas ? 'LOOTERS COMPUTAS' : 'LOOTERS APPARELS';
+      const tagline = isComputas ? 'Refurbished PCs, parts & tech' : 'Clothing & Accessories';
+      const logoClass = isComputas ? 'computas' : 'apparels';
+
+      // Apply compact class to body/docs
+      const docsArea = document.getElementById('docsArea');
+      if (minimal) {
+        docsArea.classList.add('compact');
+      } else {
+        docsArea.classList.remove('compact');
+      }
+
+      // Apply logo
+      ['invLogo', 'packLogo', 'warLogo', 'combLogo'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.textContent = brandName;
+          el.className = 'company-logo ' + logoClass;
+        }
+      });
+      document.getElementById('invTagline').textContent = tagline;
+      document.getElementById('packTagline').textContent = tagline;
+      document.getElementById('combTagline').textContent = isComputas ? 'Refurbished / Second-life goods' : 'Second-life / Pre-owned goods';
+
+      const ref = data.reference || 'N/A';
+      const date = todayStr();
+
+      // ===== COMBINED (Invoice + Packing Slip on same page) =====
+      document.getElementById('combRef').textContent = ref;
+      document.getElementById('combDate').textContent = date;
+      document.getElementById('combBuyerName').textContent = addr.name;
+      document.getElementById('combAddress').textContent = addr.lines;
+      document.getElementById('combEmail').textContent = data.email || '';
+      document.getElementById('combBuyerUser').textContent = data.buyer || '';
+      document.getElementById('combShipping').textContent = data.shippingMethod || '';
+      document.getElementById('combItemDesc').textContent = itemDesc;
+      document.getElementById('combPrice').textContent = formatMoney(data.price);
+      document.getElementById('combShip').textContent = formatMoney(data.shipping);
+      document.getElementById('combSubtotal').textContent = formatMoney(data.price);
+      document.getElementById('combShipTotal').textContent = formatMoney(data.shipping);
+      document.getElementById('combFee').textContent = formatMoney(data.fee);
+      document.getElementById('combPaid').textContent = formatMoney(data.paid || data.total);
+
+      // Packing section of combined page
+      document.getElementById('combPackPostal').textContent = addr.postal || (addr.name + '\n' + addr.lines);
+      document.getElementById('combPackShip').textContent = data.shippingMethod || 'Standard';
+
+      // ===== FULL INVOICE =====
+      document.getElementById('invCompanyExtra').textContent = companyExtra;
+      document.getElementById('invRef').textContent = ref;
+      document.getElementById('invRef2').textContent = ref;
+      document.getElementById('invDate').textContent = date;
+      document.getElementById('invBuyerName').textContent = addr.name;
+      document.getElementById('invAddress').textContent = addr.lines;
+      document.getElementById('invEmail').textContent = data.email || '';
+      document.getElementById('invBuyerUser').textContent = data.buyer || '';
+      document.getElementById('invShipping').textContent = data.shippingMethod || '';
+      document.getElementById('invItemDesc').textContent = itemDesc;
+      document.getElementById('invPrice').textContent = formatMoney(data.price);
+      document.getElementById('invPrice2').textContent = formatMoney(data.price);
+      document.getElementById('invShipMethod').textContent = data.shippingMethod || 'Standard';
+      document.getElementById('invShip').textContent = formatMoney(data.shipping);
+      document.getElementById('invShip2').textContent = formatMoney(data.shipping);
+      document.getElementById('invSubtotal').textContent = formatMoney(data.price);
+      document.getElementById('invShipTotal').textContent = formatMoney(data.shipping);
+      document.getElementById('invFee').textContent = formatMoney(data.fee);
+      document.getElementById('invPaid').textContent = formatMoney(data.paid || data.total);
+
+      // ===== PACKING =====
+      document.getElementById('packRef').textContent = ref;
+      document.getElementById('packRef2').textContent = ref;
+      document.getElementById('packDate').textContent = date;
+      document.getElementById('packPostal').textContent = addr.postal || (addr.name + '\n' + addr.lines);
+      document.getElementById('packShipping').textContent = data.shippingMethod || 'Standard';
+      document.getElementById('packItemDesc').textContent = itemDesc;
+
+      // ===== WARRANTY =====
+      document.getElementById('warRef').textContent = ref;
+
+      docsArea.classList.add('visible');
+      docsArea.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function printSection(id) {
+      const allCards = document.querySelectorAll('.doc-card');
+      allCards.forEach(c => c.style.display = 'none');
+      const target = document.getElementById(id);
+      if (target) target.style.display = 'block';
+      window.print();
+      // restore
+      const minimal = document.getElementById('minimalPaper').checked;
+      allCards.forEach(c => {
+        if (minimal) {
+          // only combined should show
+          c.style.display = c.classList.contains('combined-doc') ? 'block' : 'none';
+        } else {
+          c.style.display = c.classList.contains('combined-doc') ? 'none' : 'block';
+        }
+      });
+    }
+
+    function clearAll() {
+      document.getElementById('rawText').value = '';
+      document.getElementById('docsArea').classList.remove('visible', 'compact');
+    }
+
+    // Auto-generate sample on load
+    window.addEventListener('load', () => setTimeout(generateDocs, 80));
+  </script>
+</body>
+</html>

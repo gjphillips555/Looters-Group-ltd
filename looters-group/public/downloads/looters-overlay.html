@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Looters Overlay</title>
+<style>
+  :root { --ink:#141318; --paper:#f4f0e8; --cream:#fbf8f2; --muted:#6e6873; --line:#e6dfd4; --software:#1d4ed8; --ok:#15803d; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Figtree, ui-sans-serif, system-ui, sans-serif; background: var(--paper); color: var(--ink); }
+  header { padding: 20px 24px 8px; }
+  header p { margin: 0; font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--software); }
+  h1 { margin: 6px 0 0; font-size: 28px; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 12px 24px 40px; display: grid; gap: 16px; }
+  @media (min-width: 900px) { .wrap { grid-template-columns: 300px 1fr; } }
+  .card { background: var(--cream); border-radius: 24px; padding: 16px; box-shadow: 0 0 0 1px rgba(20,19,24,.06); }
+  .label { font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  .hint { font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+  .drop { margin-top: 8px; min-height: 96px; width: 100%; border: 2px dashed var(--line); border-radius: 16px; background: transparent; cursor: pointer; color: var(--muted); }
+  .drop.over { border-color: var(--software); background: #dbeafe; color: var(--software); }
+  button { cursor: pointer; font: inherit; }
+  .btn { min-height: 44px; width: 100%; margin-top: 8px; border: 0; border-radius: 999px; font-weight: 700; font-size: 14px; }
+  .btn.ink { background: var(--ink); color: var(--cream); }
+  .btn.ok { background: var(--ok); color: #fff; }
+  .btn.soft { background: var(--software); color: #fff; }
+  .btn.ghost { background: var(--line); }
+  .btn:disabled { opacity: .4; }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .pill { min-height: 36px; border: 0; border-radius: 999px; padding: 0 12px; font-size: 12px; font-weight: 700; text-transform: uppercase; background: #ece7de; }
+  .pill.on { background: var(--ink); color: var(--cream); }
+  .pill.style.on { background: var(--software); }
+  .thumbs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .thumbs img { width: 56px; height: 56px; object-fit: contain; background: #fff; border-radius: 8px; border: 1px solid var(--line); cursor: pointer; }
+  .thumbs img.active { outline: 2px solid var(--software); }
+  .preview { min-height: 280px; display: flex; align-items: center; justify-content: center; background: rgba(20,19,24,.05); border-radius: 16px; padding: 12px; }
+  canvas { max-width: 100%; max-height: 540px; border-radius: 8px; background: #fff; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .row .btn { width: auto; padding: 0 20px; }
+  .placed { margin-top: 8px; font-size: 12px; color: var(--muted); }
+  .placed div { display: flex; justify-content: space-between; background: #ece7de; border-radius: 8px; padding: 6px 8px; margin-top: 4px; }
+  .placed button { border: 0; background: none; color: #ea580c; font-weight: 700; }
+  .status { font-size: 12px; color: var(--muted); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header>
+  <p>Looters Software</p>
+  <h1>Overlay</h1>
+  <p class="hint" style="text-transform:none;letter-spacing:0;font-weight:400;margin-top:8px;max-width:520px">
+    Drop a listing photo, upload your own logos or badges, place them, download a 2048×1536 PNG. Nothing is preloaded.
+  </p>
+</header>
+<div class="wrap">
+  <div class="card">
+    <div class="label">1. Product photo</div>
+    <button class="drop" id="drop">Drop a photo or click</button>
+    <input id="productFile" type="file" accept="image/*" hidden />
+    <div class="label" style="margin-top:18px">2. Your overlays</div>
+    <p class="hint">PNG logos or badges you already have.</p>
+    <button class="btn ink" id="uploadOverlay">Upload overlay</button>
+    <input id="overlayFile" type="file" accept="image/*" hidden />
+    <div class="thumbs" id="thumbs"></div>
+    <div class="label" style="margin-top:18px">3. Corners</div>
+    <div class="pills" id="corners"></div>
+    <button class="btn ok" id="add" disabled>Add overlay</button>
+    <div class="placed" id="placed">No overlays added yet.</div>
+    <div class="label" style="margin-top:18px">4. Style</div>
+    <div class="pills" id="styles"></div>
+  </div>
+  <div class="card">
+    <div class="preview"><canvas id="canvas"></canvas></div>
+    <div class="row">
+      <button class="btn soft" id="download" disabled>Download 2048×1536 PNG</button>
+      <button class="btn ghost" id="clear">Clear</button>
+    </div>
+    <p class="status" id="status">Drop a photo to start.</p>
+  </div>
+</div>
+<script>
+const TARGET_W = 2048, TARGET_H = 1536;
+const CORNERS = ["br","bl","tr","tl"];
+const STYLES = ["clean","vignette","warm","cool","lens","frame"];
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+let product = null;
+let overlays = [];
+let activeId = null;
+let corners = new Set(["br"]);
+let placed = [];
+let style = "clean";
+
+function loadFile(file) {
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith("image/")) return reject();
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = URL.createObjectURL(file);
+  });
+}
+function applyStyle(c, w, h) {
+  if (style === "clean") return;
+  if (style === "vignette") {
+    const g = c.createRadialGradient(w/2,h/2,w*0.28,w/2,h/2,w*0.72);
+    g.addColorStop(0,"rgba(0,0,0,0)"); g.addColorStop(1,"rgba(0,0,0,0.32)");
+    c.fillStyle = g; c.fillRect(0,0,w,h);
+  } else if (style === "warm") { c.fillStyle = "rgba(255,140,50,0.07)"; c.fillRect(0,0,w,h); }
+  else if (style === "cool") { c.fillStyle = "rgba(70,130,255,0.06)"; c.fillRect(0,0,w,h); }
+  else if (style === "lens") {
+    const g = c.createRadialGradient(w*0.65,h*0.25,0,w*0.65,h*0.25,w*0.55);
+    g.addColorStop(0,"rgba(255,255,255,0.11)"); g.addColorStop(0.6,"rgba(255,255,255,0.02)"); g.addColorStop(1,"rgba(0,0,0,0)");
+    c.fillStyle = g; c.fillRect(0,0,w,h);
+  } else { c.strokeStyle = "rgba(29,78,216,0.4)"; c.lineWidth = Math.max(3,7*(w/TARGET_W)); c.strokeRect(10,10,w-20,h-20); }
+}
+function paint(c, w, h) {
+  c.fillStyle = "#fff"; c.fillRect(0,0,w,h);
+  if (!product) return;
+  const scale = Math.min(w/product.width, h/product.height);
+  const pw = Math.round(product.width*scale), ph = Math.round(product.height*scale);
+  const px = Math.round((w-pw)/2), py = Math.round((h-ph)/2);
+  c.save(); c.shadowColor = "rgba(0,0,0,0.22)"; c.shadowBlur = Math.max(18,30*(w/TARGET_W)); c.shadowOffsetY = Math.max(6,12*(w/TARGET_W));
+  c.drawImage(product, px, py, pw, ph); c.restore();
+  applyStyle(c, w, h);
+  placed.forEach(entry => {
+    const ov = overlays.find(o => o.id === entry.id); if (!ov) return;
+    const lw = Math.round(w*0.22), lh = Math.round(ov.img.height * (lw/ov.img.width)), m = Math.round(w*0.018);
+    const pos = { br:[w-lw-m,h-lh-m], bl:[m,h-lh-m], tr:[w-lw-m,m], tl:[m,m] };
+    entry.corners.forEach(k => { const [dx,dy] = pos[k]; c.drawImage(ov.img, dx, dy, lw, lh); });
+  });
+}
+function redraw() {
+  const scale = Math.min(960/TARGET_W, 540/TARGET_H);
+  canvas.width = Math.round(TARGET_W*scale);
+  canvas.height = Math.round(TARGET_H*scale);
+  paint(ctx, canvas.width, canvas.height);
+}
+function setStatus(t) { document.getElementById("status").textContent = t; }
+function renderCorners() {
+  document.getElementById("corners").innerHTML = CORNERS.map(c =>
+    `<button class="pill${corners.has(c)?" on":""}" data-c="${c}">${c}</button>`
+  ).join("");
+}
+function renderStyles() {
+  document.getElementById("styles").innerHTML = STYLES.map(s =>
+    `<button class="pill style${style===s?" on":""}" data-s="${s}">${s}</button>`
+  ).join("");
+}
+function renderThumbs() {
+  document.getElementById("thumbs").innerHTML = overlays.map(o =>
+    `<img src="${o.img.src}" data-id="${o.id}" class="${o.id===activeId?"active":""}" alt="">`
+  ).join("");
+}
+function renderPlaced() {
+  const el = document.getElementById("placed");
+  if (!placed.length) { el.textContent = "No overlays added yet."; return; }
+  el.innerHTML = placed.map((p,i) => {
+    const name = overlays.find(o => o.id === p.id)?.name || "overlay";
+    return `<div><span>${name} · ${p.corners.join(", ").toUpperCase()}</span><button data-i="${i}">Remove</button></div>`;
+  }).join("");
+}
+function sync() { renderCorners(); renderStyles(); renderThumbs(); renderPlaced(); redraw(); document.getElementById("add").disabled = !product || !activeId; document.getElementById("download").disabled = !product; }
+
+document.getElementById("corners").onclick = e => {
+  const b = e.target.closest("[data-c]"); if (!b) return;
+  const c = b.dataset.c; if (corners.has(c)) corners.delete(c); else corners.add(c); sync();
+};
+document.getElementById("styles").onclick = e => {
+  const b = e.target.closest("[data-s]"); if (!b) return; style = b.dataset.s; sync();
+};
+document.getElementById("thumbs").onclick = e => {
+  const img = e.target.closest("img"); if (!img) return; activeId = img.dataset.id; sync();
+};
+document.getElementById("placed").onclick = e => {
+  const b = e.target.closest("[data-i]"); if (!b) return; placed.splice(Number(b.dataset.i),1); sync();
+};
+
+const drop = document.getElementById("drop");
+const productFile = document.getElementById("productFile");
+drop.onclick = () => productFile.click();
+drop.ondragover = e => { e.preventDefault(); drop.classList.add("over"); };
+drop.ondragleave = () => drop.classList.remove("over");
+drop.ondrop = e => { e.preventDefault(); drop.classList.remove("over"); if (e.dataTransfer.files[0]) onProduct(e.dataTransfer.files[0]); };
+productFile.onchange = () => { if (productFile.files[0]) onProduct(productFile.files[0]); productFile.value = ""; };
+async function onProduct(file) {
+  product = await loadFile(file); placed = []; setStatus("Loaded " + file.name); sync();
+}
+document.getElementById("uploadOverlay").onclick = () => document.getElementById("overlayFile").click();
+document.getElementById("overlayFile").onchange = async e => {
+  const file = e.target.files[0]; e.target.value = ""; if (!file) return;
+  const img = await loadFile(file);
+  const id = "ov-" + Math.random().toString(36).slice(2);
+  overlays.push({ id, name: file.name.length > 18 ? file.name.slice(0,15)+"…" : file.name, img });
+  activeId = id; setStatus("Overlay ready: " + file.name); sync();
+};
+document.getElementById("add").onclick = () => {
+  if (!product || !activeId || !corners.size) return;
+  placed.push({ id: activeId, corners: [...corners] }); corners = new Set(["br"]); setStatus("Overlay added."); sync();
+};
+document.getElementById("clear").onclick = () => { product = null; placed = []; setStatus("Drop a photo to start."); sync(); };
+document.getElementById("download").onclick = () => {
+  if (!product) return;
+  const full = document.createElement("canvas"); full.width = TARGET_W; full.height = TARGET_H;
+  paint(full.getContext("2d"), TARGET_W, TARGET_H);
+  full.toBlob(blob => {
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "overlay-2048x1536.png"; a.click(); URL.revokeObjectURL(a.href);
+    setStatus("Downloaded 2048 × 1536 PNG.");
+  }, "image/png");
+};
+sync();
+</script>
+</body>
+</html>
