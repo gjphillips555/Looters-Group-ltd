@@ -6,12 +6,24 @@ export function SiftaLaunch() {
     <div className="w-full">
       <div className="flex flex-wrap gap-2">
         <a
-          href={SIFTA.download}
-          target="_blank"
-          rel="noreferrer"
+          href={SIFTA.windows}
           className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-software-hot px-5 text-sm font-semibold text-ink"
         >
-          Download Sifta Browser
+          Download for Windows
+        </a>
+        <a
+          href={SIFTA.linux}
+          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-cream/10 px-5 text-sm font-semibold text-cream"
+        >
+          Download for Linux
+        </a>
+        <a
+          href={SIFTA.url}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-cream/10 px-5 text-sm font-semibold text-cream"
+        >
+          Open in browser
           <ExternalLink className="size-4" />
         </a>
       </div>

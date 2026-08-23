@@ -395,7 +395,11 @@ export function productImages(product: Product) {
 export const SIFTA = {
   name: "Sifta Browser",
   url: "https://siftabrowser-looters-group.vercel.app",
-  download: "https://siftabrowser-looters-group.vercel.app/download",
+  download: "https://github.com/gjphillips555/Sifta-WebApp/releases/latest",
+  windows:
+    "https://github.com/gjphillips555/Sifta-WebApp/releases/latest/download/SiftaBrowser-Windows.zip",
+  linux:
+    "https://github.com/gjphillips555/Sifta-WebApp/releases/latest/download/SiftaBrowser-Linux-x64.tar.gz",
   features: [
     { href: "/slots", label: "SiftaSlots" },
     { href: "/games", label: "Games" },
