@@ -6,7 +6,6 @@ import { LiveListings } from "@/components/live-listings";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { AfterpayMark } from "@/components/afterpay-mark";
 import { SiftaAd } from "@/components/sifta-ad";
-import { SIFTA } from "@/data/catalog";
 
 export const Route = createFileRoute("/")({ component: Home });
 
@@ -101,14 +100,12 @@ function Home() {
                 the app. SiftaLoot still works on this site when you sign in.
               </p>
               <div className="mt-4 flex flex-wrap gap-3">
-                <a
-                  href={SIFTA.download}
-                  target="_blank"
-                  rel="noreferrer"
+                <Link
+                  to="/software"
                   className="inline-flex min-h-10 items-center text-sm font-semibold text-software-hot hover:underline"
                 >
-                  Download Sifta Browser
-                </a>
+                  Open Sifta on Looters Software
+                </Link>
                 <Link
                   to="/software"
                   className="inline-flex min-h-10 items-center text-sm font-semibold text-cream/80 hover:underline"

@@ -53,21 +53,23 @@ function Account() {
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">
           Signed in
         </p>
-        <h1 className="mt-2 font-display text-3xl font-extrabold">Account</h1>
+        <h1 className="mt-2 font-display text-3xl font-extrabold">Wallet</h1>
         <p className="mt-2 text-muted">{user.displayName ?? user.primaryEmail}</p>
 
-        <section className="mt-8 rounded-3xl bg-cream p-6 shadow-border">
-          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-accent">
-            <Coins className="size-3.5" /> SiftaLoot wallet
-          </p>
-          <p className="mt-3 font-display text-4xl font-extrabold tabular-nums">
-            {wallet ? wallet.balance : "—"}{" "}
-            <span className="text-lg font-semibold text-muted">SL</span>
-          </p>
-          <p className="mt-3 text-sm leading-relaxed text-muted">
-            Lives on Looters Group — no Sifta Browser needed. 1 SiftaLoot = $1 NZD
-            shop credit in store or on a Trade Me listing. Show the code at
-            Kilbirnie or in the listing message.
+        <section className="mt-8 overflow-hidden rounded-3xl bg-ink text-cream shadow-border">
+          <div className="bg-gradient-to-br from-ink to-computas px-6 py-7">
+            <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-cream/60">
+              <Coins className="size-3.5" /> SiftaLoot
+            </p>
+            <p className="mt-4 font-display text-5xl font-extrabold tabular-nums">
+              {wallet ? wallet.balance : "—"}
+              <span className="ml-2 text-lg font-semibold text-cream/50">SL</span>
+            </p>
+            <p className="mt-2 text-xs text-cream/55">1 SL = $1 NZD in store or on Trade Me</p>
+          </div>
+          <div className="bg-cream p-6 text-ink">
+          <p className="text-sm leading-relaxed text-muted">
+            Lives on Looters Group — Sifta Browser not required.
           </p>
 
           <label className="mt-6 block text-xs font-semibold uppercase tracking-[0.14em] text-muted">
@@ -95,6 +97,7 @@ function Account() {
               {code}
             </p>
           ) : null}
+          </div>
         </section>
 
         <section className="mt-8">
