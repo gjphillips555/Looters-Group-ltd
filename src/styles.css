@@ -1,0 +1,80 @@
+@import url("https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Syne:wght@600;700;800&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Syne", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --color-ink: #141318;
+  --color-paper: #f4f0e8;
+  --color-cream: #fbf8f2;
+  --color-muted: #6e6873;
+  --color-line: #e6dfd4;
+  --color-accent: #cb0003;
+  --color-computas: #cb0003;
+  --color-computas-hot: #e10600;
+  --color-apparel: #014fcb;
+  --color-apparel-hot: #3b6fe0;
+  --color-software: #159b26;
+  --color-software-hot: #22c43a;
+  --color-ok: #15803d;
+  --shadow-border:
+    0px 0px 0px 1px rgba(20, 19, 24, 0.06), 0px 1px 2px -1px rgba(20, 19, 24, 0.06),
+    0px 2px 4px 0px rgba(20, 19, 24, 0.04);
+  --shadow-border-hover:
+    0px 0px 0px 1px rgba(20, 19, 24, 0.1), 0px 8px 24px -12px rgba(20, 19, 24, 0.18);
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+    font-family: var(--font-display);
+  }
+  p {
+    text-wrap: pretty;
+  }
+  img.media {
+    outline: 1px solid rgba(20, 19, 24, 0.1);
+    outline-offset: -1px;
+  }
+}
+
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.ticker-track {
+  animation: ticker-scroll 42s linear infinite;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
