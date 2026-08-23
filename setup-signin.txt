@@ -1,0 +1,38 @@
+LOOTERS GROUP — what you do (I cannot click these for you)
+
+The live site is already on:
+https://looters-group-ltd.vercel.app/
+
+Google / X / GitHub sign-in needs THREE things in Vercel. Windows:
+double-click setup-signin.bat and it opens the pages for you.
+
+
+1) Neon database   https://console.neon.tech
+   Sign in with GitHub → New project → copy the postgresql:// string
+   Vercel env name: DATABASE_URL
+
+2) GitHub OAuth app   https://github.com/settings/applications/new
+   Application name:  Looters Group
+   Homepage URL:      https://looters-group-ltd.vercel.app
+   Callback URL:      https://looters-group-ltd.vercel.app/api/auth/callback/github
+   Then copy Client ID + Client Secret
+   Vercel env names: GITHUB_CLIENT_ID   GITHUB_CLIENT_SECRET
+
+3) Vercel   https://vercel.com/dashboard
+   Project looters-group-ltd → Settings → Environment Variables
+   Also add:
+     BETTER_AUTH_URL     = https://looters-group-ltd.vercel.app
+     BETTER_AUTH_SECRET  = (the bat file generates this in Notepad)
+
+   Then Deployments → … on the latest → Redeploy
+
+
+Optional
+  Google: https://looters-group-ltd.vercel.app/api/auth/callback/google
+  X:      https://looters-group-ltd.vercel.app/api/auth/callback/twitter
+
+Tradevine APARL (same four keys as Render):
+  TRADEVINE_CONSUMER_KEY
+  TRADEVINE_CONSUMER_SECRET
+  TRADEVINE_ACCESS_TOKEN
+  TRADEVINE_ACCESS_TOKEN_SECRET
