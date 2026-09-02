@@ -1,40 +1,39 @@
 import { createServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 
-import {
-  type Product,
-  type SkuCode,
-} from "@/data/catalog";
+import { type Product, type SkuCode } from "@/data/catalog";
 
-const SKU_CODES: SkuCode[] = [
-  "DSKTP",
-  "LPTOP",
-  "CMPNT",
-  "APARL",
-  "SFTWR",
-];
+const SKU_CODES: SkuCode[] = ["DSKTP", "LPTOP", "CMPNT", "APARL", "SFTWR"];
+
+/** LootersComputas Trade Me member id */
+const MEMBER_DEFAULT = "9233545";
 
 function skuFromBlob(blob: string): SkuCode | null {
   const upper = blob.toUpperCase();
-
   for (const code of SKU_CODES) {
-    if (new RegExp(`\\b${code}\\b`).test(upper)) {
-      return code;
-    }
+    if (new RegExp(`\\b${code}\\b`).test(upper)) return code;
   }
-
   if (/\bAPPAREL\b/.test(upper)) return "APARL";
-  if (/\bLAPTOP/.test(upper)) return "LPTOP";
-  if (/\bDESKTOP/.test(upper)) return "DSKTP";
-  if (/\bSOFTWARE\b/.test(upper)) return "SFTWR";
-
+  if (/\bLAPTOP|\bNOTEBOOK|\bPROBOOK|\bELITEBOOK|\bTHINKPAD\b/.test(upper)) return "LPTOP";
+  if (/\bDESKTOP|\bPRODESK|\bOPTIPLEX|\bSFF\b|\bMINI PC\b/.test(upper)) return "DSKTP";
+  if (/\bSOFTWARE\b|\bSIFTA\b|\bLICENSE\b/.test(upper)) return "SFTWR";
+  if (
+    /\bGPU\b|\bGRAPHICS\b|\bRAM\b|\bSSD\b|\bHDD\b|\bCOMPONENT|\bCARD\b|\bNVS\b|\bQUADRO\b|\bGEFORCE\b/.test(
+      upper,
+    )
+  ) {
+    return "CMPNT";
+  }
+  if (/\/CLOTHING|\/FASHION|\/APPAREL/.test(upper)) return "APARL";
+  if (/\/LAPTOPS?\b/.test(upper)) return "LPTOP";
+  if (/\/DESKTOPS?\b/.test(upper)) return "DSKTP";
+  if (/\/COMPUTERS?\b/.test(upper)) return "CMPNT";
   return null;
 }
 
 function branchForSku(sku: SkuCode): Product["branch"] {
   if (sku === "APARL") return "apparel";
   if (sku === "SFTWR") return "software";
-
   return "computas";
 }
 
@@ -43,185 +42,73 @@ function categoryForSku(sku: SkuCode): string {
   if (sku === "LPTOP") return "Laptops";
   if (sku === "APARL") return "Apparel";
   if (sku === "SFTWR") return "Software";
-
   return "Components";
 }
 
 function money(val: unknown): number {
-  if (typeof val === "number" && Number.isFinite(val)) {
-    return val;
-  }
-
-  const n = parseFloat(
-    String(val ?? "").replace(/[^0-9.]/g, "")
-  );
-
+  if (typeof val === "number" && Number.isFinite(val)) return val;
+  const n = parseFloat(String(val ?? "").replace(/[^0-9.]/g, ""));
   return Number.isFinite(n) ? n : 0;
 }
 
-function tradevineHeader(): string | null {
-  const key = process.env.TRADEVINE_CONSUMER_KEY?.trim();
-  const secret = process.env.TRADEVINE_CONSUMER_SECRET?.trim();
-  const token = process.env.TRADEVINE_ACCESS_TOKEN?.trim();
-  const tokenSecret =
-    process.env.TRADEVINE_ACCESS_TOKEN_SECRET?.trim();
-
-  if (!key || !secret || !token || !tokenSecret) {
-    return null;
+function tradeMeAuth(): string | null {
+  const key = process.env.TRADEME_CONSUMER_KEY?.trim();
+  const secret = process.env.TRADEME_CONSUMER_SECRET?.trim();
+  if (!key || !secret) return null;
+  const token = process.env.TRADEME_ACCESS_TOKEN?.trim();
+  const tokenSecret = process.env.TRADEME_ACCESS_TOKEN_SECRET?.trim();
+  if (token && tokenSecret) {
+    const sig = `${encodeURIComponent(secret)}&${encodeURIComponent(tokenSecret)}`;
+    return (
+      `OAuth oauth_consumer_key="${encodeURIComponent(key)}", ` +
+      `oauth_token="${encodeURIComponent(token)}", ` +
+      `oauth_signature_method="PLAINTEXT", ` +
+      `oauth_signature="${sig}"`
+    );
   }
-
-  const sig =
-    `${encodeURIComponent(secret)}&${encodeURIComponent(tokenSecret)}`;
-
   return (
     `OAuth oauth_consumer_key="${encodeURIComponent(key)}", ` +
-    `oauth_token="${encodeURIComponent(token)}", ` +
     `oauth_signature_method="PLAINTEXT", ` +
-    `oauth_signature="${sig}"`
+    `oauth_signature="${encodeURIComponent(secret)}&"`
   );
 }
 
-function labelsOf(it: Record<string, unknown>): string[] {
-  const out: string[] = [];
-
-  const add = (val: unknown) => {
-    if (!val) return;
-
-    if (typeof val === "string") {
-      for (const part of val.split(/[;,|/]/)) {
-        const t = part.trim();
-
-        if (t) {
-          out.push(t);
-        }
-      }
-
-      return;
-    }
-
-    if (Array.isArray(val)) {
-      val.forEach(add);
-      return;
-    }
-
-    if (typeof val === "object") {
-      const o = val as Record<string, unknown>;
-
-      add(
-        o.Name ??
-          o.Label ??
-          o.LabelName ??
-          o.Value ??
-          o.Code ??
-          o.Tag
-      );
-    }
-  };
-
-  for (const key of [
-    "Labels",
-    "LabelList",
-    "ProductLabels",
-    "Tags",
-    "Label",
-    "ProductLabel",
-  ]) {
-    add(it[key]);
-  }
-
-  return out;
-}
-
-function photosOf(it: Record<string, unknown>): string[] {
+function photosFromListing(it: Record<string, unknown>): string[] {
   const urls: string[] = [];
-
   const add = (u: unknown) => {
-    const s = String(u ?? "").trim();
-
-    if (s.startsWith("http")) {
-      urls.push(s.replace("http://", "https://"));
-    }
+    const s = String(u ?? "").trim().replace("http://", "https://");
+    if (s.startsWith("http")) urls.push(s);
   };
-
-  for (const key of ["Photos", "PhotoList", "Images"]) {
-    const raw = it[key];
-
-    if (!Array.isArray(raw)) continue;
-
-    for (const p of raw) {
-      if (typeof p === "string") {
-        add(p);
-      } else if (p && typeof p === "object") {
-        const o = p as Record<string, unknown>;
-
-        add(
-          o.PublicUrl ??
-            o.Url ??
-            o.PhotoUrl ??
-            o.TradevineUrl
-        );
-      }
+  add(it.PictureHref);
+  const photos = it.Photos;
+  if (Array.isArray(photos)) {
+    for (const p of photos) {
+      if (!p || typeof p !== "object") continue;
+      const v = (p as { Value?: Record<string, string> }).Value ?? (p as Record<string, string>);
+      add(v.FullSize ?? v.Large ?? v.Gallery ?? v.Medium ?? v.List ?? v.Thumbnail);
     }
   }
-
-  add(it.PublicUrl ?? it.PictureHref ?? it.ImageUrl);
-
   return [...new Set(urls)];
 }
 
-function mapRule(
-  it: Record<string, unknown>
-): Product | null {
-  const lid =
-    it.LastTradeMeListingExternalID ??
-    it.TradeMeListingRuleID ??
-    it.ProductID;
-
-  if (lid == null) {
-    return null;
-  }
-
+function mapListing(it: Record<string, unknown>): Product | null {
+  const lid = it.ListingId;
+  if (lid == null) return null;
   const id = String(lid);
-
-  const title = String(
-    it.Title ??
-      it.RuleName ??
-      it.ProductCode ??
-      "Listing"
-  ).trim();
-
-  const code = String(it.ProductCode ?? "");
-
-  const labs = labelsOf(it);
-
-  /*
-   * IMPORTANT:
-   *
-   * Category is determined from Tradevine data only.
-   * We do NOT default unknown items into Computas.
-   */
-  const sku = skuFromBlob(
-    [...labs, code, title].join(" ")
-  );
-
-  if (!sku) {
-    return null;
-  }
-
-  const photos = photosOf(it);
-
-  const price = money(
-    it.BuyNowPrice ?? it.StartPrice
-  );
-
-  const desc = String(
-    it.Description ??
-      it.SubTitle ??
-      ""
-  )
+  const title = String(it.Title ?? "Listing").trim();
+  const skuCode = String(it.SKU ?? "");
+  const path = String(it.CategoryPath ?? it.Category ?? "");
+  const body = String(it.Body ?? it.Subtitle ?? "")
     .replace(/<[^>]+>/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+  const sku =
+    skuFromBlob([skuCode, title, path, body].join(" ")) ??
+    (path.includes("/Computers") || path.includes("/Electronics") ? ("CMPNT" as SkuCode) : null);
+  if (!sku) return null;
+
+  const photos = photosFromListing(it);
+  const price = money(it.BuyNowPrice) || money(it.StartPrice) || money(it.PriceDisplay);
 
   return {
     id,
@@ -230,304 +117,133 @@ function mapRule(
     title,
     price,
     category: categoryForSku(sku),
-    image:
-      photos[0] ??
-      "/brand/storefront.jpg",
-    images:
-      photos.length
-        ? photos
-        : undefined,
+    image: photos[0] ?? "/brand/storefront.jpg",
+    images: photos.length ? photos : undefined,
     sku,
-    condition: "Trade Me · Tradevine",
-    blurb:
-      desc.slice(0, 280) ||
-      title,
-    specs:
-      labs.length
-        ? labs
-        : [code].filter(Boolean),
+    condition: "Trade Me",
+    blurb: body.slice(0, 280) || title,
+    specs: [skuCode, path].filter(Boolean),
   };
 }
 
-/*
- * Short cache only.
- *
- * Tradevine remains the source of truth.
- * Nothing from the local catalogue is merged
- * into the live Tradevine results.
- */
-const cache: {
-  at: number;
-  items: Product[] | null;
-} = {
-  at: 0,
-  items: null,
-};
-
+const cache: { at: number; items: Product[] | null } = { at: 0, items: null };
 const CACHE_MS = 60 * 1000;
 
-async function loadTradevine(): Promise<Product[]> {
-  const auth = tradevineHeader();
+async function loadTradeMe(): Promise<Product[]> {
+  const auth = tradeMeAuth();
+  if (!auth) throw new Error("Trade Me credentials are not configured");
 
-  if (!auth) {
-    throw new Error(
-      "Tradevine credentials are not configured"
-    );
-  }
+  if (cache.items && Date.now() - cache.at < CACHE_MS) return cache.items;
 
-  if (
-    cache.items &&
-    Date.now() - cache.at < CACHE_MS
-  ) {
-    return cache.items;
-  }
-
-  const base = (
-    process.env.TRADEVINE_BASE_URL ??
-    "https://api.tradevine.com"
-  ).replace(/\/$/, "");
-
+  const memberId = (process.env.TRADEME_MEMBER_ID ?? MEMBER_DEFAULT).trim();
   const items: Product[] = [];
 
-  /*
-   * Keep requesting pages until Tradevine tells us
-   * that we have received the complete result set.
-   *
-   * This avoids the old hard limit of 5 pages.
-   */
-  for (let page = 1; ; page += 1) {
+  for (let page = 1; page <= 20; page += 1) {
     const url =
-      `${base}/v1/TradeMeListingRule` +
-      `?pageNumber=${page}` +
-      `&pageSize=100` +
-      `&isArchived=false`;
+      `https://api.trademe.co.nz/v1/Search/General.json` +
+      `?member_listing=${encodeURIComponent(memberId)}` +
+      `&rows=50&page=${page}&photo_size=FullSize&sort_order=ExpiryDesc`;
 
     const res = await fetch(url, {
-      headers: {
-        Accept: "application/json",
-        Authorization: auth,
-        Connection: "close",
-      },
+      headers: { Accept: "application/json", Authorization: auth },
     });
-
     if (!res.ok) {
-      throw new Error(
-        `Tradevine request failed: ${res.status} ${res.statusText}`
-      );
+      throw new Error(`Trade Me search failed: ${res.status} ${res.statusText}`);
     }
 
     const data = (await res.json()) as {
       List?: Record<string, unknown>[];
       TotalCount?: number;
     };
+    const batch = data.List ?? [];
+    if (batch.length === 0) break;
 
-    const rawBatch = data.List ?? [];
-
-    /*
-     * Map only valid/current Tradevine records.
-     * Unknown/unclassified records are ignored rather
-     * than incorrectly becoming Computas products.
-     */
-    const batch = rawBatch
-      .map(mapRule)
-      .filter(
-        (p): p is Product =>
-          Boolean(p)
-      );
-
-    items.push(...batch);
-
-    const totalCount =
-      Number(data.TotalCount ?? 0);
-
-    /*
-     * Stop when:
-     * - Tradevine returned no records
-     * - We have received the advertised total
-     * - The page contained fewer than 100 records
-     */
-    if (
-      rawBatch.length === 0 ||
-      (totalCount > 0 &&
-        items.length >= totalCount) ||
-      rawBatch.length < 100
-    ) {
-      break;
+    for (const row of batch) {
+      const id = row.ListingId;
+      if (id == null) continue;
+      try {
+        const detailRes = await fetch(`https://api.trademe.co.nz/v1/Listings/${id}.json`, {
+          headers: { Accept: "application/json", Authorization: auth },
+        });
+        const detail = detailRes.ok
+          ? ((await detailRes.json()) as Record<string, unknown>)
+          : row;
+        const mapped = mapListing({ ...row, ...detail });
+        if (mapped) items.push(mapped);
+      } catch {
+        const mapped = mapListing(row);
+        if (mapped) items.push(mapped);
+      }
     }
+
+    const total = Number(data.TotalCount ?? 0);
+    if (batch.length < 50 || (total > 0 && items.length >= total)) break;
   }
 
-  /*
-   * Remove duplicate listing IDs.
-   */
   const unique = new Map<string, Product>();
-
-  for (const item of items) {
-    unique.set(item.id, item);
-  }
-
+  for (const item of items) unique.set(item.id, item);
   const current = [...unique.values()];
-
-  /*
-   * Only cache a successful Tradevine result.
-   *
-   * This is important:
-   * an API failure must NOT cause old inventory
-   * to be presented as current inventory.
-   */
   cache.at = Date.now();
   cache.items = current;
-
   return current;
 }
 
-export const getStoreListings =
-  createServerFn({ method: "GET" })
-    .validator(
-      (branch: Product["branch"]) => branch
-    )
-    .handler(async ({ data: branch }) => {
-      /*
-       * Tradevine is the ONLY source of live listings.
-       *
-       * There is deliberately NO local catalogue fallback.
-       */
-      const live = await loadTradevine();
+export const getStoreListings = createServerFn({ method: "GET" })
+  .validator((branch: Product["branch"]) => branch)
+  .handler(async ({ data: branch }) => {
+    const live = await loadTradeMe();
+    if (branch === "apparel") return live.filter((p) => p.sku === "APARL");
+    if (branch === "computas") {
+      return live.filter((p) => p.sku === "DSKTP" || p.sku === "LPTOP" || p.sku === "CMPNT");
+    }
+    if (branch === "software") return live.filter((p) => p.sku === "SFTWR");
+    return [];
+  });
 
-      /*
-       * Strict store separation.
-       */
-      if (branch === "apparel") {
-        return live.filter(
-          (p) => p.sku === "APARL"
-        );
-      }
+export const getListing = createServerFn({ method: "GET" })
+  .validator((id: string) => id.trim())
+  .handler(async ({ data: id }) => {
+    const live = await loadTradeMe();
+    return live.find((p) => p.id === id) ?? null;
+  });
 
-      if (branch === "computas") {
-        return live.filter(
-          (p) =>
-            p.sku === "DSKTP" ||
-            p.sku === "LPTOP" ||
-            p.sku === "CMPNT"
-        );
-      }
-
-      if (branch === "software") {
-        return live.filter(
-          (p) => p.sku === "SFTWR"
-        );
-      }
-
-      return [];
-    });
-
-export const getListing =
-  createServerFn({ method: "GET" })
-    .validator(
-      (id: string) => id.trim()
-    )
-    .handler(async ({ data: id }) => {
-      /*
-       * A listing is considered valid only if it
-       * currently exists in Tradevine.
-       */
-      const live = await loadTradevine();
-
-      return (
-        live.find(
-          (p) => p.id === id
-        ) ?? null
-      );
-    });
-
-export function useStoreListings(
-  branch: Product["branch"],
-  fallback: Product[]
-) {
-  /*
-   * Keep the supplied fallback for the initial
-   * render only. Once the server responds, the
-   * Tradevine result becomes authoritative.
-   */
-  const [items, setItems] =
-    useState(fallback);
-
+export function useStoreListings(branch: Product["branch"], fallback: Product[]) {
+  const [items, setItems] = useState(fallback);
   useEffect(() => {
     let live = true;
-
-    void getStoreListings({
-      data: branch,
-    })
+    void getStoreListings({ data: branch })
       .then((rows) => {
         if (!live) return;
-
-        /*
-         * IMPORTANT:
-         *
-         * An empty Tradevine result is valid.
-         * Do NOT retain old fallback products.
-         *
-         * This is what allows a completely empty
-         * store to correctly display as empty.
-         */
         setItems(rows);
       })
-      .catch(() => {
-        /*
-         * Do not replace current data with stale
-         * local catalogue data after a Tradevine error.
-         *
-         * Keeping the previous UI state is safer than
-         * pretending stale products are current.
-         */
-      });
-
+      .catch(() => {});
     return () => {
       live = false;
     };
   }, [branch]);
-
   return items;
 }
 
 export function useListing(id: string) {
-  const [product, setProduct] =
-    useState<Product | null>(null);
-
-  const [ready, setReady] =
-    useState(false);
-
+  const [product, setProduct] = useState<Product | null>(null);
+  const [ready, setReady] = useState(false);
   useEffect(() => {
     let live = true;
-
     setReady(false);
-
-    void getListing({
-      data: id,
-    })
+    void getListing({ data: id })
       .then((row) => {
         if (!live) return;
-
-        /*
-         * If the item has been deleted from Tradevine,
-         * row will be null.
-         */
         setProduct(row);
         setReady(true);
       })
       .catch(() => {
         if (!live) return;
-
         setProduct(null);
         setReady(true);
       });
-
     return () => {
       live = false;
     };
   }, [id]);
-
-  return {
-    product,
-    ready,
-  };
+  return { product, ready };
 }
