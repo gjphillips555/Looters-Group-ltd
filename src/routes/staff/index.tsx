@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import {
   FileText,
   ImageIcon,
-  Package,
   ShoppingCart,
   Volume2,
   VolumeX,
@@ -66,15 +65,6 @@ const CARDS = [
     badge: "Live",
     icon: ShoppingCart,
     hover: "hover:border-sky-400",
-  },
-  {
-    href: "https://www.tradevine.co.nz",
-    external: true,
-    title: "Tradevine",
-    body: "Inventory & multi-channel",
-    badge: "Live",
-    icon: Package,
-    hover: "hover:border-emerald-400",
   },
   {
     href: "/staff/printables",
