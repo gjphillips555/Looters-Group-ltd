@@ -22,11 +22,14 @@ Callbacks:
 
 Also: `BETTER_AUTH_URL=https://looters-group-ltd.vercel.app`
 
-## Tradevine
+## Trade Me (live listings)
 
-`TRADEVINE_CONSUMER_KEY` `TRADEVINE_CONSUMER_SECRET`
-`TRADEVINE_ACCESS_TOKEN` `TRADEVINE_ACCESS_TOKEN_SECRET`
+`TRADEME_CONSUMER_KEY` `TRADEME_CONSUMER_SECRET`
+`TRADEME_MEMBER_ID` (default `9233545` — LootersComputas)
 
-APARL → Apparel only. DSKTP / LPTOP / CMPNT → Computas.
+Optional if you later add full OAuth: `TRADEME_ACCESS_TOKEN` `TRADEME_ACCESS_TOKEN_SECRET`
+
+Products are classified from listing title / category / SKU:
+APARL → Apparel · SFTWR → Software · DSKTP / LPTOP / CMPNT → Computas.
 
 Staff: `/staff` — pin `Staff` / `Staff`.

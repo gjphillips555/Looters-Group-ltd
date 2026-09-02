@@ -46,7 +46,7 @@ function ApparelHome() {
           </div>
           <h2 className="mt-14 font-display text-2xl font-extrabold">Second-life · near new</h2>
           <p className="mt-2 max-w-xl text-sm text-muted">
-            Anything labelled APARL in Tradevine lands here — not on Computas.
+            Anything labelled APARL on Trade Me lands here — not on Computas.
           </p>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {second.map((p) => (
