@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ProductCard } from "@/components/product-card";
 import { AfterpayMark } from "@/components/afterpay-mark";
-import { COMPUTAS_PRODUCTS, SKU_LABELS, skuFor, type SkuCode } from "@/data/catalog";
+import { SKU_LABELS, skuFor, type SkuCode } from "@/data/catalog";
 import { useStoreListings } from "@/lib/listings";
 
 export const Route = createFileRoute("/computas/shop/")({ component: Shop });
@@ -12,7 +12,7 @@ const COMPUTAS_SKUS = SKU_LABELS.filter((s) => s.branch === "computas");
 function Shop() {
   const [q, setQ] = useState("");
   const [sku, setSku] = useState<SkuCode | "All">("All");
-  const catalog = useStoreListings("computas", COMPUTAS_PRODUCTS);
+  const catalog = useStoreListings("computas", []);
   const items = useMemo(() => {
     const needle = q.trim().toLowerCase();
     return catalog.filter((p) => {
@@ -77,7 +77,9 @@ function Shop() {
           <ProductCard key={p.id} product={p} />
         ))}
       </div>
-      {items.length === 0 ? (
+      {catalog.length === 0 ? (
+        <p className="mt-10 text-sm text-muted">Loading live Trade Me listings…</p>
+      ) : items.length === 0 ? (
         <p className="mt-10 text-sm text-muted">No matches. Try another search.</p>
       ) : null}
     </main>
