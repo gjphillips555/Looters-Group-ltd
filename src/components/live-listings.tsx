@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { COMPUTAS_PRODUCTS } from "@/data/catalog";
 import { useStoreListings } from "@/lib/listings";
 import { ProductCard } from "@/components/product-card";
 
 const INTERVAL_MS = 5000;
 
 export function LiveListings({ count = 2 }: { count?: number }) {
-  const items = useStoreListings("computas", COMPUTAS_PRODUCTS);
+  const items = useStoreListings("computas", []);
   const [offset, setOffset] = useState(0);
   const [visible, setVisible] = useState(true);
 
@@ -25,6 +24,14 @@ export function LiveListings({ count = 2 }: { count?: number }) {
     }, ms);
     return () => window.clearInterval(id);
   }, [count, items.length]);
+
+  if (items.length === 0) {
+    return (
+      <p className="text-sm text-muted">
+        Loading live Trade Me listings…
+      </p>
+    );
+  }
 
   const shown = Array.from({ length: Math.min(count, items.length) }, (_, i) => {
     return items[(offset + i) % items.length];
