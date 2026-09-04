@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { Download, X } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { ExternalLink, X } from "lucide-react";
 
 const THUMB = "/brand/overlay-thumb.jpg";
-const APP = "/downloads/looters-overlay.html";
 
 export function OverlayDownload() {
   const [open, setOpen] = useState(false);
@@ -30,22 +30,21 @@ export function OverlayDownload() {
         />
         <div className="p-5">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-software">
-            Click to enlarge
+            Live on this site
           </p>
-          <h3 className="mt-1 font-display text-xl font-bold">Overlay</h3>
+          <h3 className="mt-1 font-display text-xl font-bold">Overlay Studio</h3>
           <p className="mt-1 text-sm text-muted">
-            Single HTML webapp. Open it offline, add your own overlays, export PNGs.
+            Your logos only. AI background removal, persistent library, 2048×1536 PNG export.
           </p>
         </div>
       </button>
-      <a
-        href={APP}
-        download="Looters-Overlay.html"
+      <Link
+        to="/software/overlay"
         className="mt-3 inline-flex min-h-12 items-center gap-2 rounded-full bg-software px-5 text-sm font-semibold text-cream"
       >
-        <Download className="size-4" />
-        Download Overlay
-      </a>
+        <ExternalLink className="size-4" />
+        Open Overlay Studio
+      </Link>
 
       {open ? (
         <div
@@ -67,19 +66,18 @@ export function OverlayDownload() {
             <img src={THUMB} alt="Looters Overlay" className="max-h-[70vh] w-full object-contain bg-ink/5" />
             <div className="flex flex-wrap items-center justify-between gap-3 p-5">
               <div>
-                <p className="font-display text-lg font-bold">Looters Overlay</p>
+                <p className="font-display text-lg font-bold">Overlay Studio</p>
                 <p className="text-sm text-muted">
-                  Download the webapp — one HTML file, yours to keep.
+                  Runs on Vercel — AI cutouts + your saved overlays in this browser.
                 </p>
               </div>
-              <a
-                href={APP}
-                download="Looters-Overlay.html"
+              <Link
+                to="/software/overlay"
                 className="inline-flex min-h-12 items-center gap-2 rounded-full bg-software px-5 text-sm font-semibold text-cream"
               >
-                <Download className="size-4" />
-                Download
-              </a>
+                <ExternalLink className="size-4" />
+                Open
+              </Link>
             </div>
           </div>
         </div>
