@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Navigate, notFound } from "@tanstack/react-router";
 import { useState } from "react";
 import { ProductCard } from "@/components/product-card";
-import { COMPUTAS_PRODUCTS, productImages } from "@/data/catalog";
+import { productImages } from "@/data/catalog";
 import { useListing, useStoreListings } from "@/lib/listings";
 import { formatNzd } from "@/lib/utils";
 import { AfterpayMark } from "@/components/afterpay-mark";
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/computas/shop/$id")({
 function ProductPage() {
   const { id } = Route.useParams();
   const { product, ready } = useListing(id);
-  const relatedAll = useStoreListings("computas", COMPUTAS_PRODUCTS);
+  const relatedAll = useStoreListings("computas", []);
   const [active, setActive] = useState(0);
 
   if (!ready) {
