@@ -9,6 +9,41 @@ import { SiftaAd } from "@/components/sifta-ad";
 
 export const Route = createFileRoute("/")({ component: Home });
 
+/** Hero wordmark — WebP first, PNG fallback, density-aware srcset */
+function HeroTitleLogo() {
+  const sizes = "(max-width: 640px) 72vw, (max-width: 768px) 280px, 360px";
+  const webp = [
+    "/brand/logos/looters-computas-title-320.webp 320w",
+    "/brand/logos/looters-computas-title-480.webp 480w",
+    "/brand/logos/looters-computas-title-640.webp 640w",
+    "/brand/logos/looters-computas-title-960.webp 960w",
+  ].join(", ");
+  const png = [
+    "/brand/logos/looters-computas-title-320.png 320w",
+    "/brand/logos/looters-computas-title-480.png 480w",
+    "/brand/logos/looters-computas-title-640.png 640w",
+    "/brand/logos/looters-computas-title-960.png 960w",
+  ].join(", ");
+
+  return (
+    <picture>
+      <source type="image/webp" srcSet={webp} sizes={sizes} />
+      <source type="image/png" srcSet={png} sizes={sizes} />
+      <img
+        src="/brand/logos/looters-computas-title-480.png"
+        srcSet={png}
+        sizes={sizes}
+        width={480}
+        height={275}
+        alt="Looters Computas"
+        className="h-28 w-auto max-w-[min(100%,22rem)] object-contain sm:h-40 sm:max-w-[min(100%,28rem)] md:h-48 md:max-w-[min(100%,32rem)]"
+        decoding="async"
+        fetchPriority="high"
+      />
+    </picture>
+  );
+}
+
 function Home() {
   return (
     <div className="min-h-dvh bg-ink text-cream">
@@ -20,16 +55,16 @@ function Home() {
         <img
           src="/og.jpg"
           alt=""
+          width={1920}
+          height={1080}
           className="absolute inset-0 h-full w-full object-cover opacity-45"
+          decoding="async"
+          fetchPriority="low"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-ink/75 via-ink/80 to-ink" />
         <div className="relative mx-auto flex max-w-6xl flex-col items-center px-4 py-14 text-center sm:px-6 sm:py-20">
           <h1 className="sr-only">Looters Computas</h1>
-          <img
-            src="/brand/logos/looters-computas-title.png"
-            alt="Looters Computas"
-            className="h-28 w-auto max-w-full object-contain sm:h-40 md:h-48"
-          />
+          <HeroTitleLogo />
           <div className="mt-10 grid w-full max-w-3xl gap-3 sm:grid-cols-3">
             {BRANCHES.map((b) => (
               <Link
@@ -40,7 +75,11 @@ function Home() {
                 <img
                   src={BRANCH_LOGO[b.id]}
                   alt={b.name}
+                  width={160}
+                  height={96}
                   className="h-20 w-auto object-contain sm:h-24"
+                  loading="lazy"
+                  decoding="async"
                 />
                 <span className="sr-only">{b.name}</span>
               </Link>
@@ -128,7 +167,11 @@ function Home() {
             <img
               src="/brand/storefront.jpg"
               alt="Looters Computas storefront with Lootzy the penguin"
+              width={800}
+              height={600}
               className="media h-56 w-full rounded-2xl object-cover md:h-full"
+              loading="lazy"
+              decoding="async"
             />
           </div>
         </div>
