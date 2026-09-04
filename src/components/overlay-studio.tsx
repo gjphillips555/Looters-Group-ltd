@@ -88,6 +88,34 @@ function loadFromDataUrl(dataUrl: string): Promise<HTMLImageElement> {
   });
 }
 
+/** Light alpha cleanup: kill near-zero noise, soft-threshold partial edges */
+async function refineCutoutAlpha(src: HTMLImageElement): Promise<HTMLImageElement> {
+  const w = src.naturalWidth || src.width;
+  const h = src.naturalHeight || src.height;
+  const c = document.createElement("canvas");
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext("2d", { willReadFrequently: true });
+  if (!ctx) return src;
+  ctx.drawImage(src, 0, 0);
+  const imageData = ctx.getImageData(0, 0, w, h);
+  const d = imageData.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const a = d[i + 3];
+    if (a < 12) {
+      d[i + 3] = 0;
+    } else if (a < 40) {
+      // Soften fringe so hard halos are less obvious
+      d[i + 3] = Math.round(a * 0.55);
+    } else if (a > 240) {
+      d[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(imageData, 0, 0);
+  const url = c.toDataURL("image/png");
+  return loadFromDataUrl(url);
+}
+
 function applyStyle(ctx: CanvasRenderingContext2D, w: number, h: number, style: Style) {
   if (style === "clean") return;
   if (style === "vignette") {
@@ -116,6 +144,34 @@ function applyStyle(ctx: CanvasRenderingContext2D, w: number, h: number, style: 
   }
 }
 
+function drawContactShadow(
+  ctx: CanvasRenderingContext2D,
+  px: number,
+  py: number,
+  pw: number,
+  ph: number,
+  strength: number,
+) {
+  if (strength <= 0) return;
+  const cx = px + pw / 2;
+  const cy = py + ph * 0.92;
+  const rx = pw * 0.38;
+  const ry = Math.max(8, ph * 0.06);
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.scale(1, ry / rx);
+  const g = ctx.createRadialGradient(0, 0, rx * 0.15, 0, 0, rx);
+  const a = 0.22 * strength;
+  g.addColorStop(0, `rgba(0,0,0,${a})`);
+  g.addColorStop(0.55, `rgba(0,0,0,${a * 0.35})`);
+  g.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(0, 0, rx, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
 function paint(
   ctx: CanvasRenderingContext2D,
   w: number,
@@ -124,6 +180,8 @@ function paint(
   overlays: Overlay[],
   placed: Placed[],
   style: Style,
+  shadowStrength: number,
+  cutout: boolean,
 ) {
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, w, h);
@@ -134,12 +192,31 @@ function paint(
   const ph = Math.round(product.height * scale);
   const px = Math.round((w - pw) / 2);
   const py = Math.round((h - ph) / 2);
+
+  // Soft ground contact shadow (remove.bg style) under cut-out subjects
+  if (cutout && shadowStrength > 0) {
+    drawContactShadow(ctx, px, py, pw, ph, shadowStrength);
+  }
+
   ctx.save();
-  ctx.shadowColor = "rgba(0,0,0,0.22)";
-  ctx.shadowBlur = Math.max(18, 30 * (w / TARGET_W));
-  ctx.shadowOffsetY = Math.max(6, 12 * (w / TARGET_W));
+  const s = cutout ? shadowStrength : Math.min(shadowStrength, 0.7);
+  if (s > 0) {
+    // Layered soft drop shadow around the product silhouette
+    ctx.shadowColor = `rgba(0,0,0,${0.18 + 0.2 * s})`;
+    ctx.shadowBlur = Math.max(14, (28 + 40 * s) * (w / TARGET_W));
+    ctx.shadowOffsetY = Math.max(4, (8 + 14 * s) * (w / TARGET_W));
+    ctx.shadowOffsetX = 0;
+  }
   ctx.drawImage(product, px, py, pw, ph);
+  // Second pass slightly tighter for depth
+  if (cutout && s > 0.35) {
+    ctx.shadowColor = `rgba(0,0,0,${0.1 * s})`;
+    ctx.shadowBlur = Math.max(8, 16 * s * (w / TARGET_W));
+    ctx.shadowOffsetY = Math.max(2, 6 * s * (w / TARGET_W));
+    ctx.drawImage(product, px, py, pw, ph);
+  }
   ctx.restore();
+
   applyStyle(ctx, w, h, style);
 
   placed.forEach((entry) => {
@@ -148,9 +225,8 @@ function paint(
     let targetW = Math.round(w * 0.28);
     if (overlay.img.width > overlay.img.height * 1.8) targetW = Math.round(w * 0.4);
     else if (overlay.img.width < overlay.img.height * 0.9) targetW = Math.round(w * 0.2);
-    const sc = targetW / overlay.img.width;
     const lw = targetW;
-    const lh = Math.round(overlay.img.height * sc);
+    const lh = Math.round(overlay.img.height * (targetW / overlay.img.width));
     const margin = Math.round(w * 0.018);
     const positions: Record<Corner, [number, number]> = {
       br: [w - lw - margin, h - lh - margin],
@@ -179,9 +255,10 @@ export function OverlayStudio() {
   const [drag, setDrag] = useState(false);
   const [bgBusy, setBgBusy] = useState(false);
   const [bgProgress, setBgProgress] = useState("");
+  const [bgRemoved, setBgRemoved] = useState(false);
+  const [shadowStrength, setShadowStrength] = useState(0.85);
   const removeBgRef = useRef<null | ((src: Blob | string, cfg?: object) => Promise<Blob>)>(null);
 
-  // Load saved overlays on mount
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -194,7 +271,7 @@ export function OverlayStudio() {
             const img = await loadFromDataUrl(row.data);
             loaded.push({ id: row.id, name: row.name, img, dataUrl: row.data });
           } catch {
-            /* skip bad row */
+            /* skip */
           }
         }
         if (cancelled || !loaded.length) return;
@@ -220,8 +297,8 @@ export function OverlayStudio() {
     canvas.height = Math.round(TARGET_H * scale);
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    paint(ctx, canvas.width, canvas.height, product, overlays, placed, style);
-  }, [overlays, placed, product, style]);
+    paint(ctx, canvas.width, canvas.height, product, overlays, placed, style, shadowStrength, bgRemoved);
+  }, [overlays, placed, product, style, shadowStrength, bgRemoved]);
 
   useEffect(() => {
     redraw();
@@ -231,6 +308,7 @@ export function OverlayStudio() {
     const img = await loadFile(file);
     setProduct(img);
     setPlaced([]);
+    setBgRemoved(false);
     setStatus(`Loaded ${file.name}`);
   }
 
@@ -246,8 +324,7 @@ export function OverlayStudio() {
       const img = await loadFromDataUrl(dataUrl);
       const id = `ov-${crypto.randomUUID()}`;
       const name = file.name.length > 18 ? `${file.name.slice(0, 15)}…` : file.name;
-      const rec = { id, name, img, dataUrl };
-      added.push(rec);
+      added.push({ id, name, img, dataUrl });
       try {
         await dbPut({ id, name, data: dataUrl });
       } catch (e) {
@@ -285,7 +362,7 @@ export function OverlayStudio() {
     full.height = TARGET_H;
     const ctx = full.getContext("2d");
     if (!ctx) return;
-    paint(ctx, TARGET_W, TARGET_H, product, overlays, placed, style);
+    paint(ctx, TARGET_W, TARGET_H, product, overlays, placed, style, shadowStrength, bgRemoved);
     full.toBlob((blob) => {
       if (!blob) return;
       const a = document.createElement("a");
@@ -299,10 +376,11 @@ export function OverlayStudio() {
 
   async function ensureRemoveBg() {
     if (removeBgRef.current) return removeBgRef.current;
-    setBgProgress("Loading AI model (first time ~40–80 MB)…");
+    setBgProgress("Loading AI model (highest quality, first time ~80 MB)…");
     const mod = await import("@imgly/background-removal");
-    const fn = (mod as { removeBackground?: typeof removeBgRef.current; default?: typeof removeBgRef.current })
-      .removeBackground || (mod as { default?: typeof removeBgRef.current }).default;
+    const fn =
+      (mod as { removeBackground?: typeof removeBgRef.current }).removeBackground ||
+      (mod as { default?: typeof removeBgRef.current }).default;
     if (!fn) throw new Error("Background removal module missing export");
     removeBgRef.current = fn;
     setBgProgress("Model ready");
@@ -323,21 +401,57 @@ export function OverlayStudio() {
       ctx.drawImage(product, 0, 0);
       const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, "image/png"));
       if (!blob) throw new Error("Could not encode image");
-      setBgProgress("Running AI segmentation…");
+      setBgProgress("Running AI segmentation (isnet)…");
+
+      // Prefer GPU + highest-quality model when available
       const result = await removeBg(blob, {
+        model: "isnet",
+        device: "gpu",
         progress: (key: string, current: number, total: number) => {
-          if (total) setBgProgress(`Processing: ${key} ${Math.round((current / total) * 100)}%`);
+          if (total) setBgProgress(`${key}: ${Math.round((current / total) * 100)}%`);
         },
-        output: { format: "image/png" },
+        output: { format: "image/png", type: "foreground" },
       } as object);
-      const url = URL.createObjectURL(result);
-      const img = await loadFromDataUrl(url);
+
+      setBgProgress("Cleaning edges…");
+      let img = await loadFromDataUrl(URL.createObjectURL(result));
+      img = await refineCutoutAlpha(img);
       setProduct(img);
-      setBgProgress("Background removed ✓");
-      setStatus("Background removed — ready for overlays");
+      setBgRemoved(true);
+      setBgProgress("Background removed ✓ + soft shadow");
+      setStatus("Cutout ready — shadow applied under the product");
     } catch (err) {
       console.error(err);
-      setBgProgress(`Error: ${err instanceof Error ? err.message : "failed"}`);
+      // Fallback: try fp16 / cpu if full isnet+gpu failed
+      try {
+        setBgProgress("Retrying with balanced model…");
+        const removeBg = await ensureRemoveBg();
+        const canvas = document.createElement("canvas");
+        canvas.width = product.naturalWidth || product.width;
+        canvas.height = product.naturalHeight || product.height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) throw err;
+        ctx.drawImage(product, 0, 0);
+        const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, "image/png"));
+        if (!blob) throw err;
+        const result = await removeBg(blob, {
+          model: "isnet_fp16",
+          device: "cpu",
+          progress: (key: string, current: number, total: number) => {
+            if (total) setBgProgress(`${key}: ${Math.round((current / total) * 100)}%`);
+          },
+          output: { format: "image/png" },
+        } as object);
+        let img = await loadFromDataUrl(URL.createObjectURL(result));
+        img = await refineCutoutAlpha(img);
+        setProduct(img);
+        setBgRemoved(true);
+        setBgProgress("Background removed ✓ (balanced model)");
+        setStatus("Cutout ready — shadow applied under the product");
+      } catch (err2) {
+        console.error(err2);
+        setBgProgress(`Error: ${err2 instanceof Error ? err2.message : "failed"}`);
+      }
     } finally {
       setBgBusy(false);
     }
@@ -366,7 +480,6 @@ export function OverlayStudio() {
         console.warn(e);
       }
     }
-    // fallback: multi file
     overlayInput.current?.click();
   }
 
@@ -420,6 +533,23 @@ export function OverlayStudio() {
           {bgBusy ? "Removing…" : "Remove Background (AI)"}
         </button>
         {bgProgress ? <p className="mt-1 text-xs text-muted">{bgProgress}</p> : null}
+
+        <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
+          Product shadow
+        </p>
+        <input
+          type="range"
+          min={0}
+          max={100}
+          value={Math.round(shadowStrength * 100)}
+          onChange={(e) => setShadowStrength(Number(e.target.value) / 100)}
+          className="mt-2 w-full accent-software"
+        />
+        <p className="mt-1 text-xs text-muted">
+          {bgRemoved
+            ? "Soft drop + floor shadow (like remove.bg). Drag to taste."
+            : "Shadow strength — strongest after background is removed."}
+        </p>
 
         <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
           2. Your overlays
@@ -573,6 +703,7 @@ export function OverlayStudio() {
             onClick={() => {
               setProduct(null);
               setPlaced([]);
+              setBgRemoved(false);
               setBgProgress("");
               setStatus("Drop a photo to start.");
             }}
