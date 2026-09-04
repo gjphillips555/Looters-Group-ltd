@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MapPin } from "lucide-react";
 import { BRANCHES, STORE } from "@/data/catalog";
-import { BRANCH_LOGO, LootersMarkOnce } from "@/components/brand-logo";
+import { BRANCH_LOGO } from "@/components/brand-logo";
 import { LiveListings } from "@/components/live-listings";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { AfterpayMark } from "@/components/afterpay-mark";
@@ -23,24 +23,14 @@ function Home() {
           className="absolute inset-0 h-full w-full object-cover opacity-45"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-ink/75 via-ink/80 to-ink" />
-        <div className="relative mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-          <h1 className="sr-only">Looters Group Ltd</h1>
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-cream/70">
-            A Purple Penguin Company
-          </p>
-          <div className="mt-5 inline-flex rounded-3xl bg-white p-4 shadow-border sm:p-6">
-            <LootersMarkOnce className="h-28 w-auto object-contain sm:h-36" />
-          </div>
-          <p className="mt-4 font-display text-2xl font-extrabold tracking-tight sm:text-3xl">
-            Group Ltd
-          </p>
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-cream/75">
-            We are about the environment. If it still works, it should still be used.
-            Offices upgrade, people replace, landfill gets the rest — unless someone
-            takes the good stuff and puts it in front of people who actually need it.
-            A bit Robin Hood. A lot less waste.
-          </p>
-          <div className="mt-10 grid gap-3 sm:grid-cols-3">
+        <div className="relative mx-auto flex max-w-6xl flex-col items-center px-4 py-14 text-center sm:px-6 sm:py-20">
+          <h1 className="sr-only">Looters Computas</h1>
+          <img
+            src="/brand/logos/looters-computas-title.png"
+            alt="Looters Computas"
+            className="h-28 w-auto max-w-full object-contain sm:h-40 md:h-48"
+          />
+          <div className="mt-10 grid w-full max-w-3xl gap-3 sm:grid-cols-3">
             {BRANCHES.map((b) => (
               <Link
                 key={b.id}
