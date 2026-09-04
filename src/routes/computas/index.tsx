@@ -1,13 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { BranchShell } from "@/components/site-chrome";
 import { ProductCard } from "@/components/product-card";
-import { COMPUTAS_PRODUCTS, STORE } from "@/data/catalog";
+import { STORE } from "@/data/catalog";
 import { useStoreListings } from "@/lib/listings";
 
 export const Route = createFileRoute("/computas/")({ component: ComputasHome });
 
 function ComputasHome() {
-  const products = useStoreListings("computas", COMPUTAS_PRODUCTS);
+  const products = useStoreListings("computas", []);
   return (
     <BranchShell branch="computas">
       <main>
@@ -62,6 +62,9 @@ function ComputasHome() {
               <ProductCard key={p.id} product={p} />
             ))}
           </div>
+          {products.length === 0 ? (
+            <p className="mt-8 text-sm text-muted">Loading live Trade Me listings…</p>
+          ) : null}
         </section>
 
         <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
