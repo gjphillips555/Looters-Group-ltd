@@ -28,10 +28,11 @@ export const Route = createRootRoute({
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: FONT_CSS },
       { rel: "stylesheet", href: appCss },
+      // LCP: header + hero share this asset — preload once
       {
         rel: "preload",
         as: "image",
-        href: "/brand/logos/looters-computas-title.png",
+        href: "/brand/logos/computas.png",
         // @ts-expect-error fetchpriority is valid on link
         fetchPriority: "high",
       },
