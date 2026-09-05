@@ -1,17 +1,20 @@
 /**
  * PayPal REST Orders API v2 + webhook helpers.
- * Env:
+ *
+ * Required env (set on Vercel — never commit real values):
  *   PAYPAL_CLIENT_ID
  *   PAYPAL_CLIENT_SECRET
- *   PAYPAL_MODE = "sandbox" | "live" (default sandbox)
- *   PAYPAL_WEBHOOK_ID = webhook id from PayPal dashboard (required to verify)
+ *   PAYPAL_MODE = sandbox | live
+ *   PAYPAL_WEBHOOK_ID  (from PayPal dashboard webhook)
  */
 
 export type PayPalMode = "sandbox" | "live";
 
 function mode(): PayPalMode {
-  const m = (process.env.PAYPAL_MODE ?? "sandbox").trim().toLowerCase();
-  return m === "live" ? "live" : "sandbox";
+  const m = (process.env.PAYPAL_MODE ?? process.env.PAYPAL_ENV ?? "sandbox")
+    .trim()
+    .toLowerCase();
+  return m === "live" || m === "production" || m === "prod" ? "live" : "sandbox";
 }
 
 function baseUrl(): string {
@@ -21,27 +24,38 @@ function baseUrl(): string {
 }
 
 export function paypalConfigured(): boolean {
-  return Boolean(
-    process.env.PAYPAL_CLIENT_ID?.trim() && process.env.PAYPAL_CLIENT_SECRET?.trim(),
+  return Boolean(paypalClientId() && paypalClientSecret());
+}
+
+export function paypalClientId(): string | null {
+  return (
+    process.env.PAYPAL_CLIENT_ID?.trim() ||
+    process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID?.trim() ||
+    null
   );
+}
+
+function paypalClientSecret(): string | null {
+  return process.env.PAYPAL_CLIENT_SECRET?.trim() || null;
 }
 
 export function paypalWebhookId(): string | null {
   return process.env.PAYPAL_WEBHOOK_ID?.trim() || null;
 }
 
-export function paypalClientId(): string | null {
-  return process.env.PAYPAL_CLIENT_ID?.trim() || null;
+export function paypalMode(): PayPalMode {
+  return mode();
 }
 
-let cachedToken: { value: string; exp: number } | null = null;
+let cachedToken: { value: string; exp: number; mode: PayPalMode } | null = null;
 
 async function accessToken(): Promise<string> {
-  const id = process.env.PAYPAL_CLIENT_ID?.trim();
-  const secret = process.env.PAYPAL_CLIENT_SECRET?.trim();
+  const id = paypalClientId();
+  const secret = paypalClientSecret();
   if (!id || !secret) throw new Error("PayPal is not configured");
 
-  if (cachedToken && Date.now() < cachedToken.exp - 30_000) {
+  const currentMode = mode();
+  if (cachedToken && cachedToken.mode === currentMode && Date.now() < cachedToken.exp - 30_000) {
     return cachedToken.value;
   }
 
@@ -56,12 +70,13 @@ async function accessToken(): Promise<string> {
   });
   if (!res.ok) {
     const t = await res.text();
-    throw new Error(`PayPal auth failed: ${res.status} ${t.slice(0, 200)}`);
+    throw new Error(`PayPal auth failed (${currentMode}): ${res.status} ${t.slice(0, 200)}`);
   }
   const data = (await res.json()) as { access_token: string; expires_in: number };
   cachedToken = {
     value: data.access_token,
     exp: Date.now() + (data.expires_in ?? 300) * 1000,
+    mode: currentMode,
   };
   return data.access_token;
 }
@@ -85,12 +100,14 @@ export async function createPayPalOrder(input: CreateOrderInput): Promise<{
   const ship = Math.max(0, Number(input.shippingPrice.toFixed(2)));
   const total = Number((item + ship).toFixed(2));
 
+  if (total <= 0) throw new Error("Order total must be greater than zero");
+
   const body = {
     intent: "CAPTURE",
     purchase_units: [
       {
-        reference_id: `tm-${input.listingId}`,
-        description: input.title.slice(0, 120),
+        reference_id: `tm-${input.listingId}`.slice(0, 256),
+        description: input.title.slice(0, 127),
         custom_id: JSON.stringify({
           listingId: input.listingId,
           shipping: input.shippingLabel.slice(0, 80),
@@ -136,7 +153,7 @@ export async function createPayPalOrder(input: CreateOrderInput): Promise<{
 
   if (!res.ok) {
     const t = await res.text();
-    throw new Error(`PayPal create order failed: ${res.status} ${t.slice(0, 300)}`);
+    throw new Error(`PayPal create order failed: ${res.status} ${t.slice(0, 400)}`);
   }
 
   const order = (await res.json()) as {
@@ -164,10 +181,40 @@ export async function capturePayPalOrder(orderId: string): Promise<{
       Prefer: "return=representation",
     },
   });
+
+  // Idempotent: already-captured orders return 422 — fetch order details instead
   if (!res.ok) {
     const t = await res.text();
-    throw new Error(`PayPal capture failed: ${res.status} ${t.slice(0, 300)}`);
+    if (res.status === 422 || /already|completed|captured/i.test(t)) {
+      const getRes = await fetch(
+        `${baseUrl()}/v2/checkout/orders/${encodeURIComponent(orderId)}`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      if (getRes.ok) {
+        const data = (await getRes.json()) as {
+          id: string;
+          status: string;
+          purchase_units?: {
+            custom_id?: string;
+            payments?: {
+              captures?: { id: string; amount?: { value: string } }[];
+            };
+          }[];
+        };
+        const unit = data.purchase_units?.[0];
+        const cap = unit?.payments?.captures?.[0];
+        return {
+          id: data.id,
+          status: data.status,
+          captureId: cap?.id,
+          amount: cap?.amount?.value,
+          customId: unit?.custom_id,
+        };
+      }
+    }
+    throw new Error(`PayPal capture failed: ${res.status} ${t.slice(0, 400)}`);
   }
+
   const data = (await res.json()) as {
     id: string;
     status: string;
@@ -208,15 +255,12 @@ export type PayPalWebhookEvent = {
   resource?: Record<string, unknown>;
 };
 
-/** Verify transmission using PayPal's verify-webhook-signature API. */
 export async function verifyPayPalWebhook(
   headers: PayPalWebhookHeaders,
   webhookEvent: unknown,
 ): Promise<boolean> {
   const webhookId = paypalWebhookId();
-  if (!webhookId) {
-    throw new Error("PAYPAL_WEBHOOK_ID is not set");
-  }
+  if (!webhookId) throw new Error("PAYPAL_WEBHOOK_ID is not set");
 
   const token = await accessToken();
   const res = await fetch(`${baseUrl()}/v1/notifications/verify-webhook-signature`, {
@@ -258,7 +302,6 @@ export function readPayPalWebhookHeaders(request: Request): PayPalWebhookHeaders
   return { authAlgo, certUrl, transmissionId, transmissionSig, transmissionTime };
 }
 
-/** Extract listing id / amount from common webhook resource shapes. */
 export function summarizeWebhookEvent(event: PayPalWebhookEvent): {
   eventType: string;
   eventId: string;
@@ -287,12 +330,10 @@ export function summarizeWebhookEvent(event: PayPalWebhookEvent): {
       if (parsed.listingId) listingId = String(parsed.listingId);
       if (parsed.shipping) shipping = String(parsed.shipping);
     } catch {
-      // custom_id may be plain listing id
       if (/^\d+$/.test(custom)) listingId = custom;
     }
   }
 
-  // reference_id like tm-123456
   const ref =
     (resource.reference_id as string | undefined) ??
     ((resource.purchase_units as { reference_id?: string }[] | undefined)?.[0]?.reference_id);
@@ -329,7 +370,6 @@ export function summarizeWebhookEvent(event: PayPalWebhookEvent): {
   };
 }
 
-/** Events we actively care about for sales ops. */
 export const HANDLED_WEBHOOK_EVENTS = new Set([
   "CHECKOUT.ORDER.APPROVED",
   "CHECKOUT.ORDER.COMPLETED",
