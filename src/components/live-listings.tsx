@@ -27,9 +27,26 @@ export function LiveListings({ count = 2 }: { count?: number }) {
 
   if (items.length === 0) {
     return (
-      <p className="text-sm text-muted">
-        Loading live Trade Me listings…
-      </p>
+      <div
+        className="grid min-h-[14rem] gap-4 sm:grid-cols-2"
+        aria-busy="true"
+        aria-live="polite"
+      >
+        {Array.from({ length: count }).map((_, i) => (
+          <div
+            key={i}
+            className="overflow-hidden rounded-2xl bg-cream shadow-border"
+          >
+            <div className="aspect-[4/3] animate-pulse bg-line/60" />
+            <div className="space-y-2 p-4">
+              <div className="h-3 w-16 animate-pulse rounded bg-line" />
+              <div className="h-4 w-3/4 animate-pulse rounded bg-line" />
+              <div className="h-4 w-20 animate-pulse rounded bg-line" />
+            </div>
+          </div>
+        ))}
+        <p className="sr-only">Loading live Trade Me listings…</p>
+      </div>
     );
   }
 
@@ -41,8 +58,8 @@ export function LiveListings({ count = 2 }: { count?: number }) {
     <div
       className={
         visible
-          ? "grid gap-4 opacity-100 transition-opacity duration-200 sm:grid-cols-2"
-          : "grid gap-4 opacity-0 transition-opacity duration-200 sm:grid-cols-2"
+          ? "grid min-h-[14rem] gap-4 opacity-100 transition-opacity duration-200 sm:grid-cols-2"
+          : "grid min-h-[14rem] gap-4 opacity-0 transition-opacity duration-200 sm:grid-cols-2"
       }
     >
       {shown.map((p) => (
