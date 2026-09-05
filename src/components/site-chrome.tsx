@@ -2,8 +2,9 @@ import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { ResponsiveImage } from "@/components/responsive-image";
 
-/** Site wordmark — Title.png deployed as /brand/logos/title.png (fallback: computas.png). */
+/** Prefer title.png (Title wordmark); fall back to computas.png until title is uploaded. */
 const TITLE = "/brand/logos/title.png";
+const TITLE_FALLBACK = "/brand/logos/computas.png";
 
 export function SiteHeader() {
   return (
@@ -20,6 +21,7 @@ export function SiteHeader() {
             priority
             plain
             className="h-9 w-auto max-w-[11rem] object-contain sm:h-10"
+            onErrorSrc={TITLE_FALLBACK}
           />
         </Link>
 
@@ -61,6 +63,7 @@ export function SiteFooter() {
           quality={80}
           plain
           className="mx-auto h-8 w-auto object-contain"
+          onErrorSrc={TITLE_FALLBACK}
         />
         <p className="mt-3 text-sm text-muted">
           Refurbished PCs online · Wellington · Shop closed, selling from home
