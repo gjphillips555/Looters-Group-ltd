@@ -22,6 +22,7 @@ function Home() {
           sizes="(max-width: 640px) 70vw, 320px"
           priority
           quality={85}
+          plain
           className="mx-auto h-20 w-auto max-w-[min(100%,18rem)] object-contain sm:h-24"
         />
         <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-muted sm:text-base">
