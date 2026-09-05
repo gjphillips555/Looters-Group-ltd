@@ -10,7 +10,7 @@ import { ResponsiveImage } from "@/components/responsive-image";
 
 export const Route = createFileRoute("/")({ component: Home });
 
-/** Hero wordmark — WebP first, PNG fallback, density-aware srcset */
+/** Hero wordmark — WebP first, PNG fallback, density-aware srcset (LCP) */
 function HeroTitleLogo() {
   const sizes = "(max-width: 640px) 72vw, (max-width: 768px) 280px, 360px";
   const webp = [
@@ -40,6 +40,8 @@ function HeroTitleLogo() {
         className="h-28 w-auto max-w-[min(100%,22rem)] object-contain sm:h-40 sm:max-w-[min(100%,28rem)] md:h-48 md:max-w-[min(100%,32rem)]"
         decoding="async"
         fetchPriority="high"
+        // Intrinsic size + CSS height keeps CLS near zero while image loads
+        style={{ aspectRatio: "480 / 275" }}
       />
     </picture>
   );
@@ -52,14 +54,14 @@ function Home() {
         <SiteHeader />
       </div>
 
-      <section className="relative overflow-hidden">
+      <section className="relative min-h-[22rem] overflow-hidden sm:min-h-[26rem]">
+        {/* Decorative only — not LCP; keep priority off so logo wins bandwidth */}
         <ResponsiveImage
           src="/og.jpg"
           alt=""
           width={1920}
           height={1080}
           sizes="100vw"
-          priority
           className="absolute inset-0 h-full w-full object-cover opacity-45"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-ink/75 via-ink/80 to-ink" />
@@ -71,7 +73,7 @@ function Home() {
               <Link
                 key={b.id}
                 to={b.href as "/computas" | "/apparel" | "/software"}
-                className="flex flex-col items-center rounded-2xl bg-white p-3 text-ink shadow-border transition hover:-translate-y-0.5"
+                className="flex min-h-[7.5rem] flex-col items-center justify-center rounded-2xl bg-white p-3 text-ink shadow-border transition hover:-translate-y-0.5"
               >
                 <ResponsiveImage
                   src={BRANCH_LOGO[b.id]}
@@ -101,9 +103,11 @@ function Home() {
               Full catalogue
             </Link>
           </div>
-          <LiveListings />
+          <div className="min-h-[16rem]">
+            <LiveListings />
+          </div>
 
-          <div className="mt-10 flex flex-col items-start gap-6 rounded-3xl bg-cream p-5 shadow-border sm:flex-row sm:items-center sm:justify-between md:p-6">
+          <div className="cv-auto mt-10 flex flex-col items-start gap-6 rounded-3xl bg-cream p-5 shadow-border sm:flex-row sm:items-center sm:justify-between md:p-6">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
                 Pay later
@@ -117,7 +121,7 @@ function Home() {
             <AfterpayMark className="h-20 w-auto sm:h-24" />
           </div>
 
-          <div className="mt-8 flex flex-col items-start gap-5 rounded-3xl bg-ink p-5 text-cream shadow-border sm:flex-row sm:items-center">
+          <div className="cv-auto mt-8 flex flex-col items-start gap-5 rounded-3xl bg-ink p-5 text-cream shadow-border sm:flex-row sm:items-center">
             <SiftaAd />
             <div className="max-w-sm">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-software-hot">
@@ -145,7 +149,7 @@ function Home() {
             </div>
           </div>
 
-          <div className="mt-14 grid gap-8 rounded-3xl bg-cream p-6 shadow-border md:grid-cols-[1.2fr_1fr] md:p-8">
+          <div className="cv-auto mt-14 grid gap-8 rounded-3xl bg-cream p-6 shadow-border md:grid-cols-[1.2fr_1fr] md:p-8">
             <div>
               <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
                 <MapPin className="size-3.5" /> Visit
