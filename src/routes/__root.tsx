@@ -1,7 +1,4 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
-import { AuthProvider } from "@/lib/auth/provider";
-import { PreviewHostBridge } from "@/components/preview-host-bridge";
-import { WebVitalsReporter } from "@/components/web-vitals-reporter";
 import appCss from "../styles.css?url";
 
 const APP_NAME = "Looters Computas";
@@ -19,7 +16,7 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "Looters Computas — refurbished PCs and parts online from Wellington. Shop closed; selling from home.",
+          "Looters Computas — refurbished PCs and parts online from Wellington.",
       },
     ],
     links: [
@@ -54,11 +51,7 @@ export const Route = createRootRoute({
         <HeadContent />
       </head>
       <body className="min-h-dvh bg-white">
-        <PreviewHostBridge />
-        <WebVitalsReporter />
-        <AuthProvider>
-          <Outlet />
-        </AuthProvider>
+        <Outlet />
         <Scripts />
       </body>
     </html>
