@@ -16,7 +16,7 @@ export function SiteHeader({ branch }: { branch?: BranchId }) {
 
   return (
     <header className="sticky top-0 z-40 border-b border-line/80 bg-cream/95 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+      <div className="site-header-bar mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <Link to="/" className="flex min-h-11 min-w-0 items-center gap-3">
           {isGroup ? (
             <span className="flex min-w-0 items-center gap-3">
@@ -38,7 +38,7 @@ export function SiteHeader({ branch }: { branch?: BranchId }) {
         <div className="flex items-center gap-1 sm:gap-2">
           <BranchMenu branch={branch} />
           {isPending ? (
-            <div className="h-10 w-10 animate-pulse rounded-full bg-line" />
+            <div className="h-10 w-10 shrink-0 animate-pulse rounded-full bg-line" aria-hidden />
           ) : (
             <>
               <SignedOut>
@@ -64,7 +64,7 @@ export function SiteHeader({ branch }: { branch?: BranchId }) {
 
 export function SiteFooter() {
   return (
-    <footer className="mt-auto border-t border-line bg-cream">
+    <footer className="cv-auto mt-auto border-t border-line bg-cream">
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 sm:px-6 md:flex-row md:justify-between">
         <div>
           <LootersMark className="h-8 w-auto object-contain" />
