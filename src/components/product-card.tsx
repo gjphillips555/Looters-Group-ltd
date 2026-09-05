@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { Product } from "@/data/catalog";
 import { formatNzd } from "@/lib/utils";
+import { ResponsiveImage } from "@/components/responsive-image";
 
 export function ProductCard({ product }: { product: Product }) {
   if (product.branch === "apparel") {
@@ -39,10 +40,13 @@ function CardInner({ product }: { product: Product }) {
   return (
     <>
       <div className="aspect-[4/3] overflow-hidden bg-line/40">
-        <img
+        <ResponsiveImage
           src={product.image}
           alt=""
-          className="media h-full w-full object-cover transition duration-200 group-hover:scale-[1.03]"
+          width={640}
+          height={480}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
+          className="h-full w-full object-cover transition duration-200 group-hover:scale-[1.03]"
         />
       </div>
       <div className="flex flex-1 flex-col gap-1 p-4">
