@@ -6,7 +6,6 @@ import { BuyPanel } from "@/components/buy-panel";
 import { productImages } from "@/data/catalog";
 import { useListing, useStoreListings } from "@/lib/listings";
 import { formatNzd } from "@/lib/utils";
-import { AfterpayMark } from "@/components/afterpay-mark";
 
 export const Route = createFileRoute("/computas/shop/$id")({
   component: ProductPage,
@@ -86,7 +85,7 @@ function ProductPage() {
 
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-            {product.category} · listing #{product.listingId}
+            {product.category} · #{product.listingId}
           </p>
           <h1 className="mt-2 font-display text-3xl font-extrabold">{product.title}</h1>
           <p className="mt-3 font-display text-3xl font-bold tabular-nums text-computas-hot">
@@ -107,19 +106,8 @@ function ProductPage() {
           <BuyPanel product={product} />
 
           <p className="mt-6 text-sm text-muted">
-            Afterpay is available on Trade Me checkout. 90-day return-to-base hardware warranty
-            on most listings unless sold as-is.
+            90-day return-to-base hardware warranty on most listings unless sold as-is.
           </p>
-          <div className="mt-5 flex flex-wrap items-center gap-4">
-            <AfterpayMark className="h-16 w-auto" />
-            <img
-              src="/brand/logos/badge.png"
-              alt="90 day warranty"
-              className="h-12 w-auto"
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
         </div>
       </div>
 
