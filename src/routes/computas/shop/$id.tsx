@@ -1,6 +1,7 @@
 import { createFileRoute, Link, Navigate, notFound } from "@tanstack/react-router";
 import { useState } from "react";
 import { ProductCard } from "@/components/product-card";
+import { ResponsiveImage } from "@/components/responsive-image";
 import { productImages } from "@/data/catalog";
 import { useListing, useStoreListings } from "@/lib/listings";
 import { formatNzd } from "@/lib/utils";
@@ -45,10 +46,14 @@ function ProductPage() {
       <div className="mt-6 grid gap-10 md:grid-cols-2">
         <div>
           <div className="overflow-hidden rounded-3xl bg-cream">
-            <img
+            <ResponsiveImage
               src={photos[active] ?? product.image}
               alt={product.title}
-              className="media aspect-[4/3] w-full object-contain"
+              width={1200}
+              height={900}
+              sizes="(max-width: 768px) 100vw, 50vw"
+              priority
+              className="aspect-[4/3] w-full object-contain"
             />
           </div>
           {photos.length > 1 ? (
@@ -64,7 +69,14 @@ function ProductPage() {
                       : "overflow-hidden rounded-xl ring-1 ring-line"
                   }
                 >
-                  <img src={src} alt="" className="aspect-square w-full object-cover" />
+                  <ResponsiveImage
+                    src={src}
+                    alt=""
+                    width={160}
+                    height={160}
+                    sizes="80px"
+                    className="aspect-square w-full object-cover"
+                  />
                 </button>
               ))}
             </div>
@@ -98,7 +110,7 @@ function ProductPage() {
           </p>
           <div className="mt-5 flex flex-wrap items-center gap-4">
             <AfterpayMark className="h-16 w-auto" />
-            <img src="/brand/logos/badge.png" alt="90 day warranty" className="h-12 w-auto" />
+            <img src="/brand/logos/badge.png" alt="90 day warranty" className="h-12 w-auto" loading="lazy" decoding="async" />
           </div>
           <a
             href={`https://www.trademe.co.nz/a/listing/${product.listingId}`}
