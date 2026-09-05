@@ -1,6 +1,7 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
+import { WebVitalsReporter } from "@/components/web-vitals-reporter";
 import appCss from "../styles.css?url";
 
 const APP_NAME = "Looters";
@@ -61,6 +62,7 @@ export const Route = createRootRoute({
       </head>
       <body className="min-h-dvh">
         <PreviewHostBridge />
+        <WebVitalsReporter />
         <AuthProvider>
           <Outlet />
         </AuthProvider>
