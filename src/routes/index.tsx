@@ -5,6 +5,10 @@ import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 
 export const Route = createFileRoute("/")({ component: Home });
 
+/** Prefer new title asset; fall back to computas banner if not uploaded yet */
+const TITLE_SRC = "/brand/logos/looters-computas-title.png";
+const TITLE_FALLBACK = "/brand/logos/computas.png";
+
 function Home() {
   return (
     <div className="min-h-dvh bg-white text-ink">
@@ -19,17 +23,24 @@ function Home() {
           height={900}
           className="pointer-events-none absolute inset-x-0 top-0 h-40 w-full object-cover object-top opacity-80 sm:h-52"
           decoding="async"
+          onError={(e) => {
+            (e.target as HTMLImageElement).style.display = "none";
+          }}
         />
         <div className="relative mx-auto flex max-w-4xl flex-col items-center px-4 pb-10 pt-14 text-center sm:px-6 sm:pt-16">
           <h1 className="sr-only">Looters Computas</h1>
           <img
-            src="/brand/logos/looters-computas-title.png"
+            src={TITLE_SRC}
             alt="Looters Computas"
             width={480}
             height={275}
             className="h-28 w-auto max-w-[min(100%,22rem)] object-contain sm:h-40 md:h-48"
             decoding="async"
             fetchPriority="high"
+            onError={(e) => {
+              const el = e.target as HTMLImageElement;
+              if (el.src !== TITLE_FALLBACK) el.src = TITLE_FALLBACK;
+            }}
           />
           <p className="mt-5 max-w-lg text-base leading-relaxed text-muted sm:text-lg">
             Refurbished PCs, laptops and parts — listed online, shipped nationwide,
@@ -79,6 +90,9 @@ function Home() {
                 height={64}
                 className="h-12 w-12 rounded-lg object-cover ring-1 ring-line"
                 loading="lazy"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = "none";
+                }}
               />
               <Link
                 to="/computas/shop"
@@ -108,6 +122,10 @@ function Home() {
             className="h-auto w-full max-w-lg object-contain"
             loading="lazy"
             decoding="async"
+            onError={(e) => {
+              const el = e.target as HTMLImageElement;
+              el.src = "/brand/afterpay-accepted.png";
+            }}
           />
           <img
             src="/brand/logos/afterpay.png"
@@ -121,7 +139,7 @@ function Home() {
       </section>
 
       {/* Store closed → home-based */}
-      <section className="relative overflow-hidden border-t border-line bg-white">
+      <section className="relative overflow-hidden border-t border-line bg-white pb-16">
         <img
           src="/brand/bottom-background.png"
           alt=""
@@ -129,6 +147,9 @@ function Home() {
           height={900}
           className="pointer-events-none absolute inset-x-0 bottom-0 h-48 w-full object-cover object-bottom opacity-70"
           loading="lazy"
+          onError={(e) => {
+            (e.target as HTMLImageElement).style.display = "none";
+          }}
         />
         <div className="relative mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 md:items-center">
           <div className="order-2 md:order-1">
@@ -176,14 +197,14 @@ function Home() {
           </div>
         </div>
 
-        {/* Penguin peeking from bottom (no feet — sits behind the edge) */}
-        <div className="pointer-events-none relative mx-auto max-w-6xl px-4 sm:px-6">
+        {/* Penguin with no feet — clipped at the bottom edge so it looks behind the section */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 overflow-hidden">
           <img
             src="/brand/logos/pointing.png"
             alt=""
             width={200}
             height={200}
-            className="absolute bottom-0 right-6 h-28 w-auto translate-y-[35%] object-contain object-bottom sm:right-10 sm:h-36 md:right-16"
+            className="absolute bottom-0 right-6 h-28 w-auto object-contain object-bottom sm:right-12 sm:h-32 md:right-20"
             loading="lazy"
           />
         </div>
