@@ -52,11 +52,23 @@ async function loadQuotes(): Promise<Quote[]> {
   return rows;
 }
 
+function scheduleIdle(cb: () => void): () => void {
+  if (typeof window === "undefined") return () => {};
+  if ("requestIdleCallback" in window) {
+    const id = window.requestIdleCallback(() => cb(), { timeout: 2500 });
+    return () => window.cancelIdleCallback(id);
+  }
+  const id = window.setTimeout(cb, 400);
+  return () => window.clearTimeout(id);
+}
+
 export function CryptoTicker() {
   const [quotes, setQuotes] = useState<Quote[] | null>(null);
 
   useEffect(() => {
     let alive = true;
+    let intervalId = 0;
+
     const run = () => {
       loadQuotes()
         .then((rows) => {
@@ -66,11 +78,18 @@ export function CryptoTicker() {
           /* keep last good set */
         });
     };
-    run();
-    const id = window.setInterval(run, 60_000);
+
+    // Defer network + state updates until the browser is idle so first input stays snappy
+    const cancelIdle = scheduleIdle(() => {
+      if (!alive) return;
+      run();
+      intervalId = window.setInterval(run, 60_000);
+    });
+
     return () => {
       alive = false;
-      window.clearInterval(id);
+      cancelIdle();
+      if (intervalId) window.clearInterval(intervalId);
     };
   }, []);
 
@@ -78,7 +97,7 @@ export function CryptoTicker() {
   const loop = [...items, ...items];
 
   return (
-    <div className="relative overflow-hidden border-t border-ink/10 bg-ink text-cream">
+    <div className="ticker-slot relative overflow-hidden border-t border-ink/10 bg-ink text-cream">
       <p className="sr-only">Live cryptocurrency prices in New Zealand dollars</p>
       <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-ink to-transparent" />
       <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-ink to-transparent" />
