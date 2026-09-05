@@ -3,40 +3,37 @@ import { Link } from "@tanstack/react-router";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { SignedIn, SignedOut, UserButton } from "@/lib/auth/gates";
 import type { BranchId } from "@/data/catalog";
-import { BRANCHES, SIFTA } from "@/data/catalog";
-import { BrandLogo, LootersMark } from "@/components/brand-logo";
-import { BranchMenu } from "@/components/branch-menu";
-import { CryptoTicker } from "@/components/crypto-ticker";
-import { AfterpayMark } from "@/components/afterpay-mark";
 import { SiftaLootChip } from "@/components/sifta-loot-chip";
 
-export function SiteHeader({ branch }: { branch?: BranchId }) {
+export function SiteHeader(_props: { branch?: BranchId }) {
   const { isPending } = useCurrentUserState();
-  const isGroup = !branch;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line/80 bg-cream/95 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-line/80 bg-white/95 backdrop-blur-md">
       <div className="site-header-bar mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <Link to="/" className="flex min-h-11 min-w-0 items-center gap-3">
-          {isGroup ? (
-            <span className="flex min-w-0 items-center gap-3">
-              <LootersMark className="h-8 w-auto object-contain sm:h-10" />
-              <span className="hidden text-[11px] uppercase tracking-[0.16em] text-muted sm:block">
-                Group Ltd · A Purple Penguin Company
-              </span>
-            </span>
-          ) : (
-            <>
-              <BrandLogo branch={branch} />
-              <span className="hidden text-[11px] uppercase tracking-[0.16em] text-muted sm:block">
-                Back to group
-              </span>
-            </>
-          )}
+          <img
+            src="/brand/logos/looters-computas-title.png"
+            alt="Looters Computas"
+            width={160}
+            height={96}
+            className="h-9 w-auto object-contain sm:h-10"
+          />
         </Link>
 
-        <div className="flex items-center gap-1 sm:gap-2">
-          <BranchMenu branch={branch} />
+        <nav className="flex items-center gap-1 sm:gap-2">
+          <Link
+            to="/computas/shop"
+            className="inline-flex min-h-11 items-center rounded-full px-3 text-sm font-semibold text-ink hover:bg-line/70"
+          >
+            Shop
+          </Link>
+          <Link
+            to="/computas/policy"
+            className="hidden min-h-11 items-center rounded-full px-3 text-sm font-semibold text-ink hover:bg-line/70 sm:inline-flex"
+          >
+            Policy
+          </Link>
           {isPending ? (
             <div className="h-10 w-10 shrink-0 animate-pulse rounded-full bg-line" aria-hidden />
           ) : (
@@ -55,69 +52,61 @@ export function SiteHeader({ branch }: { branch?: BranchId }) {
               </SignedIn>
             </>
           )}
-        </div>
+        </nav>
       </div>
-      <CryptoTicker />
     </header>
   );
 }
 
 export function SiteFooter() {
   return (
-    <footer className="cv-auto mt-auto border-t border-line bg-cream">
-      <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 sm:px-6 md:flex-row md:justify-between">
-        <div>
-          <LootersMark className="h-8 w-auto object-contain" />
-          <p className="mt-2 font-display text-lg font-extrabold">Looters Group Ltd</p>
-          <p className="mt-1 max-w-xs text-sm text-muted">
-            A Purple Penguin Company. Nothing useful goes to waste — gear and
-            clothes get a second life instead of landfill.
+    <footer className="cv-auto relative mt-auto overflow-hidden border-t border-line bg-white">
+      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6 md:flex-row md:justify-between">
+        <div className="max-w-sm">
+          <img
+            src="/brand/logos/looters-computas-title.png"
+            alt="Looters Computas"
+            width={200}
+            height={120}
+            className="h-12 w-auto object-contain"
+          />
+          <p className="mt-3 text-sm leading-relaxed text-muted">
+            Looters Computas — refurbished computers online. The shopfront closed
+            after a few years; we now work from home thanks to the internet taking
+            over the high street.
           </p>
-          <p className="mt-3 text-sm text-muted">
-            6 Ruru Avenue
-            <br />
-            Kilbirnie, Wellington 6022
-          </p>
-          <div className="mt-4">
-            <AfterpayMark className="h-16 w-auto" />
-          </div>
+          <p className="mt-3 text-sm text-muted">Wellington, New Zealand</p>
+          <img
+            src="/brand/logos/afterpay.png"
+            alt="Afterpay"
+            width={140}
+            height={56}
+            className="mt-4 h-10 w-auto object-contain"
+            loading="lazy"
+          />
         </div>
         <div className="grid grid-cols-2 gap-8 text-sm">
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-              Branches
+              Shop
             </p>
-            {BRANCHES.map((b) => (
-              <Link
-                key={b.id}
-                to={b.href as "/computas" | "/apparel" | "/software"}
-                className="block hover:underline"
-              >
-                {b.name}
-              </Link>
-            ))}
-          </div>
-          <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-              Visit
-            </p>
+            <Link to="/computas/shop" className="block hover:underline">
+              Live listings
+            </Link>
             <Link to="/computas/policy" className="block hover:underline">
               Store policy
             </Link>
             <Link to="/computas/news" className="block hover:underline">
               Hardware news
             </Link>
-            <Link to="/login" className="block hover:underline">
+          </div>
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
               Account
+            </p>
+            <Link to="/login" className="block hover:underline">
+              Sign in
             </Link>
-            <a
-              href={SIFTA.url}
-              target="_blank"
-              rel="noreferrer"
-              className="block hover:underline"
-            >
-              Sifta Browser
-            </a>
             <Link to="/staff/login" className="block hover:underline">
               Staff
             </Link>
@@ -125,22 +114,21 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-line px-4 py-4 text-center text-xs text-muted">
-        © 2026 Looters Group Ltd · A Purple Penguin Company
+        © 2026 Looters Computas
       </div>
     </footer>
   );
 }
 
 export function BranchShell({
-  branch,
   children,
 }: {
   branch?: BranchId;
   children: ReactNode;
 }) {
   return (
-    <div className="flex min-h-dvh flex-col bg-paper text-ink">
-      <SiteHeader branch={branch} />
+    <div className="flex min-h-dvh flex-col bg-white text-ink">
+      <SiteHeader />
       <div className="flex-1">{children}</div>
       <SiteFooter />
     </div>
