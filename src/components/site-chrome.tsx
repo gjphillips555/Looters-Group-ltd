@@ -4,6 +4,9 @@ import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { SignedIn, SignedOut, UserButton } from "@/lib/auth/gates";
 import type { BranchId } from "@/data/catalog";
 import { SiftaLootChip } from "@/components/sifta-loot-chip";
+import { ResponsiveImage } from "@/components/responsive-image";
+
+const LOGO = "/brand/logos/computas.png";
 
 export function SiteHeader(_props: { branch?: BranchId }) {
   const { isPending } = useCurrentUserState();
@@ -12,12 +15,15 @@ export function SiteHeader(_props: { branch?: BranchId }) {
     <header className="sticky top-0 z-40 border-b border-line/80 bg-white/95 backdrop-blur-md">
       <div className="site-header-bar mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <Link to="/" className="flex min-h-11 min-w-0 items-center gap-3">
-          <img
-            src="/brand/logos/looters-computas-title.png"
+          <ResponsiveImage
+            src={LOGO}
             alt="Looters Computas"
-            width={160}
-            height={96}
-            className="h-9 w-auto object-contain sm:h-10"
+            width={140}
+            height={45}
+            sizes="120px"
+            quality={75}
+            priority
+            className="h-8 w-auto object-contain sm:h-9"
           />
         </Link>
 
@@ -41,7 +47,7 @@ export function SiteHeader(_props: { branch?: BranchId }) {
               <SignedOut>
                 <Link
                   to="/login"
-                  className="inline-flex min-h-11 items-center rounded-full px-3 text-sm font-semibold text-ink hover:bg-line/70"
+ormalen-flex min-h-11 items-center rounded-full px-3 text-sm font-semibold text-ink hover:bg-line/70"
                 >
                   Sign in
                 </Link>
@@ -63,12 +69,14 @@ export function SiteFooter() {
     <footer className="cv-auto relative mt-auto overflow-hidden border-t border-line bg-white">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6 md:flex-row md:justify-between">
         <div className="max-w-sm">
-          <img
-            src="/brand/logos/looters-computas-title.png"
+          <ResponsiveImage
+            src={LOGO}
             alt="Looters Computas"
-            width={200}
-            height={120}
-            className="h-12 w-auto object-contain"
+            width={160}
+            height={51}
+            sizes="140px"
+            quality={70}
+            className="h-10 w-auto object-contain"
           />
           <p className="mt-3 text-sm leading-relaxed text-muted">
             Looters Computas — refurbished computers online. The shopfront closed
@@ -76,13 +84,14 @@ export function SiteFooter() {
             over the high street.
           </p>
           <p className="mt-3 text-sm text-muted">Wellington, New Zealand</p>
-          <img
+          <ResponsiveImage
             src="/brand/logos/afterpay.png"
             alt="Afterpay"
-            width={140}
-            height={56}
-            className="mt-4 h-10 w-auto object-contain"
-            loading="lazy"
+            width={120}
+            height={48}
+            sizes="100px"
+            quality={70}
+            className="mt-4 h-9 w-auto object-contain"
           />
         </div>
         <div className="grid grid-cols-2 gap-8 text-sm">
