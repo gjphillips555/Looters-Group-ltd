@@ -5,6 +5,9 @@ import appCss from "../styles.css?url";
 
 const APP_NAME = "Looters";
 
+const FONT_CSS =
+  "https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Syne:wght@600;700;800&display=swap";
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
@@ -20,7 +23,22 @@ export const Route = createRootRoute({
     ],
     links: [
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+      // DNS + TLS warm-up before font CSS / files (LCP / text paint)
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      { rel: "dns-prefetch", href: "https://fonts.googleapis.com" },
+      { rel: "dns-prefetch", href: "https://fonts.gstatic.com" },
+      // Non-blocking font stylesheet (was a render-blocking @import in CSS)
+      { rel: "stylesheet", href: FONT_CSS },
       { rel: "stylesheet", href: appCss },
+      // LCP candidate: hero wordmark (home)
+      {
+        rel: "preload",
+        as: "image",
+        href: "/brand/logos/looters-computas-title.png",
+        // @ts-expect-error fetchpriority is valid on link
+        fetchPriority: "high",
+      },
       { rel: "manifest", href: "/__grok/manifest.webmanifest" },
       { rel: "apple-touch-icon", href: "/__grok/icon-180.png" },
     ],
@@ -41,7 +59,7 @@ export const Route = createRootRoute({
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body className="min-h-dvh">
         <PreviewHostBridge />
         <AuthProvider>
           <Outlet />
