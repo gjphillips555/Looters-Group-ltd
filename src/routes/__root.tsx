@@ -28,23 +28,20 @@ export const Route = createRootRoute({
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: FONT_CSS },
       { rel: "stylesheet", href: appCss },
-      // LCP: header + hero share this asset — preload once
       {
         rel: "preload",
         as: "image",
-        href: "/brand/logos/computas.png",
+        href: "/brand/logos/title.png",
         // @ts-expect-error fetchpriority is valid on link
         fetchPriority: "high",
       },
-      { rel: "manifest", href: "/__grok/manifest.webmanifest" },
-      { rel: "apple-touch-icon", href: "/__grok/icon-180.png" },
     ],
   }),
   notFoundComponent: () => (
     <main className="grid min-h-dvh place-items-center bg-white px-6 text-ink">
       <div className="text-center">
         <p className="font-display text-4xl font-extrabold">404</p>
-        <p className="mt-2 text-sm text-muted">That Looters Computas page is not here.</p>
+        <p className="mt-2 text-sm text-muted">Page not found.</p>
         <a href="/" className="mt-6 inline-block text-sm font-semibold underline">
           Home
         </a>
