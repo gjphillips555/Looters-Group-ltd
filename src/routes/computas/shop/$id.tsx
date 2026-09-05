@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Navigate, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
 import { ProductCard } from "@/components/product-card";
 import { ResponsiveImage } from "@/components/responsive-image";
@@ -23,9 +23,6 @@ function ProductPage() {
         <div className="h-80 animate-pulse rounded-3xl bg-line" />
       </main>
     );
-  }
-  if (product?.branch === "apparel") {
-    return <Navigate to="/apparel/$id" params={{ id }} />;
   }
   if (!product || product.branch !== "computas") throw notFound();
 
