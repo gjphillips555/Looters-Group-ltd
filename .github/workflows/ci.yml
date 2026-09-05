@@ -41,6 +41,5 @@ jobs:
       - name: Production build
         run: npm run build
         env:
-          # Build should not require live secrets; keep empty/safe defaults
           DATABASE_URL: ""
-          PAYPAL_MODE: "sandbox"
+          PAYPAL_MODE: "live"
