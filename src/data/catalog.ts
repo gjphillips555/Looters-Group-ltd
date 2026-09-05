@@ -23,6 +23,15 @@ export function skuForCategory(branch: BranchId, category: string): SkuCode {
   return "CMPNT";
 }
 
+/** Shipping line from Trade Me listing detail (ShippingOptions). */
+export type ShippingOption = {
+  id: string | number;
+  label: string;
+  price: number;
+  /** free | custom | undecided | pickup | other */
+  type: "free" | "custom" | "undecided" | "pickup" | "other";
+};
+
 export type Product = {
   id: string;
   branch: BranchId;
@@ -38,6 +47,8 @@ export type Product = {
   sku?: SkuCode;
   sizes?: string[];
   madeToOrder?: boolean;
+  /** Trade Me shipping options when available */
+  shippingOptions?: ShippingOption[];
 };
 
 export function skuFor(product: Product): SkuCode {
@@ -113,9 +124,9 @@ export const SIFTA = {
 } as const;
 
 export const STORE = {
-  name: "Looters",
-  group: "A Purple Penguin Company",
-  address: ["6 Ruru Avenue", "Kilbirnie, Wellington 6022", "New Zealand"],
+  name: "Looters Computas",
+  group: "Refurbished computers online",
+  address: ["Wellington", "New Zealand"],
   afterpay: true,
   warranty:
     "90-day return-to-base hardware warranty on most Computas listings (unless sold as-is).",
