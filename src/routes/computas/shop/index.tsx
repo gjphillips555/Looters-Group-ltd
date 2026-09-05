@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ProductCard } from "@/components/product-card";
-import { AfterpayMark } from "@/components/afterpay-mark";
 import { SKU_LABELS, skuFor, type SkuCode } from "@/data/catalog";
 import { useStoreListings } from "@/lib/listings";
 
@@ -26,23 +25,16 @@ function Shop() {
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-computas">
-        Looters Stores · Computas
-      </p>
-      <h1 className="mt-2 font-display text-4xl font-extrabold">Shop</h1>
+      <h1 className="font-display text-3xl font-extrabold sm:text-4xl">Shop</h1>
       <p className="mt-2 max-w-xl text-sm text-muted">
-        Search desktops, laptops, or parts. Purchases complete on Trade Me so an
-        item cannot sell twice. Afterpay accepted.
+        Live Trade Me stock. Pay with PayPal here or on Trade Me.
       </p>
-      <div className="mt-4">
-        <AfterpayMark className="h-16 w-auto" />
-      </div>
-      <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+      <div className="mt-6">
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search laptops, CPUs, drives…"
-          className="min-h-12 flex-1 rounded-full border border-line bg-cream px-5 text-sm"
+          className="min-h-12 w-full rounded-full border border-line bg-cream px-5 text-sm sm:max-w-md"
         />
       </div>
       <div className="mt-4 flex flex-wrap gap-2">
@@ -78,9 +70,9 @@ function Shop() {
         ))}
       </div>
       {catalog.length === 0 ? (
-        <p className="mt-10 text-sm text-muted">Loading live Trade Me listings…</p>
+        <p className="mt-10 text-sm text-muted">Loading listings…</p>
       ) : items.length === 0 ? (
-        <p className="mt-10 text-sm text-muted">No matches. Try another search.</p>
+        <p className="mt-10 text-sm text-muted">No matches.</p>
       ) : null}
     </main>
   );
