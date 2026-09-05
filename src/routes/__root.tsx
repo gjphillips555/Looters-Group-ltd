@@ -4,7 +4,7 @@ import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { WebVitalsReporter } from "@/components/web-vitals-reporter";
 import appCss from "../styles.css?url";
 
-const APP_NAME = "Looters";
+const APP_NAME = "Looters Computas";
 
 const FONT_CSS =
   "https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Syne:wght@600;700;800&display=swap";
@@ -15,24 +15,19 @@ export const Route = createRootRoute({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: APP_NAME },
-      { name: "theme-color", content: "#141318" },
+      { name: "theme-color", content: "#ffffff" },
       {
         name: "description",
         content:
-          "Looters Group — Computas, Apparel and Software. Refurbished PCs in Kilbirnie, Wellington.",
+          "Looters Computas — refurbished PCs and parts online from Wellington. Shop closed; selling from home.",
       },
     ],
     links: [
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
-      // DNS + TLS warm-up before font CSS / files (LCP / text paint)
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "dns-prefetch", href: "https://fonts.googleapis.com" },
-      { rel: "dns-prefetch", href: "https://fonts.gstatic.com" },
-      // Non-blocking font stylesheet (was a render-blocking @import in CSS)
       { rel: "stylesheet", href: FONT_CSS },
       { rel: "stylesheet", href: appCss },
-      // LCP candidate: hero wordmark (home)
       {
         rel: "preload",
         as: "image",
@@ -45,10 +40,10 @@ export const Route = createRootRoute({
     ],
   }),
   notFoundComponent: () => (
-    <main className="grid min-h-dvh place-items-center bg-paper px-6 text-ink">
+    <main className="grid min-h-dvh place-items-center bg-white px-6 text-ink">
       <div className="text-center">
         <p className="font-display text-4xl font-extrabold">404</p>
-        <p className="mt-2 text-sm text-muted">That Looters page is not here.</p>
+        <p className="mt-2 text-sm text-muted">That Looters Computas page is not here.</p>
         <a href="/" className="mt-6 inline-block text-sm font-semibold underline">
           Home
         </a>
@@ -60,7 +55,7 @@ export const Route = createRootRoute({
       <head>
         <HeadContent />
       </head>
-      <body className="min-h-dvh">
+      <body className="min-h-dvh bg-white">
         <PreviewHostBridge />
         <WebVitalsReporter />
         <AuthProvider>
