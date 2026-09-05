@@ -1,185 +1,209 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MapPin } from "lucide-react";
-import { BRANCHES, STORE } from "@/data/catalog";
-import { BRANCH_LOGO } from "@/components/brand-logo";
 import { LiveListings } from "@/components/live-listings";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
-import { AfterpayMark } from "@/components/afterpay-mark";
-import { SiftaAd } from "@/components/sifta-ad";
-import { ResponsiveImage } from "@/components/responsive-image";
 
 export const Route = createFileRoute("/")({ component: Home });
 
-/** Hero wordmark — WebP first, PNG fallback, density-aware srcset (LCP) */
-function HeroTitleLogo() {
-  const sizes = "(max-width: 640px) 72vw, (max-width: 768px) 280px, 360px";
-  const webp = [
-    "/brand/logos/looters-computas-title-320.webp 320w",
-    "/brand/logos/looters-computas-title-480.webp 480w",
-    "/brand/logos/looters-computas-title-640.webp 640w",
-    "/brand/logos/looters-computas-title-960.webp 960w",
-  ].join(", ");
-  const png = [
-    "/brand/logos/looters-computas-title-320.png 320w",
-    "/brand/logos/looters-computas-title-480.png 480w",
-    "/brand/logos/looters-computas-title-640.png 640w",
-    "/brand/logos/looters-computas-title-960.png 960w",
-  ].join(", ");
-
-  return (
-    <picture>
-      <source type="image/webp" srcSet={webp} sizes={sizes} />
-      <source type="image/png" srcSet={png} sizes={sizes} />
-      <img
-        src="/brand/logos/looters-computas-title.png"
-        srcSet={png}
-        sizes={sizes}
-        width={480}
-        height={275}
-        alt="Looters Computas"
-        className="h-28 w-auto max-w-[min(100%,22rem)] object-contain sm:h-40 sm:max-w-[min(100%,28rem)] md:h-48 md:max-w-[min(100%,32rem)]"
-        decoding="async"
-        fetchPriority="high"
-        // Intrinsic size + CSS height keeps CLS near zero while image loads
-        style={{ aspectRatio: "480 / 275" }}
-      />
-    </picture>
-  );
-}
-
 function Home() {
   return (
-    <div className="min-h-dvh bg-ink text-cream">
-      <div className="bg-paper text-ink">
-        <SiteHeader />
-      </div>
+    <div className="min-h-dvh bg-white text-ink">
+      <SiteHeader />
 
-      <section className="relative min-h-[22rem] overflow-hidden sm:min-h-[26rem]">
-        {/* Decorative only — not LCP; keep priority off so logo wins bandwidth */}
-        <ResponsiveImage
-          src="/og.jpg"
+      {/* Hero — title logo on white, soft top wave */}
+      <section className="relative overflow-hidden bg-white">
+        <img
+          src="/brand/top-background.png"
           alt=""
-          width={1920}
-          height={1080}
-          sizes="100vw"
-          className="absolute inset-0 h-full w-full object-cover opacity-45"
+          width={1600}
+          height={900}
+          className="pointer-events-none absolute inset-x-0 top-0 h-40 w-full object-cover object-top opacity-80 sm:h-52"
+          decoding="async"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-ink/75 via-ink/80 to-ink" />
-        <div className="relative mx-auto flex max-w-6xl flex-col items-center px-4 py-14 text-center sm:px-6 sm:py-20">
+        <div className="relative mx-auto flex max-w-4xl flex-col items-center px-4 pb-10 pt-14 text-center sm:px-6 sm:pt-16">
           <h1 className="sr-only">Looters Computas</h1>
-          <HeroTitleLogo />
-          <div className="mt-10 grid w-full max-w-3xl gap-3 sm:grid-cols-3">
-            {BRANCHES.map((b) => (
-              <Link
-                key={b.id}
-                to={b.href as "/computas" | "/apparel" | "/software"}
-                className="flex min-h-[7.5rem] flex-col items-center justify-center rounded-2xl bg-white p-3 text-ink shadow-border transition hover:-translate-y-0.5"
-              >
-                <ResponsiveImage
-                  src={BRANCH_LOGO[b.id]}
-                  alt={b.name}
-                  width={160}
-                  height={96}
-                  sizes="120px"
-                  className="h-20 w-auto object-contain sm:h-24"
-                />
-                <span className="sr-only">{b.name}</span>
-              </Link>
-            ))}
+          <img
+            src="/brand/logos/looters-computas-title.png"
+            alt="Looters Computas"
+            width={480}
+            height={275}
+            className="h-28 w-auto max-w-[min(100%,22rem)] object-contain sm:h-40 md:h-48"
+            decoding="async"
+            fetchPriority="high"
+          />
+          <p className="mt-5 max-w-lg text-base leading-relaxed text-muted sm:text-lg">
+            Refurbished PCs, laptops and parts — listed online, shipped nationwide,
+            or pick up by arrangement.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <Link
+              to="/computas/shop"
+              className="inline-flex min-h-12 items-center rounded-full bg-computas-hot px-6 text-sm font-semibold text-white"
+            >
+              Shop live listings
+            </Link>
+            <Link
+              to="/computas/policy"
+              className="inline-flex min-h-12 items-center rounded-full bg-line px-6 text-sm font-semibold text-ink"
+            >
+              Store policy
+            </Link>
           </div>
+          <img
+            src="/brand/brands.png"
+            alt="We work with HP, AMD, NVIDIA and Intel hardware"
+            width={900}
+            height={196}
+            className="mt-10 h-12 w-auto max-w-full object-contain sm:h-14"
+            loading="lazy"
+            decoding="async"
+          />
         </div>
       </section>
 
-      <section className="bg-paper py-16 text-ink">
+      {/* Live stock */}
+      <section className="border-t border-line bg-white py-14">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="mb-8 flex items-end justify-between gap-4">
+          <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
-                Looters Stores
+                Trade Me
               </p>
               <h2 className="font-display text-3xl font-extrabold">Live listings</h2>
             </div>
-            <Link to="/computas/shop" className="text-sm font-semibold underline-offset-4 hover:underline">
-              Full catalogue
-            </Link>
+            <div className="flex items-center gap-3">
+              <img
+                src="/brand/logos/intel-core-i7.jpg"
+                alt="Intel Core i7"
+                width={64}
+                height={64}
+                className="h-12 w-12 rounded-lg object-cover ring-1 ring-line"
+                loading="lazy"
+              />
+              <Link
+                to="/computas/shop"
+                className="text-sm font-semibold underline-offset-4 hover:underline"
+              >
+                Full catalogue
+              </Link>
+            </div>
           </div>
           <div className="min-h-[16rem]">
             <LiveListings />
           </div>
+        </div>
+      </section>
 
-          <div className="cv-auto mt-10 flex flex-col items-start gap-6 rounded-3xl bg-cream p-5 shadow-border sm:flex-row sm:items-center sm:justify-between md:p-6">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-                Pay later
-              </p>
-              <h3 className="mt-1 font-display text-xl font-bold">Afterpay at Looters Stores</h3>
-              <p className="mt-2 max-w-md text-sm text-muted">
-                Split the cost on Computas and Apparel. Same checkout on Trade Me,
-                accepted in store too.
-              </p>
-            </div>
-            <AfterpayMark className="h-20 w-auto sm:h-24" />
-          </div>
+      {/* Payments on white */}
+      <section className="border-t border-line bg-white py-12">
+        <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 px-4 text-center sm:px-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
+            Pay your way
+          </p>
+          <img
+            src="/brand/payment-methods.png"
+            alt="Afterpay, American Express, Mastercard, Visa and Discover accepted"
+            width={900}
+            height={354}
+            className="h-auto w-full max-w-lg object-contain"
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            src="/brand/logos/afterpay.png"
+            alt="Afterpay"
+            width={200}
+            height={80}
+            className="h-12 w-auto object-contain"
+            loading="lazy"
+          />
+        </div>
+      </section>
 
-          <div className="cv-auto mt-8 flex flex-col items-start gap-5 rounded-3xl bg-ink p-5 text-cream shadow-border sm:flex-row sm:items-center">
-            <SiftaAd />
-            <div className="max-w-sm">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-software-hot">
-                Live
-              </p>
-              <h3 className="mt-1 font-display text-xl font-bold">Sifta Browser</h3>
-              <p className="mt-2 text-sm leading-relaxed text-cream/70">
-                Privacy first. So easy even your toddler could use it. Download
-                the app. SiftaLoot still works on this site when you sign in.
-              </p>
-              <div className="mt-4 flex flex-wrap gap-3">
-                <Link
-                  to="/software"
-                  className="inline-flex min-h-10 items-center text-sm font-semibold text-software-hot hover:underline"
-                >
-                  Open Sifta on Looters Software
-                </Link>
-                <Link
-                  to="/software"
-                  className="inline-flex min-h-10 items-center text-sm font-semibold text-cream/80 hover:underline"
-                >
-                  Looters Software
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          <div className="cv-auto mt-14 grid gap-8 rounded-3xl bg-cream p-6 shadow-border md:grid-cols-[1.2fr_1fr] md:p-8">
-            <div>
-              <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-                <MapPin className="size-3.5" /> Visit
-              </p>
-              <h3 className="mt-2 font-display text-2xl font-bold">Kilbirnie, Wellington</h3>
-              <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted">
-                Computas keeps machines in service. Apparel is near-new 2nd-life clothing.
-                Software is the tools that run it. Same parent, same idea: don’t dump what
-                still has a job to do.
-              </p>
-              <p className="mt-4 text-sm font-medium">
-                {STORE.address.map((l) => (
-                  <span key={l} className="block">
-                    {l}
-                  </span>
-                ))}
-              </p>
-            </div>
-            <ResponsiveImage
-              src="/brand/storefront.jpg"
-              alt="Looters Computas storefront with Lootzy the penguin"
-              width={800}
-              height={600}
-              sizes="(max-width: 768px) 100vw, 40vw"
-              className="h-56 w-full rounded-2xl object-cover md:h-full"
+      {/* Store closed → home-based */}
+      <section className="relative overflow-hidden border-t border-line bg-white">
+        <img
+          src="/brand/bottom-background.png"
+          alt=""
+          width={1600}
+          height={900}
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-48 w-full object-cover object-bottom opacity-70"
+          loading="lazy"
+        />
+        <div className="relative mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 md:items-center">
+          <div className="order-2 md:order-1">
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
+              <MapPin className="size-3.5" /> Wellington
+            </p>
+            <h2 className="mt-2 font-display text-2xl font-extrabold sm:text-3xl">
+              Shop closed — still selling online
+            </h2>
+            <p className="mt-4 text-sm leading-relaxed text-muted sm:text-base">
+              The Kilbirnie storefront had a good run for a few years, then we shut
+              the doors. The internet took over the foot traffic — so Looters
+              Computas now runs from home. Same refurbished gear, same Trade Me
+              listings, nationwide courier or local pickup by arrangement.
+            </p>
+            <p className="mt-3 text-sm text-muted">
+              Based around Ruru Ave / Kilbirnie, Wellington — no public walk-in
+              counter anymore.
+            </p>
+            <img
+              src="/brand/store-map-mock.png"
+              alt="Map pin for Looters Computas near Ruru Ave"
+              width={900}
+              height={420}
+              className="mt-6 w-full max-w-md rounded-2xl bg-white object-contain ring-1 ring-line"
+              loading="lazy"
             />
           </div>
+
+          <div className="order-1 md:order-2">
+            <div className="overflow-hidden rounded-3xl bg-white ring-1 ring-line">
+              <img
+                src="/brand/storefront.jpg"
+                alt="The old Looters Computas shopfront"
+                width={1400}
+                height={640}
+                className="aspect-[21/10] w-full object-cover"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <p className="mt-2 text-center text-xs text-muted">
+              The old shopfront — fond memories, sales now online.
+            </p>
+          </div>
         </div>
-        <SiteFooter />
+
+        {/* Penguin peeking from bottom (no feet — sits behind the edge) */}
+        <div className="pointer-events-none relative mx-auto max-w-6xl px-4 sm:px-6">
+          <img
+            src="/brand/logos/pointing.png"
+            alt=""
+            width={200}
+            height={200}
+            className="absolute bottom-0 right-6 h-28 w-auto translate-y-[35%] object-contain object-bottom sm:right-10 sm:h-36 md:right-16"
+            loading="lazy"
+          />
+        </div>
       </section>
+
+      {/* Computas banner strip */}
+      <section className="border-t border-line bg-white py-10">
+        <div className="mx-auto flex max-w-3xl justify-center px-4">
+          <img
+            src="/brand/logos/computas.png"
+            alt="Looters Computas"
+            width={800}
+            height={256}
+            className="h-16 w-auto max-w-full object-contain sm:h-20"
+            loading="lazy"
+          />
+        </div>
+      </section>
+
+      <SiteFooter />
     </div>
   );
 }
