@@ -37,7 +37,13 @@ export function BuyPanel({ product }: { product: Product }) {
       });
       const data = (await res.json()) as { approveUrl?: string; error?: string };
       if (!res.ok || !data.approveUrl) {
-        throw new Error(data.error || "Could not start PayPal checkout");
+        const msg = data.error || "Could not start PayPal checkout";
+        if (res.status === 503) {
+          throw new Error(
+            "PayPal is not set up on the server yet. Use Pay via Trade Me, or ask the store to finish PayPal setup.",
+          );
+        }
+        throw new Error(msg);
       }
       window.location.href = data.approveUrl;
     } catch (e) {
@@ -51,7 +57,7 @@ export function BuyPanel({ product }: { product: Product }) {
       <h2 className="font-display text-lg font-bold">Buy this item</h2>
       <p className="mt-1 text-sm text-muted">
         Same Trade Me listing specs and shipping. Pay here with PayPal, or finish on Trade Me.
-        If you pay with PayPal, we'll unlist the Trade Me ad once the payment clears.
+        After a PayPal payment clears, we unlist the Trade Me ad.
       </p>
 
       {options.length > 0 ? (
