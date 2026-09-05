@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 
-import { type Product, type SkuCode } from "@/data/catalog";
+import { type Product, type ShippingOption, type SkuCode } from "@/data/catalog";
 
 const SKU_CODES: SkuCode[] = ["DSKTP", "LPTOP", "CMPNT", "APARL", "SFTWR"];
 
@@ -91,6 +91,49 @@ function photosFromListing(it: Record<string, unknown>): string[] {
   return [...new Set(urls)];
 }
 
+/** Map Trade Me ShippingOptions → our ShippingOption[] */
+function shippingFromListing(it: Record<string, unknown>): ShippingOption[] {
+  const raw = it.ShippingOptions;
+  if (!Array.isArray(raw) || raw.length === 0) return [];
+
+  const out: ShippingOption[] = [];
+  for (const row of raw) {
+    if (!row || typeof row !== "object") continue;
+    const r = row as Record<string, unknown>;
+    const typeNum = Number(r.Type ?? r.ShippingType ?? 0);
+    const price = money(r.Price);
+    const method = String(r.Method ?? r.Name ?? "").trim();
+    const id = r.ShippingId ?? r.Id ?? `${typeNum}-${method}-${price}`;
+
+    // Trade Me types: Undecided=1, Pickup=2, Free=3, Custom=4, TradeMe=5
+    let type: ShippingOption["type"] = "other";
+    let label = method;
+    if (typeNum === 3 || (typeNum === 0 && price === 0 && /free/i.test(method))) {
+      type = "free";
+      label = method || "Free shipping within NZ";
+    } else if (typeNum === 2 || /pick\s*up|collection/i.test(method)) {
+      type = "pickup";
+      label = method || "Pickup";
+    } else if (typeNum === 1 || /undecided|to be arranged|arrange/i.test(method)) {
+      type = "undecided";
+      label = method || "Shipping to be arranged";
+    } else if (typeNum === 4 || typeNum === 5 || method) {
+      type = "custom";
+      label = method || (price > 0 ? "Courier" : "Shipping");
+    } else {
+      continue;
+    }
+
+    out.push({
+      id: typeof id === "number" || typeof id === "string" ? id : String(id),
+      label,
+      price: type === "free" || type === "pickup" ? 0 : price,
+      type,
+    });
+  }
+  return out;
+}
+
 function mapListing(it: Record<string, unknown>): Product | null {
   const lid = it.ListingId;
   if (lid == null) return null;
@@ -109,6 +152,7 @@ function mapListing(it: Record<string, unknown>): Product | null {
 
   const photos = photosFromListing(it);
   const price = money(it.BuyNowPrice) || money(it.StartPrice) || money(it.PriceDisplay);
+  const shippingOptions = shippingFromListing(it);
 
   return {
     id,
@@ -123,6 +167,7 @@ function mapListing(it: Record<string, unknown>): Product | null {
     condition: "Trade Me",
     blurb: body.slice(0, 280) || title,
     specs: [skuCode, path].filter(Boolean),
+    shippingOptions: shippingOptions.length ? shippingOptions : undefined,
   };
 }
 
