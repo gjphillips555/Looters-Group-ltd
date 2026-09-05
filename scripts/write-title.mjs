@@ -1,8 +1,10 @@
-import { writeFileSync, mkdirSync, readFileSync } from "node:fs";
+import { writeFileSync, mkdirSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 const dir = dirname(fileURLToPath(import.meta.url));
-const b64 = readFileSync(join(dir, "title.b64.txt"), "utf8").trim();
+const chunkDir = join(dir, "title_chunks");
+const files = readdirSync(chunkDir).filter((f) => f.endsWith(".txt")).sort();
+const b64 = files.map((f) => readFileSync(join(chunkDir, f), "utf8").trim()).join("");
 const out = join(dir, "../public/brand/logos/title.png");
 mkdirSync(dirname(out), { recursive: true });
 writeFileSync(out, Buffer.from(b64, "base64"));
