@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 
 /** Widths Vercel Image Optimization will serve (keep in sync with vercel.json). */
@@ -48,6 +48,8 @@ export type ResponsiveImageProps = {
   /** Disable Vercel optimizer (plain src only) */
   plain?: boolean;
   quality?: number;
+  /** Fallback if primary src fails to load */
+  onErrorSrc?: string;
 } & Omit<
   React.ImgHTMLAttributes<HTMLImageElement>,
   "src" | "alt" | "width" | "height" | "sizes" | "srcSet" | "loading" | "fetchPriority"
@@ -67,22 +69,26 @@ export function ResponsiveImage({
   priority = false,
   plain = false,
   quality = 72,
+  onErrorSrc,
+  onError,
   ...rest
 }: ResponsiveImageProps) {
-  const canOptimize = !plain && (isLocalPublic(src) || isRemoteHttp(src));
+  const [failed, setFailed] = useState(false);
+  const activeSrc = failed && onErrorSrc ? onErrorSrc : src;
+  const canOptimize = !plain && (isLocalPublic(activeSrc) || isRemoteHttp(activeSrc));
 
   const { srcSet, resolvedSrc } = useMemo(() => {
     if (!canOptimize) {
-      return { srcSet: undefined as string | undefined, resolvedSrc: src };
+      return { srcSet: undefined as string | undefined, resolvedSrc: activeSrc };
     }
     const widths = pickWidths(width);
-    const srcSet = widths.map((w) => `${vercelImageUrl(src, w, quality)} ${w}w`).join(", ");
+    const srcSet = widths.map((w) => `${vercelImageUrl(activeSrc, w, quality)} ${w}w`).join(", ");
     const fallbackW = widths.find((w) => w >= width) ?? widths[widths.length - 1];
     return {
       srcSet,
-      resolvedSrc: vercelImageUrl(src, fallbackW, quality),
+      resolvedSrc: vercelImageUrl(activeSrc, fallbackW, quality),
     };
-  }, [canOptimize, src, width, quality]);
+  }, [canOptimize, activeSrc, width, quality]);
 
   return (
     <img
@@ -96,6 +102,10 @@ export function ResponsiveImage({
       loading={priority ? "eager" : "lazy"}
       decoding="async"
       fetchPriority={priority ? "high" : "low"}
+      onError={(e) => {
+        if (onErrorSrc && !failed) setFailed(true);
+        onError?.(e);
+      }}
       {...rest}
     />
   );
