@@ -6,6 +6,7 @@ import { LiveListings } from "@/components/live-listings";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { AfterpayMark } from "@/components/afterpay-mark";
 import { SiftaAd } from "@/components/sifta-ad";
+import { ResponsiveImage } from "@/components/responsive-image";
 
 export const Route = createFileRoute("/")({ component: Home });
 
@@ -30,7 +31,7 @@ function HeroTitleLogo() {
       <source type="image/webp" srcSet={webp} sizes={sizes} />
       <source type="image/png" srcSet={png} sizes={sizes} />
       <img
-        src="/brand/logos/looters-computas-title-480.png"
+        src="/brand/logos/looters-computas-title.png"
         srcSet={png}
         sizes={sizes}
         width={480}
@@ -52,14 +53,14 @@ function Home() {
       </div>
 
       <section className="relative overflow-hidden">
-        <img
+        <ResponsiveImage
           src="/og.jpg"
           alt=""
           width={1920}
           height={1080}
+          sizes="100vw"
+          priority
           className="absolute inset-0 h-full w-full object-cover opacity-45"
-          decoding="async"
-          fetchPriority="low"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-ink/75 via-ink/80 to-ink" />
         <div className="relative mx-auto flex max-w-6xl flex-col items-center px-4 py-14 text-center sm:px-6 sm:py-20">
@@ -72,14 +73,13 @@ function Home() {
                 to={b.href as "/computas" | "/apparel" | "/software"}
                 className="flex flex-col items-center rounded-2xl bg-white p-3 text-ink shadow-border transition hover:-translate-y-0.5"
               >
-                <img
+                <ResponsiveImage
                   src={BRANCH_LOGO[b.id]}
                   alt={b.name}
                   width={160}
                   height={96}
+                  sizes="120px"
                   className="h-20 w-auto object-contain sm:h-24"
-                  loading="lazy"
-                  decoding="async"
                 />
                 <span className="sr-only">{b.name}</span>
               </Link>
@@ -164,14 +164,13 @@ function Home() {
                 ))}
               </p>
             </div>
-            <img
+            <ResponsiveImage
               src="/brand/storefront.jpg"
               alt="Looters Computas storefront with Lootzy the penguin"
               width={800}
               height={600}
-              className="media h-56 w-full rounded-2xl object-cover md:h-full"
-              loading="lazy"
-              decoding="async"
+              sizes="(max-width: 768px) 100vw, 40vw"
+              className="h-56 w-full rounded-2xl object-cover md:h-full"
             />
           </div>
         </div>
