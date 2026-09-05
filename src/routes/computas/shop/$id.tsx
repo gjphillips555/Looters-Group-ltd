@@ -2,6 +2,7 @@ import { createFileRoute, Link, Navigate, notFound } from "@tanstack/react-route
 import { useState } from "react";
 import { ProductCard } from "@/components/product-card";
 import { ResponsiveImage } from "@/components/responsive-image";
+import { BuyPanel } from "@/components/buy-panel";
 import { productImages } from "@/data/catalog";
 import { useListing, useStoreListings } from "@/lib/listings";
 import { formatNzd } from "@/lib/utils";
@@ -103,23 +104,22 @@ function ProductPage() {
             ))}
           </ul>
 
+          <BuyPanel product={product} />
+
           <p className="mt-6 text-sm text-muted">
-            Pickup Upper Hutt / Kilbirnie, or courier nationwide. Afterpay accepted
-            at Looters Stores and on Trade Me. 90-day return-to-base hardware warranty
+            Afterpay is available on Trade Me checkout. 90-day return-to-base hardware warranty
             on most listings unless sold as-is.
           </p>
           <div className="mt-5 flex flex-wrap items-center gap-4">
             <AfterpayMark className="h-16 w-auto" />
-            <img src="/brand/logos/badge.png" alt="90 day warranty" className="h-12 w-auto" loading="lazy" decoding="async" />
+            <img
+              src="/brand/logos/badge.png"
+              alt="90 day warranty"
+              className="h-12 w-auto"
+              loading="lazy"
+              decoding="async"
+            />
           </div>
-          <a
-            href={`https://www.trademe.co.nz/a/listing/${product.listingId}`}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-6 inline-flex min-h-12 items-center rounded-full bg-computas-hot px-6 text-sm font-semibold text-cream"
-          >
-            Buy on Trade Me
-          </a>
         </div>
       </div>
 
