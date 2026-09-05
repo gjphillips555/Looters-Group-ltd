@@ -3,6 +3,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { BranchShell } from "@/components/site-chrome";
 import { AfterpayMark } from "@/components/afterpay-mark";
 import { ApparelOrder } from "@/components/apparel-order";
+import { ResponsiveImage } from "@/components/responsive-image";
 import { productImages } from "@/data/catalog";
 import { useListing } from "@/lib/listings";
 import { formatNzd } from "@/lib/utils";
@@ -30,10 +31,14 @@ function ApparelItem() {
     <BranchShell branch="apparel">
       <main className="mx-auto grid max-w-6xl gap-10 px-4 py-10 sm:px-6 md:grid-cols-2">
         <div>
-          <img
+          <ResponsiveImage
             src={photos[active] ?? product.image}
             alt={product.title}
-            className="media w-full rounded-3xl object-cover"
+            width={1200}
+            height={1200}
+            sizes="(max-width: 768px) 100vw, 50vw"
+            priority
+            className="w-full rounded-3xl object-cover"
           />
           {photos.length > 1 ? (
             <div className="mt-3 grid grid-cols-3 gap-2">
@@ -48,7 +53,14 @@ function ApparelItem() {
                       : "overflow-hidden rounded-xl ring-1 ring-line"
                   }
                 >
-                  <img src={src} alt="" className="aspect-square w-full object-cover" />
+                  <ResponsiveImage
+                    src={src}
+                    alt=""
+                    width={200}
+                    height={200}
+                    sizes="120px"
+                    className="aspect-square w-full object-cover"
+                  />
                 </button>
               ))}
             </div>
