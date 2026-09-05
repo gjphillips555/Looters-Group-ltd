@@ -47,7 +47,7 @@ export function SiteHeader(_props: { branch?: BranchId }) {
               <SignedOut>
                 <Link
                   to="/login"
-ormalen-flex min-h-11 items-center rounded-full px-3 text-sm font-semibold text-ink hover:bg-line/70"
+                  className="inline-flex min-h-11 items-center rounded-full px-3 text-sm font-semibold text-ink hover:bg-line/70"
                 >
                   Sign in
                 </Link>
