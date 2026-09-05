@@ -28,6 +28,12 @@ import { Route as StaffLoginRouteImport } from './routes/staff/login'
 import { Route as StaffOverlayRouteImport } from './routes/staff/overlay'
 import { Route as StaffPrintablesRouteImport } from './routes/staff/printables'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiVitalsRouteImport } from './routes/api/vitals'
+import { Route as ApiPaypalStatusRouteImport } from './routes/api/paypal/status'
+import { Route as ApiPaypalWebhookRouteImport } from './routes/api/paypal/webhook'
+import { Route as ApiPaypalCreateOrderRouteImport } from './routes/api/paypal/create-order'
+import { Route as ApiPaypalCaptureOrderRouteImport } from './routes/api/paypal/capture-order'
+import { Route as CheckoutSuccessRouteImport } from './routes/checkout/success'
 import { Route as ComputasShopIndexRouteImport } from './routes/computas/shop/index'
 import { Route as ComputasShopIdRouteImport } from './routes/computas/shop/$id'
 
@@ -126,6 +132,36 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiVitalsRoute = ApiVitalsRouteImport.update({
+  id: '/api/vitals',
+  path: '/api/vitals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPaypalStatusRoute = ApiPaypalStatusRouteImport.update({
+  id: '/api/paypal/status',
+  path: '/api/paypal/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPaypalWebhookRoute = ApiPaypalWebhookRouteImport.update({
+  id: '/api/paypal/webhook',
+  path: '/api/paypal/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPaypalCreateOrderRoute = ApiPaypalCreateOrderRouteImport.update({
+  id: '/api/paypal/create-order',
+  path: '/api/paypal/create-order',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPaypalCaptureOrderRoute = ApiPaypalCaptureOrderRouteImport.update({
+  id: '/api/paypal/capture-order',
+  path: '/api/paypal/capture-order',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutSuccessRoute = CheckoutSuccessRouteImport.update({
+  id: '/checkout/success',
+  path: '/checkout/success',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ComputasShopIndexRoute = ComputasShopIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -157,6 +193,12 @@ export interface FileRoutesByFullPath {
   '/software/': typeof SoftwareIndexRoute
   '/staff/': typeof StaffIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/vitals': typeof ApiVitalsRoute
+  '/api/paypal/status': typeof ApiPaypalStatusRoute
+  '/api/paypal/webhook': typeof ApiPaypalWebhookRoute
+  '/api/paypal/create-order': typeof ApiPaypalCreateOrderRoute
+  '/api/paypal/capture-order': typeof ApiPaypalCaptureOrderRoute
+  '/checkout/success': typeof CheckoutSuccessRoute
   '/computas/shop/$id': typeof ComputasShopIdRoute
   '/computas/shop/': typeof ComputasShopIndexRoute
 }
@@ -179,6 +221,12 @@ export interface FileRoutesByTo {
   '/software': typeof SoftwareIndexRoute
   '/staff': typeof StaffIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/vitals': typeof ApiVitalsRoute
+  '/api/paypal/status': typeof ApiPaypalStatusRoute
+  '/api/paypal/webhook': typeof ApiPaypalWebhookRoute
+  '/api/paypal/create-order': typeof ApiPaypalCreateOrderRoute
+  '/api/paypal/capture-order': typeof ApiPaypalCaptureOrderRoute
+  '/checkout/success': typeof CheckoutSuccessRoute
   '/computas/shop/$id': typeof ComputasShopIdRoute
   '/computas/shop': typeof ComputasShopIndexRoute
 }
@@ -203,6 +251,12 @@ export interface FileRoutesById {
   '/software/': typeof SoftwareIndexRoute
   '/staff/': typeof StaffIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/vitals': typeof ApiVitalsRoute
+  '/api/paypal/status': typeof ApiPaypalStatusRoute
+  '/api/paypal/webhook': typeof ApiPaypalWebhookRoute
+  '/api/paypal/create-order': typeof ApiPaypalCreateOrderRoute
+  '/api/paypal/capture-order': typeof ApiPaypalCaptureOrderRoute
+  '/checkout/success': typeof CheckoutSuccessRoute
   '/computas/shop/$id': typeof ComputasShopIdRoute
   '/computas/shop/': typeof ComputasShopIndexRoute
 }
@@ -228,6 +282,12 @@ export interface FileRouteTypes {
     | '/software/'
     | '/staff/'
     | '/api/auth/$'
+    | '/api/vitals'
+    | '/api/paypal/status'
+    | '/api/paypal/webhook'
+    | '/api/paypal/create-order'
+    | '/api/paypal/capture-order'
+    | '/checkout/success'
     | '/computas/shop/$id'
     | '/computas/shop/'
   fileRoutesByTo: FileRoutesByTo
@@ -250,6 +310,12 @@ export interface FileRouteTypes {
     | '/software'
     | '/staff'
     | '/api/auth/$'
+    | '/api/vitals'
+    | '/api/paypal/status'
+    | '/api/paypal/webhook'
+    | '/api/paypal/create-order'
+    | '/api/paypal/capture-order'
+    | '/checkout/success'
     | '/computas/shop/$id'
     | '/computas/shop'
   id:
@@ -273,6 +339,12 @@ export interface FileRouteTypes {
     | '/software/'
     | '/staff/'
     | '/api/auth/$'
+    | '/api/vitals'
+    | '/api/paypal/status'
+    | '/api/paypal/webhook'
+    | '/api/paypal/create-order'
+    | '/api/paypal/capture-order'
+    | '/checkout/success'
     | '/computas/shop/$id'
     | '/computas/shop/'
   fileRoutesById: FileRoutesById
@@ -297,6 +369,12 @@ export interface RootRouteChildren {
   SoftwareIndexRoute: typeof SoftwareIndexRoute
   StaffIndexRoute: typeof StaffIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiVitalsRoute: typeof ApiVitalsRoute
+  ApiPaypalStatusRoute: typeof ApiPaypalStatusRoute
+  ApiPaypalWebhookRoute: typeof ApiPaypalWebhookRoute
+  ApiPaypalCreateOrderRoute: typeof ApiPaypalCreateOrderRoute
+  ApiPaypalCaptureOrderRoute: typeof ApiPaypalCaptureOrderRoute
+  CheckoutSuccessRoute: typeof CheckoutSuccessRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -434,6 +512,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/vitals': {
+      id: '/api/vitals'
+      path: '/api/vitals'
+      fullPath: '/api/vitals'
+      preLoaderRoute: typeof ApiVitalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/paypal/status': {
+      id: '/api/paypal/status'
+      path: '/api/paypal/status'
+      fullPath: '/api/paypal/status'
+      preLoaderRoute: typeof ApiPaypalStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/paypal/webhook': {
+      id: '/api/paypal/webhook'
+      path: '/api/paypal/webhook'
+      fullPath: '/api/paypal/webhook'
+      preLoaderRoute: typeof ApiPaypalWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/paypal/create-order': {
+      id: '/api/paypal/create-order'
+      path: '/api/paypal/create-order'
+      fullPath: '/api/paypal/create-order'
+      preLoaderRoute: typeof ApiPaypalCreateOrderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/paypal/capture-order': {
+      id: '/api/paypal/capture-order'
+      path: '/api/paypal/capture-order'
+      fullPath: '/api/paypal/capture-order'
+      preLoaderRoute: typeof ApiPaypalCaptureOrderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout/success': {
+      id: '/checkout/success'
+      path: '/checkout/success'
+      fullPath: '/checkout/success'
+      preLoaderRoute: typeof CheckoutSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/computas/shop/': {
       id: '/computas/shop/'
       path: '/'
@@ -484,6 +604,12 @@ const rootRouteChildren: RootRouteChildren = {
   SoftwareIndexRoute: SoftwareIndexRoute,
   StaffIndexRoute: StaffIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiVitalsRoute: ApiVitalsRoute,
+  ApiPaypalStatusRoute: ApiPaypalStatusRoute,
+  ApiPaypalWebhookRoute: ApiPaypalWebhookRoute,
+  ApiPaypalCreateOrderRoute: ApiPaypalCreateOrderRoute,
+  ApiPaypalCaptureOrderRoute: ApiPaypalCaptureOrderRoute,
+  CheckoutSuccessRoute: CheckoutSuccessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
