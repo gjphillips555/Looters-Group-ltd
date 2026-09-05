@@ -1,4 +1,22 @@
 {
   "buildCommand": "npm run build",
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "images": {
+    "sizes": [320, 480, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    "domains": [
+      "trademe.tmcdn.co.nz",
+      "trademe.co.nz",
+      "www.trademe.co.nz",
+      "images.trademe.co.nz",
+      "mediarss.trademe.co.nz"
+    ],
+    "remotePatterns": [
+      { "protocol": "https", "hostname": "**.trademe.co.nz" },
+      { "protocol": "https", "hostname": "**.tmcdn.co.nz" },
+      { "protocol": "https", "hostname": "trademe.tmcdn.co.nz" }
+    ],
+    "minimumCacheTTL": 60,
+    "formats": ["image/webp", "image/avif"],
+    "dangerouslyAllowSVG": false
+  }
 }
