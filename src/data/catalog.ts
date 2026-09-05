@@ -23,6 +23,9 @@ export function skuForCategory(branch: BranchId, category: string): SkuCode {
   return "CMPNT";
 }
 
+/** Standard apparel sizes for interest forms when a product has no sizes. */
+export const APPAREL_SIZES = ["XS", "S", "M", "L", "XL", "2XL"] as const;
+
 /** Shipping line from Trade Me listing detail (ShippingOptions). */
 export type ShippingOption = {
   id: string | number;
