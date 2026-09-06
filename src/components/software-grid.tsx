@@ -6,6 +6,7 @@ import {
   type CatalogApp,
   type SoftwareCategory,
 } from "@/lib/software-catalog";
+import { ProductOfComputas } from "@/components/product-of-computas";
 
 const FILTERS: Array<SoftwareCategory | "all"> = [
   "all",
@@ -76,10 +77,11 @@ function AppCard({ app }: { app: CatalogApp }) {
         </h3>
         <p className="line-clamp-3 text-xs leading-relaxed text-muted">{app.blurb}</p>
         {app.tags && app.tags.length > 0 && (
-          <p className="mt-auto pt-2 text-[10px] font-medium uppercase tracking-wide text-software">
+          <p className="pt-1 text-[10px] font-medium uppercase tracking-wide text-software">
             {app.tags.join(" · ")}
           </p>
         )}
+        <ProductOfComputas className="mt-auto" />
       </div>
     </a>
   );
@@ -123,7 +125,7 @@ export function SoftwareGrid({ os }: { os: OsId }) {
 
       <p className="mt-8 text-center text-xs text-muted">
         Links go to official project pages. Use security tools only on systems you own or
-        have permission to test.
+        have permission to test. Catalog curated by Looters Computas.
       </p>
     </div>
   );
