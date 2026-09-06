@@ -67,7 +67,7 @@ export function BranchShell({
   return (
     <div className="flex min-h-dvh flex-col bg-white text-ink">
       <SiteHeader />
-      <div className="flex-1">{children}</div>
+      <div className={"flex-1"}>{children}</div>
       <SiteFooter />
     </div>
   );
