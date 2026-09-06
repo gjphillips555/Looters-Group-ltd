@@ -22,6 +22,12 @@ export function SiteHeader() {
             Shop
           </Link>
           <Link
+            to="/software"
+            className="inline-flex min-h-11 items-center rounded-full px-3 text-sm font-semibold text-ink hover:bg-line/70"
+          >
+            Software
+          </Link>
+          <Link
             to="/software/overlay"
             className="inline-flex min-h-11 items-center rounded-full px-3 text-sm font-semibold text-ink hover:bg-line/70"
           >
@@ -67,7 +73,7 @@ export function BranchShell({
   return (
     <div className="flex min-h-dvh flex-col bg-white text-ink">
       <SiteHeader />
-      <div className={"flex-1"}>{children}</div>
+      <div className="flex-1">{children}</div>
       <SiteFooter />
     </div>
   );
