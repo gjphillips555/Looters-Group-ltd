@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { STORE_LOGOS } from "@/lib/store-logos";
+import { STORE_LOGOS, GROUP_LOGO_SRC } from "@/lib/store-logos";
+
+export { GROUP_LOGO_SRC };
 
 export function StoreCarousel() {
   const [index, setIndex] = useState(0);
