@@ -28,12 +28,6 @@ export function SiteHeader() {
             Software
           </Link>
           <Link
-            to="/software/overlay"
-            className="inline-flex min-h-11 items-center rounded-full px-3 text-sm font-semibold text-ink hover:bg-line/70"
-          >
-            Overlay
-          </Link>
-          <Link
             to="/computas/policy"
             className="inline-flex min-h-11 items-center rounded-full px-3 text-sm font-semibold text-ink hover:bg-line/70"
           >
