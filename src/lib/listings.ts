@@ -166,7 +166,8 @@ function mapListing(it: Record<string, unknown>): Product | null {
     sku,
     condition: "Trade Me",
     blurb: body.slice(0, 280) || title,
-    specs: [skuCode, path].filter(Boolean),
+    // Customer-facing page: hide Trade Me SKU codes and category paths (e.g. /Computers/...)
+    specs: [],
     shippingOptions: shippingOptions.length ? shippingOptions : undefined,
   };
 }
