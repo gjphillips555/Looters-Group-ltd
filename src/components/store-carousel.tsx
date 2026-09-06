@@ -1,31 +1,11 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-
-const STORES = [
-  {
-    id: "computas",
-    label: "Computas",
-    src: "/brand/logos/computas.png",
-    to: "/computas",
-  },
-  {
-    id: "apparel",
-    label: "Apparel",
-    src: "/brand/logos/apparel.png",
-    to: "/apparel",
-  },
-  {
-    id: "software",
-    label: "Software",
-    src: "/brand/logos/software.png",
-    to: "/software",
-  },
-] as const;
+import { STORE_LOGOS } from "@/lib/store-logos";
 
 export function StoreCarousel() {
   const [index, setIndex] = useState(0);
-  const store = STORES[index]!;
-  const count = STORES.length;
+  const store = STORE_LOGOS[index]!;
+  const count = STORE_LOGOS.length;
 
   const prev = () => setIndex((i) => (i - 1 + count) % count);
   const next = () => setIndex((i) => (i + 1) % count);
@@ -47,7 +27,7 @@ export function StoreCarousel() {
         </button>
 
         <Link
-          to={store.to}
+          to={store.href}
           className="flex min-h-[12rem] flex-1 items-center justify-center rounded-2xl bg-white p-6 shadow-border ring-1 ring-line transition hover:ring-2 hover:ring-ink"
           aria-label={`Open ${store.label}`}
         >
@@ -69,7 +49,7 @@ export function StoreCarousel() {
       </div>
 
       <div className="mt-4 flex items-center justify-center gap-2">
-        {STORES.map((s, i) => (
+        {STORE_LOGOS.map((s, i) => (
           <button
             key={s.id}
             type="button"

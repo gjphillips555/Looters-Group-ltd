@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LiveListings } from "@/components/live-listings";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
-import { ResponsiveImage } from "@/components/responsive-image";
 import { StoreCarousel } from "@/components/store-carousel";
+import { STORE_LOGOS } from "@/lib/store-logos";
 
 export const Route = createFileRoute("/")({ component: Home });
 
-const TITLE = "/brand/logos/title.png";
+const GROUP = STORE_LOGOS.find((s) => s.id === "groupLtd")!;
 
 function Home() {
   return (
@@ -14,17 +14,11 @@ function Home() {
       <SiteHeader />
 
       <section className="mx-auto max-w-4xl px-4 pb-4 pt-12 text-center sm:px-6 sm:pt-14">
-        <h1 className="sr-only">Looters Group</h1>
-        <ResponsiveImage
-          src={TITLE}
-          alt="Looters"
-          width={480}
-          height={154}
-          sizes="(max-width: 640px) 70vw, 320px"
-          priority
-          quality={85}
-          plain
-          className="mx-auto h-20 w-auto max-w-[min(100%,18rem)] object-contain sm:h-24"
+        <h1 className="sr-only">Looters Group Ltd</h1>
+        <img
+          src={GROUP.src}
+          alt="Looters Group Ltd"
+          className="mx-auto h-20 w-auto max-w-[min(100%,20rem)] object-contain sm:h-24"
         />
       </section>
 
