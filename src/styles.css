@@ -4,23 +4,24 @@
   --font-display: "Syne", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
   --color-ink: #141318;
-  --color-paper: #f4f0e8;
+  --color-paper: #f7f4fb;
   --color-cream: #fbf8f2;
   --color-muted: #6e6873;
-  --color-line: #e6dfd4;
-  --color-accent: #cb0003;
-  --color-computas: #cb0003;
-  --color-computas-hot: #e10600;
-  --color-apparel: #014fcb;
-  --color-apparel-hot: #3b6fe0;
-  --color-software: #159b26;
-  --color-software-hot: #22c43a;
+  --color-line: #e8e2ef;
+  /* Brand: orange + purple only (official Looters mark) */
+  --color-accent: #f06000;
+  --color-computas: #c44e00;
+  --color-computas-hot: #f06000;
+  --color-apparel: #503090;
+  --color-apparel-hot: #6b45b0;
+  --color-software: #2a1450;
+  --color-software-hot: #503090;
   --color-ok: #15803d;
   --shadow-border:
-    0px 0px 0px 1px rgba(20, 19, 24, 0.06), 0px 1px 2px -1px rgba(20, 19, 24, 0.06),
+    0px 0px 0px 1px rgba(42, 20, 80, 0.06), 0px 1px 2px -1px rgba(20, 19, 24, 0.06),
     0px 2px 4px 0px rgba(20, 19, 24, 0.04);
   --shadow-border-hover:
-    0px 0px 0px 1px rgba(20, 19, 24, 0.1), 0px 8px 24px -12px rgba(20, 19, 24, 0.18);
+    0px 0px 0px 1px rgba(240, 96, 0, 0.18), 0px 8px 24px -12px rgba(42, 20, 80, 0.18);
 }
 
 @layer base {
@@ -52,10 +53,9 @@
     height: auto;
   }
   img.media {
-    outline: 1px solid rgba(20, 19, 24, 0.1);
+    outline: 1px solid rgba(42, 20, 80, 0.1);
     outline-offset: -1px;
   }
-  /* Stable header chrome height reduces CLS when auth/ticker paint */
   .site-header-bar {
     min-height: 3.5rem;
   }
@@ -64,7 +64,6 @@
   }
 }
 
-/* Defer paint/layout cost for long below-fold blocks (helps INP + memory) */
 .cv-auto {
   content-visibility: auto;
   contain-intrinsic-size: auto 480px;
