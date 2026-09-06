@@ -16,22 +16,14 @@ function Home() {
         <img
           src={GROUP_LOGO_SRC}
           alt="Looters Group Ltd"
-          className="mx-auto h-20 w-auto max-w-[min(100%,20rem)] object-contain sm:h-24"
+          className="mx-auto h-16 w-auto max-w-[min(100%,18rem)] object-contain sm:h-20"
         />
+        <p className="mt-4 text-sm text-muted sm:text-base">
+          Refurbished PCs · Software · Apparel — Wellington
+        </p>
       </section>
 
       <StoreCarousel />
-
-      {/* Lootzy welcome art */}
-      <section className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
-        <img
-          src="/brand/lootzy-welcome.jpg"
-          alt="Lootzy the penguin — Welcome to Looters Computas Store"
-          className="mx-auto w-full max-w-3xl rounded-2xl object-contain shadow-border ring-1 ring-line"
-          loading="eager"
-          decoding="async"
-        />
-      </section>
 
       <section className="border-t border-line py-12">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -50,7 +42,6 @@ function Home() {
         </div>
       </section>
 
-      {/* Shoshana Sale promo */}
       <section className="border-t border-line bg-cream/40 py-12">
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
           <p className="text-center text-xs font-semibold uppercase tracking-[0.18em] text-muted">
@@ -60,7 +51,7 @@ function Home() {
             The Shoshana Sale
           </h2>
           <p className="mx-auto mt-2 max-w-lg text-center text-sm text-muted">
-            10% off — prices more down than ever. Watch Lootzy explain the deal.
+            10% off — prices more down than ever.
           </p>
           <div className="mt-6">
             <PromoVideo />
