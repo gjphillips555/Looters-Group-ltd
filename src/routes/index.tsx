@@ -1,12 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LiveListings } from "@/components/live-listings";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
-import { StoreCarousel } from "@/components/store-carousel";
-import { STORE_LOGOS } from "@/lib/store-logos";
+import { StoreCarousel, GROUP_LOGO_SRC } from "@/components/store-carousel";
 
 export const Route = createFileRoute("/")({ component: Home });
-
-const GROUP = STORE_LOGOS.find((s) => s.id === "groupLtd")!;
 
 function Home() {
   return (
@@ -16,7 +13,7 @@ function Home() {
       <section className="mx-auto max-w-4xl px-4 pb-4 pt-12 text-center sm:px-6 sm:pt-14">
         <h1 className="sr-only">Looters Group Ltd</h1>
         <img
-          src={GROUP.src}
+          src={GROUP_LOGO_SRC}
           alt="Looters Group Ltd"
           className="mx-auto h-20 w-auto max-w-[min(100%,20rem)] object-contain sm:h-24"
         />

@@ -1,8 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { STORE_LOGOS } from "@/lib/store-logos";
-
-const GROUP = STORE_LOGOS.find((s) => s.id === "groupLtd")!;
+import { GROUP_LOGO_SRC } from "@/components/store-carousel";
 
 export function SiteHeader() {
   return (
@@ -10,7 +8,7 @@ export function SiteHeader() {
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <Link to="/" className="flex min-h-11 min-w-0 items-center">
           <img
-            src={GROUP.src}
+            src={GROUP_LOGO_SRC}
             alt="Looters Group Ltd"
             className="h-9 w-auto max-w-[11rem] object-contain sm:h-10"
           />
@@ -46,7 +44,7 @@ export function SiteFooter() {
     <footer className="mt-auto border-t border-line bg-white">
       <div className="mx-auto max-w-6xl px-4 py-8 text-center sm:px-6">
         <img
-          src={GROUP.src}
+          src={GROUP_LOGO_SRC}
           alt="Looters Group Ltd"
           className="mx-auto h-8 w-auto object-contain"
         />
