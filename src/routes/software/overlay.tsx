@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { BranchShell } from "@/components/site-chrome";
 import { OverlayStudio } from "@/components/overlay-studio";
 import { ResponsiveImage } from "@/components/responsive-image";
+import { ProductOfComputas } from "@/components/product-of-computas";
 
 const TITLE = "/brand/logos/title.png";
 
@@ -17,8 +18,6 @@ function OverlayPage() {
               src={TITLE}
               alt="Looters Computas"
               width={280}
-              height={90}
-              sizes="200px"
               quality={85}
               priority
               plain
@@ -39,6 +38,9 @@ function OverlayPage() {
         </Link>
         <div className="mt-8">
           <OverlayStudio />
+        </div>
+        <div className="mt-10 flex justify-center">
+          <ProductOfComputas />
         </div>
       </main>
     </BranchShell>

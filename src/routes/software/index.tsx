@@ -4,6 +4,7 @@ import { BranchShell } from "@/components/site-chrome";
 import { SystemCarousel } from "@/components/system-carousel";
 import { SoftwareGrid } from "@/components/software-grid";
 import type { OsId } from "@/lib/os-systems";
+import { PromoVideo } from "@/components/promo-video";
 
 export const Route = createFileRoute("/software/")({ component: SoftwareHome });
 
@@ -36,6 +37,10 @@ function SoftwareHome() {
 
         <div className="mt-12">
           <SystemCarousel value={os} onChange={setOs} />
+        </div>
+
+        <div className="mt-12 max-w-2xl">
+          <PromoVideo title="Lootzy · Shoshana Sale at Looters Computas" />
         </div>
 
         <SoftwareGrid os={os} />
