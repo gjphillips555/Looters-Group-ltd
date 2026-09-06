@@ -59,11 +59,17 @@ export function SiteFooter() {
   );
 }
 
-export function BranchShell({ children }: { children: ReactNode }) {
+export function BranchShell({
+  children,
+  branch: _branch,
+}: {
+  children: ReactNode;
+  branch?: string;
+}) {
   return (
     <div className="flex min-h-dvh flex-col bg-white text-ink">
       <SiteHeader />
-      {children}
+      <div className="flex-1">{children}</div>
       <SiteFooter />
     </div>
   );
