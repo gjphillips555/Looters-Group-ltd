@@ -57,6 +57,8 @@ function AppCard({ app }: { app: CatalogApp }) {
             alt=""
             className="h-16 w-16 object-contain drop-shadow-sm transition group-hover:scale-105"
             loading="lazy"
+            decoding="async"
+            referrerPolicy="no-referrer"
             onError={() => setImgFailed(true)}
           />
         ) : (
