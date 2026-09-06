@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { LiveListings } from "@/components/live-listings";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { ResponsiveImage } from "@/components/responsive-image";
+import { StoreCarousel } from "@/components/store-carousel";
 
 export const Route = createFileRoute("/")({ component: Home });
 
@@ -12,11 +13,11 @@ function Home() {
     <div className="min-h-dvh bg-white text-ink">
       <SiteHeader />
 
-      <section className="mx-auto max-w-4xl px-4 pb-8 pt-12 text-center sm:px-6 sm:pt-14">
-        <h1 className="sr-only">Looters Computas</h1>
+      <section className="mx-auto max-w-4xl px-4 pb-4 pt-12 text-center sm:px-6 sm:pt-14">
+        <h1 className="sr-only">Looters Group</h1>
         <ResponsiveImage
           src={TITLE}
-          alt="Looters Computas"
+          alt="Looters"
           width={480}
           height={154}
           sizes="(max-width: 640px) 70vw, 320px"
@@ -25,17 +26,9 @@ function Home() {
           plain
           className="mx-auto h-20 w-auto max-w-[min(100%,18rem)] object-contain sm:h-24"
         />
-        <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-muted sm:text-base">
-          Refurbished PCs, laptops and parts. Listed online — courier nationwide or
-          pickup by arrangement. Shop closed; working from home.
-        </p>
-        <Link
-          to="/computas/shop"
-          className="mt-6 inline-flex min-h-12 items-center rounded-full bg-computas-hot px-6 text-sm font-semibold text-white"
-        >
-          Shop live listings
-        </Link>
       </section>
+
+      <StoreCarousel />
 
       <section className="border-t border-line py-12">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
