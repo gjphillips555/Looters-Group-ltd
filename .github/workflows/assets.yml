@@ -1,0 +1,49 @@
+# Rebuild asset manifest when public/ media changes.
+# Vercel already deploys on push to main — this keeps the manifest honest in CI.
+name: Public assets
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "public/**"
+      - "scripts/compress-images.py"
+      - "scripts/asset-manifest.mjs"
+      - "scripts/deploy-assets.mjs"
+  workflow_dispatch:
+
+jobs:
+  manifest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Pillow
+        run: pip install --quiet Pillow
+
+      - name: Compress brand images
+        run: python3 scripts/compress-images.py --root public/brand --webp --min-bytes 12000
+        continue-on-error: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Generate asset manifest
+        run: node scripts/asset-manifest.mjs
+
+      - name: Commit manifest if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/asset-manifest.json
+          if git diff --staged --quiet; then
+            echo "Manifest unchanged"
+          else
+            git commit -m "chore(assets): refresh asset-manifest.json"
+            git push
+          fi

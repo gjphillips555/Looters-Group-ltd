@@ -19,7 +19,10 @@
     "format": "prettier --write .",
     "images:compress": "node scripts/compress-images.mjs",
     "images:compress:dry": "node scripts/compress-images.mjs --dry-run",
-    "images:compress:brand": "node scripts/compress-images.mjs --root public/brand --webp"
+    "images:compress:brand": "node scripts/compress-images.mjs --root public/brand --webp",
+    "assets:manifest": "node scripts/asset-manifest.mjs",
+    "assets:deploy": "node scripts/deploy-assets.mjs",
+    "assets:deploy:push": "node scripts/deploy-assets.mjs --push"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.4",
