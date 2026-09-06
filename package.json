@@ -16,7 +16,10 @@
     "typecheck": "tsc --noEmit",
     "test": "node --test 'scripts/**/*.test.mjs'",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "images:compress": "node scripts/compress-images.mjs",
+    "images:compress:dry": "node scripts/compress-images.mjs --dry-run",
+    "images:compress:brand": "node scripts/compress-images.mjs --root public/brand --webp"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.4",
