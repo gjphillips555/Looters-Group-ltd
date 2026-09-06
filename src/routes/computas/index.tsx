@@ -3,6 +3,7 @@ import { BranchShell } from "@/components/site-chrome";
 import { ProductCard } from "@/components/product-card";
 import { STORE } from "@/data/catalog";
 import { useStoreListings } from "@/lib/listings";
+import { PromoVideo } from "@/components/promo-video";
 
 export const Route = createFileRoute("/computas/")({ component: ComputasHome });
 
@@ -65,6 +66,20 @@ function ComputasHome() {
           {products.length === 0 ? (
             <p className="mt-8 text-sm text-muted">Loading live Trade Me listings…</p>
           ) : null}
+        </section>
+
+        <section className="border-y border-line bg-cream/50 py-12">
+          <div className="mx-auto max-w-3xl px-4 sm:px-6">
+            <h2 className="text-center font-display text-2xl font-extrabold">
+              The Shoshana Sale
+            </h2>
+            <p className="mt-2 text-center text-sm text-muted">
+              10% off with Lootzy — watch the promo, then shop live listings.
+            </p>
+            <div className="mt-6">
+              <PromoVideo />
+            </div>
+          </div>
         </section>
 
         <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
