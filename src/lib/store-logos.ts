@@ -1,30 +1,9 @@
-export const LOGO_GROUPLTD = {
-  id: "groupLtd" as const,
-  label: "Group Ltd",
-  href: "/",
-  src: "/brand/logos/looters-group-ltd.webp",
-};
+import { LOGO_GROUPLTD } from "./store-logo-groupLtd";
+import { LOGO_APPAREL } from "./store-logo-apparel";
+import { LOGO_COMPUTAS } from "./store-logo-computas";
+import { LOGO_SOFTWARE } from "./store-logo-software";
 
-export const LOGO_APPAREL = {
-  id: "apparel" as const,
-  label: "Apparel",
-  href: "/apparel",
-  src: "/brand/logos/looters-apparel.webp",
-};
-
-export const LOGO_COMPUTAS = {
-  id: "computas" as const,
-  label: "Computas",
-  href: "/computas",
-  src: "/brand/logos/looters-computas.webp",
-};
-
-export const LOGO_SOFTWARE = {
-  id: "software" as const,
-  label: "Software",
-  href: "/software",
-  src: "/brand/logos/looters-software.webp",
-};
+export { LOGO_GROUPLTD, LOGO_APPAREL, LOGO_COMPUTAS, LOGO_SOFTWARE };
 
 export const STORE_LOGOS = [LOGO_GROUPLTD, LOGO_APPAREL, LOGO_COMPUTAS, LOGO_SOFTWARE] as const;
 export type StoreLogo = (typeof STORE_LOGOS)[number];
