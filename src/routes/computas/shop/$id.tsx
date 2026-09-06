@@ -7,6 +7,17 @@ import { productImages } from "@/data/catalog";
 import { useListing, useStoreListings } from "@/lib/listings";
 import { formatNzd } from "@/lib/utils";
 
+/** Hide Trade Me category paths and short internal codes from the Specs list. */
+function isInternalSpec(s: string): boolean {
+  const t = s.trim();
+  if (!t) return true;
+  if (t.startsWith("/")) return true;
+  if (/^\/?(Computers|Electronics|Clothing)\b/i.test(t)) return true;
+  if (/^PR\d+$/i.test(t)) return true;
+  if (/^[A-Z]{1,4}\d{1,6}$/i.test(t) && t.length <= 8) return true;
+  return false;
+}
+
 export const Route = createFileRoute("/computas/shop/$id")({
   component: ProductPage,
 });
@@ -91,14 +102,20 @@ function ProductPage() {
           <p className="mt-2 text-sm font-medium text-computas">{product.condition}</p>
           <p className="mt-4 text-sm leading-relaxed text-muted">{product.blurb}</p>
 
-          <h2 className="mt-8 font-display text-lg font-bold">Specs</h2>
-          <ul className="mt-3 divide-y divide-line rounded-2xl bg-cream px-4 shadow-border">
-            {product.specs.map((s) => (
-              <li key={s} className="py-2.5 text-sm text-ink/90">
-                {s}
-              </li>
-            ))}
-          </ul>
+          {product.specs.filter((s) => s.trim() && !isInternalSpec(s)).length > 0 ? (
+            <>
+              <h2 className="mt-8 font-display text-lg font-bold">Specs</h2>
+              <ul className="mt-3 divide-y divide-line rounded-2xl bg-cream px-4 shadow-border">
+                {product.specs
+                  .filter((s) => s.trim() && !isInternalSpec(s))
+                  .map((s) => (
+                    <li key={s} className="py-2.5 text-sm text-ink/90">
+                      {s}
+                    </li>
+                  ))}
+              </ul>
+            </>
+          ) : null}
 
           <BuyPanel product={product} />
 
