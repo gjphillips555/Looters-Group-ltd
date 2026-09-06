@@ -25,13 +25,6 @@ export const Route = createRootRoute({
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: FONT_CSS },
       { rel: "stylesheet", href: appCss },
-      {
-        rel: "preload",
-        as: "image",
-        href: "/brand/logos/title.png",
-        // @ts-expect-error fetchpriority is valid on link
-        fetchPriority: "high",
-      },
     ],
   }),
   notFoundComponent: () => (

@@ -1,10 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { BranchShell } from "@/components/site-chrome";
 import { OverlayStudio } from "@/components/overlay-studio";
-import { ResponsiveImage } from "@/components/responsive-image";
 import { ProductOfComputas } from "@/components/product-of-computas";
-
-const TITLE = "/brand/logos/title.png";
+import { LOGO_COMPUTAS } from "@/lib/store-logo-computas";
 
 export const Route = createFileRoute("/software/overlay")({ component: OverlayPage });
 
@@ -14,14 +12,10 @@ function OverlayPage() {
       <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
         <div className="mb-8">
           <Link to="/" className="inline-block">
-            <ResponsiveImage
-              src={TITLE}
+            <img
+              src={LOGO_COMPUTAS.src}
               alt="Looters Computas"
-              width={280}
-              quality={85}
-              priority
-              plain
-              className="h-12 w-auto object-contain sm:h-14"
+              className="h-12 w-auto max-w-[14rem] object-contain sm:h-14"
             />
           </Link>
         </div>
