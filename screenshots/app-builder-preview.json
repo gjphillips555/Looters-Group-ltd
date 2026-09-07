@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "LootersRetail — Live TradeMe deals",
+      "hasCanvas": false,
+      "bodyTextLen": 1766,
+      "bodyTextHash": "1c91c185f7a204adae5240082ba5b066ddad5655a286ea536cbaea1064ce4c1e",
+      "bodyTextPrefix": "LootersRetail — live TradeMe deals Cart Your cart (0) Your cart ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "LootersRetail — Live TradeMe deals",
+      "hasCanvas": false,
+      "bodyTextLen": 1761,
+      "bodyTextHash": "90562a054fdd85d55a80dd29f0c00fa51c0f35eb2bcc32eb6a08c4ba06cdcf48",
+      "bodyTextPrefix": "LootersRetail — live TradeMe deals Your cart (0) Your cart is em",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}
