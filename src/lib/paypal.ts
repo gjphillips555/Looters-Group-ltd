@@ -1,6 +1,6 @@
 import type { Customer } from "@/lib/orders";
 
-export const PAYPAL_BUSINESS = "LootersRetail@protonmail.com";
+export const PAYPAL_BUSINESS = "gjphillips555@gmail.com";
 
 export function paypalAmount(total: number) {
   return (Math.round(total * 100) / 100).toFixed(2);
