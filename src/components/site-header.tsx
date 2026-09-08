@@ -24,19 +24,17 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
           </div>
         </div>
 
+        <span className="oled-rim" aria-hidden="true" />
+
         <div className="logo-hang md:hidden">
-          <span className="logo-hang-key">
-            <CmdLogo compact />
-          </span>
+          <CmdLogo compact />
         </div>
         <Link
           to="/"
           className="logo-hang hidden md:block"
           aria-label="Looters Computas home"
         >
-          <span className="logo-hang-key">
-            <CmdLogo />
-          </span>
+          <CmdLogo />
         </Link>
       </div>
     </header>
