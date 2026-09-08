@@ -117,28 +117,44 @@ function upgradePhoto(url: string, size: "full" | "plus"): string {
   return url.replace(/\/photoserver\/[a-z]+\//i, `/photoserver/${size}/`);
 }
 
+function photoId(url: string): string {
+  const match = url.match(/(\d+)\.(?:jpe?g|png|webp)(?:\?|$)/i);
+  return match?.[1] ?? url;
+}
+
 function bestPhotos(detail: TradeMeListingDetail, fallback: TradeMeListing): string[] {
-  const fromDetail = (detail.Photos ?? [])
-    .map((p) => {
-      const v = p.Value;
-      return (
-        v?.PlusSize ||
+  const out: string[] = [];
+  const seen = new Set<string>();
+
+  function add(url: string | null | undefined, size: "full" | "plus") {
+    if (!url) return;
+    const upgraded = upgradePhoto(url, size);
+    const id = photoId(upgraded);
+    if (seen.has(id)) return;
+    seen.add(id);
+    out.push(upgraded);
+  }
+
+  add(detail.PictureHref ?? fallback.PictureHref, "full");
+
+  for (const photo of detail.Photos ?? []) {
+    const v = photo.Value;
+    add(
+      v?.PlusSize ||
         v?.FullSize ||
         v?.Large ||
         v?.Gallery ||
         v?.Medium ||
-        v?.List ||
-        null
-      );
-    })
-    .filter((u): u is string => Boolean(u))
-    .map((u) => upgradePhoto(u, "plus"));
-  if (fromDetail.length > 0) return fromDetail;
-  const fallbacks = [
-    ...(fallback.PhotoUrls ?? []),
-    fallback.PictureHref,
-  ].filter((u): u is string => Boolean(u));
-  return fallbacks.map((u) => upgradePhoto(u, "full"));
+        v?.List,
+      "plus",
+    );
+  }
+
+  for (const url of [...(detail.PhotoUrls ?? []), ...(fallback.PhotoUrls ?? [])]) {
+    add(url, "full");
+  }
+
+  return out;
 }
 
 function mapShipping(options: TradeMeShippingOption[] | undefined): ShippingOption[] {
