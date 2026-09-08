@@ -178,7 +178,7 @@ html.light .logo-mark {
 
 .logo-mark-btn:hover .logo-mark,
 .logo-mark-btn[data-active="true"] .logo-mark {
-  color: #c44dff;
+  color: #7030c0;
 }
 
 @media (prefers-reduced-motion: reduce) {
