@@ -12,13 +12,9 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
         <div className="header-key">
           <div className="header-key-cap">
             <div className="relative mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:gap-4 sm:px-6">
-              <Link
-                to="/"
-                className="flex shrink-0 md:hidden"
-                aria-label="Looters Computas home"
-              >
+              <div className="flex shrink-0 md:hidden">
                 <CmdLogo compact />
-              </Link>
+              </div>
               <div className="hidden h-14 w-[17.5rem] shrink-0 md:block" />
 
               <div className="pointer-events-none absolute inset-y-0 left-0 right-0 hidden items-center justify-center md:flex">

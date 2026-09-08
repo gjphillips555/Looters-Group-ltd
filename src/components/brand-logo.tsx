@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ARTWORK } from "@/lib/artwork";
+import { cn } from "@/lib/utils";
 
 export function BrandLogo({
   className = "h-12 w-auto max-w-[220px] object-contain sm:h-14 sm:max-w-[280px]",
@@ -37,19 +38,20 @@ function aucklandParts() {
 }
 
 export function CmdLogo({ compact = false }: { compact?: boolean }) {
-  const [scene, setScene] = useState<"penguin" | "hud">(() =>
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      ? "hud"
-      : "penguin",
+  const [booting, setBooting] = useState(() =>
+    !(
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ),
   );
+  const [oled, setOled] = useState(false);
   const [clock, setClock] = useState(aucklandParts);
 
   useEffect(() => {
-    if (scene === "hud") return;
-    const id = window.setTimeout(() => setScene("hud"), 2600);
+    if (!booting) return;
+    const id = window.setTimeout(() => setBooting(false), 2600);
     return () => window.clearTimeout(id);
-  }, [scene]);
+  }, [booting]);
 
   useEffect(() => {
     const id = window.setInterval(() => setClock(aucklandParts()), 1000);
@@ -57,8 +59,22 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
   }, []);
 
   return (
-    <span className={compact ? "cmd-screen cmd-screen-sm" : "cmd-screen"}>
-      {scene === "penguin" ? (
+    <span
+      className={cn(
+        "cmd-screen",
+        compact && "cmd-screen-sm",
+        !booting && "boot-done",
+        oled && "is-oled",
+      )}
+      onClick={
+        compact && !booting
+          ? () => setOled((v) => !v)
+          : undefined
+      }
+      role={compact ? "button" : undefined}
+      aria-label={compact ? "Show time" : undefined}
+    >
+      {booting ? (
         <span className="cmd-boot" aria-hidden="true">
           <img
             src={ARTWORK.favicon}
@@ -69,7 +85,16 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
           />
         </span>
       ) : (
-        <OledHud compact={compact} date={clock.date} time={clock.time} />
+        <>
+          <span className="cmd-rest">
+            <img
+              src={ARTWORK.logoPixel}
+              alt="Looters Computas"
+              className="cmd-pixel-logo"
+            />
+          </span>
+          <OledHud compact={compact} date={clock.date} time={clock.time} />
+        </>
       )}
     </span>
   );

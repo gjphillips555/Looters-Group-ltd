@@ -405,12 +405,39 @@ html.light .logo-hang-key {
   }
 }
 
+.cmd-rest {
+  display: grid;
+  height: 100%;
+  place-items: center;
+}
+
+.cmd-pixel-logo {
+  display: block;
+  max-width: 100%;
+  max-height: 6.4rem;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
 .oled-hud {
-  display: flex;
+  display: none;
   height: 100%;
   flex-direction: column;
   justify-content: space-between;
   color: #c6e031;
+}
+
+.logo-hang:hover .boot-done .cmd-rest,
+.cmd-screen.is-oled .cmd-rest {
+  display: none;
+}
+
+.logo-hang:hover .boot-done .oled-hud,
+.cmd-screen.is-oled .oled-hud {
+  display: flex;
   animation: cmd-glitch-in 360ms steps(5, end);
 }
 
@@ -505,6 +532,10 @@ html.light .logo-hang-key {
 
 .cmd-screen-sm .oled-time {
   font-size: 1.35rem;
+}
+
+.cmd-screen-sm .cmd-pixel-logo {
+  max-height: 2.55rem;
 }
 
 .cmd-screen-sm .oled-battery {
