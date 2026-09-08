@@ -28,6 +28,8 @@
   --color-ring: oklch(0.62 0.22 300);
   --color-paypal: #ffc439;
   --color-paypal-foreground: #003087;
+  --color-trademe: #f6f5f4;
+  --color-trademe-foreground: #1a1a1a;
 
   --radius-sm: 0.45rem;
   --radius-md: 0.6rem;

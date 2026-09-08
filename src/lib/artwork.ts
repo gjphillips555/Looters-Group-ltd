@@ -5,6 +5,7 @@ export const ARTWORK = {
   payments: "/artwork/payment-methods.png",
   afterpay: "/artwork/afterpay.webp",
   afterpayNews: "/artwork/afterpay-news.webp",
+  trademe: "/artwork/trademe.png",
   favicon: "/artwork/favicon.svg",
   faviconPng: "/artwork/favicon-32.png",
   favicon16: "/artwork/favicon-16.png",

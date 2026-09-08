@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
-import { Check, ExternalLink, ShoppingCart, Truck } from "lucide-react";
+import { Check, ShoppingCart, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
 import { PayPalMark } from "@/components/pay-with-paypal";
+import { PayWithTradeMe } from "@/components/pay-with-trademe";
 import { Button } from "@/components/ui/button";
 import { QuantityStepper } from "@/components/quantity-stepper";
 import { getProduct } from "@/lib/catalog";
@@ -259,15 +260,7 @@ function ProductPage() {
             )}
           </div>
 
-          <Button asChild variant="outline" className="w-full sm:w-auto">
-            <a
-              href={product.listingUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Pay via TradeMe <ExternalLink />
-            </a>
-          </Button>
+          <PayWithTradeMe href={product.listingUrl} />
         </div>
       </div>
 
