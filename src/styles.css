@@ -333,10 +333,14 @@ html.light .header-key {
   left: max(0.75rem, calc((100% - 72rem) / 2 + 1rem));
   top: 0.55rem;
   width: 11.5rem;
+  padding: 0 0.9rem 0.45rem;
+  border-radius: 1.15rem;
+  background: #141018;
   filter: drop-shadow(0 0.45rem 0 #0a080e);
 }
 
 html.light .logo-hang {
+  background: #d9d4e2;
   filter: drop-shadow(0 0.45rem 0 #b7b0c4);
 }
 
