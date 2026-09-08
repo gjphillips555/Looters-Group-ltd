@@ -17,14 +17,17 @@ import { cn } from "@/lib/utils";
 export function ProductGrid({
   products,
   error,
+  unfiltered = false,
 }: {
   products: Product[];
   error?: string;
+  unfiltered?: boolean;
 }) {
   const query = useProductSearch((s) => s.query);
   const category = useProductSearch((s) => s.category);
 
   const filtered = useMemo(() => {
+    if (unfiltered) return products;
     const q = query.trim().toLowerCase();
     return products.filter((p) => {
       if (!productInCategory(p, category)) return false;
@@ -35,7 +38,7 @@ export function ProductGrid({
         (p.description ?? "").toLowerCase().includes(q)
       );
     });
-  }, [products, query, category]);
+  }, [products, query, category, unfiltered]);
 
   if (error) {
     return (
@@ -136,10 +139,9 @@ function ProductCarousel({ products }: { products: Product[] }) {
     else if (dx < -50) go(1);
   }
 
-  const slidePct = desktop ? 100 / perView : 72;
-  const trackTransform = desktop
-    ? `translateX(-${index * slidePct}%)`
-    : `translateX(calc(14% - ${index} * 72%))`;
+  const slidePct = desktop ? 28 : 72;
+  const peekPct = desktop ? 8 : 14;
+  const trackTransform = `translateX(calc(${peekPct}% - ${index} * ${slidePct}%))`;
   const real = n ? ((index % n) + n) % n : 0;
 
   return (
@@ -154,7 +156,7 @@ function ProductCarousel({ products }: { products: Product[] }) {
         <div className="overflow-hidden">
           <div
             className={cn(
-              "flex w-full",
+              "flex w-full min-w-0",
               anim && "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
             )}
             style={{ transform: trackTransform }}
@@ -164,22 +166,24 @@ function ProductCarousel({ products }: { products: Product[] }) {
             }}
           >
             {slides.map((product, i) => {
-              const faded = !desktop && i !== index;
+              const inView = desktop
+                ? i >= index && i < index + perView
+                : i === index;
               return (
                 <div
                   key={`${product.id}-${i}`}
-                  className="relative shrink-0 px-1.5 md:px-2"
-                  style={{ flexBasis: `${slidePct}%` }}
+                  className="relative box-border min-w-0 shrink-0 overflow-hidden px-1.5 md:px-2"
+                  style={{ flex: `0 0 ${slidePct}%`, width: `${slidePct}%` }}
                 >
                   <div
                     className={cn(
                       "h-full transition-[opacity,transform] duration-500",
-                      faded ? "scale-95 opacity-40" : "scale-100 opacity-100",
+                      inView ? "scale-100 opacity-100" : "scale-95 opacity-40",
                     )}
                   >
                     <ProductCard product={product} className="h-full" />
                   </div>
-                  {faded && (
+                  {!inView && (
                     <button
                       type="button"
                       className="absolute inset-0 z-10"

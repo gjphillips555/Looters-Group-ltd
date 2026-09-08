@@ -1,11 +1,19 @@
 import { ARTWORK } from "@/lib/artwork";
+import { AccountButton } from "@/components/account-button";
+import { CartButton } from "@/components/cart-button";
 import { ShopSearch } from "@/components/shop-search";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { SITE_DOMAIN, SITE_URL } from "@/lib/site";
 
-export function SiteFooter() {
+export function SiteFooter({ onOpenCart }: { onOpenCart: () => void }) {
   return (
     <footer className="mt-16 bg-white text-neutral-800">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-8 px-4 py-10 sm:px-6">
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <AccountButton />
+          <CartButton onClick={onOpenCart} />
+        </div>
         <ShopSearch
           className="w-full max-w-lg"
           inputClassName="h-11 border-neutral-300 bg-white text-neutral-900 placeholder:text-neutral-500 focus-visible:border-neutral-500 focus-visible:ring-neutral-400/40"

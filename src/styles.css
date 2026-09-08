@@ -151,36 +151,34 @@ html.light {
   font-weight: 400;
   letter-spacing: 0.03em;
   line-height: 1.05;
-  color: #c44dff;
+  color: #ffffff;
   -webkit-text-stroke: 5px #111018;
   paint-order: stroke fill;
   text-shadow: 2px 3px 0 #111018;
+  transition: color 160ms ease;
 }
 
 html.light .logo-mark {
-  color: #161018;
-  -webkit-text-stroke: 5px #ffffff;
-  text-shadow: 2px 3px 0 #1a1224;
+  color: #ffffff;
+  -webkit-text-stroke: 5px #111018;
+  text-shadow: 2px 3px 0 #111018;
 }
 
 .logo-mark-btn {
   border: 0;
   background: transparent;
   padding: 0.35rem 0.4rem;
-  filter: brightness(0.92);
-  transition:
-    transform 180ms ease,
-    filter 180ms ease;
+  filter: none;
+  transition: transform 180ms ease;
 }
 
 .logo-mark-btn:hover {
-  filter: brightness(1.08);
   transform: scale(1.04);
 }
 
-.logo-mark-btn[data-active="true"] {
-  filter: brightness(1.12);
-  transform: scale(1.06);
+.logo-mark-btn:hover .logo-mark,
+.logo-mark-btn[data-active="true"] .logo-mark {
+  color: #c44dff;
 }
 
 @media (prefers-reduced-motion: reduce) {
