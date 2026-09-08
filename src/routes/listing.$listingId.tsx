@@ -3,9 +3,9 @@ import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-ro
 import { Check, ShoppingCart, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
+import { KeyButton, KeyLink } from "@/components/key-button";
 import { PayPalMark } from "@/components/pay-with-paypal";
 import { PayWithTradeMe } from "@/components/pay-with-trademe";
-import { Button } from "@/components/ui/button";
 import { QuantityStepper } from "@/components/quantity-stepper";
 import { getProduct } from "@/lib/catalog";
 import { cartProductFrom, isInCart, useCart } from "@/lib/cart-store";
@@ -30,9 +30,7 @@ function ProductNotFound() {
         <p className="mt-2 text-sm text-muted-foreground">
           That item may have sold or been taken down.
         </p>
-        <Button asChild className="mt-6">
-          <Link to="/shop">Back to shop</Link>
-        </Button>
+        <KeyLink to="/shop" className="mt-6">Back to shop</KeyLink>
       </div>
     </AppShell>
   );
@@ -212,16 +210,15 @@ function ProductPage() {
                   />
                 )}
                 <div className="flex flex-col gap-3 sm:flex-row">
-                  <Button
-                    type="button"
+                  <KeyButton
                     className="flex-1"
                     onClick={handleAdd}
                     disabled={inCart && product.maxQty <= 1}
                   >
                     {added || (inCart && product.maxQty <= 1) ? (
-                      <Check />
+                      <Check className="size-4" />
                     ) : (
-                      <ShoppingCart />
+                      <ShoppingCart className="size-4" />
                     )}
                     {inCart && product.maxQty <= 1
                       ? "In cart"
@@ -230,11 +227,11 @@ function ProductPage() {
                         : inCart
                           ? "Add another"
                           : "Add to cart"}
-                  </Button>
+                  </KeyButton>
                   {inCart && (
-                    <Button asChild variant="outline">
-                      <Link to="/checkout" search={cartCheckoutSearch}>Checkout cart</Link>
-                    </Button>
+                    <KeyLink to="/checkout" search={cartCheckoutSearch} className="flex-1" size="default">
+                      Checkout cart
+                    </KeyLink>
                   )}
                 </div>
                 <button
@@ -254,9 +251,7 @@ function ProductPage() {
                 </p>
               </>
             ) : (
-              <Button asChild variant="outline">
-                <Link to="/shop">Back to shop</Link>
-              </Button>
+              <KeyLink to="/shop">Back to shop</KeyLink>
             )}
             <PayWithTradeMe href={product.listingUrl} />
           </div>

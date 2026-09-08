@@ -2,7 +2,7 @@ import { useState, type MouseEvent } from "react";
 import { Link } from "@tanstack/react-router";
 import { Check, ChevronLeft, ChevronRight, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { KeyButton, KeyLink } from "@/components/key-button";
 import { getProduct } from "@/lib/catalog";
 import { cartProductFrom, isInCart, useCart } from "@/lib/cart-store";
 import type { Product } from "@/lib/products";
@@ -150,8 +150,7 @@ export function ProductCard({
           </div>
 
           {canBuy ? (
-            <Button
-              type="button"
+            <KeyButton
               size="sm"
               onClick={handleAdd}
               disabled={alreadyMaxed || adding}
@@ -162,13 +161,15 @@ export function ProductCard({
                 <ShoppingCart className="size-4" />
               )}
               {alreadyMaxed ? "In cart" : added ? "Added" : adding ? "Adding" : "Add"}
-            </Button>
+            </KeyButton>
           ) : (
-            <Button asChild size="sm" variant="outline">
-              <Link to="/listing/$listingId" params={{ listingId: product.id }}>
-                View
-              </Link>
-            </Button>
+            <KeyLink
+              size="sm"
+              to="/listing/$listingId"
+              params={{ listingId: product.id }}
+            >
+              View
+            </KeyLink>
           )}
         </div>
       </div>

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { CheckCircle2 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
+import { KeyLink } from "@/components/key-button";
 import { PayWithPaypal } from "@/components/pay-with-paypal";
-import { Button } from "@/components/ui/button";
 import { getOrder, markOrderPaid, saveOrder, type PlacedOrder } from "@/lib/orders";
 import { nzd } from "@/lib/products";
 import { packingLabel } from "@/lib/shipping";
@@ -53,9 +53,7 @@ function OrderPage() {
           <p className="mt-2 text-sm text-muted-foreground">
             This confirmation is stored on this device only.
           </p>
-          <Button asChild className="mt-6">
-            <Link to="/shop">Back to shop</Link>
-          </Button>
+          <KeyLink to="/shop" className="mt-6">Back to shop</KeyLink>
         </div>
       </AppShell>
     );
@@ -96,9 +94,7 @@ function OrderPage() {
                 }
               />
             )}
-            <Button asChild variant={paid ? "default" : "outline"} className="flex-1">
-              <Link to="/shop">Keep shopping</Link>
-            </Button>
+            <KeyLink to="/shop" className="flex-1">Keep shopping</KeyLink>
           </div>
         </div>
 

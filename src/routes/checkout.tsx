@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/app-shell";
 import { GoogleMark } from "@/components/google-mark";
+import { KeyButton, KeyLink } from "@/components/key-button";
 import { PayWithPaypal } from "@/components/pay-with-paypal";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authEnabled, signIn } from "@/lib/auth/client";
@@ -149,9 +149,7 @@ function CheckoutPage() {
           <p className="mt-2 text-sm text-muted-foreground">
             That product may have sold. Add something else from the shop.
           </p>
-          <Button asChild className="mt-6">
-            <Link to="/shop">Browse shop</Link>
-          </Button>
+          <KeyLink to="/shop" className="mt-6">Browse shop</KeyLink>
         </div>
       </AppShell>
     );
@@ -165,9 +163,7 @@ function CheckoutPage() {
           <p className="mt-2 text-sm text-muted-foreground">
             Add a product before checking out.
           </p>
-          <Button asChild className="mt-6">
-            <Link to="/shop">Browse shop</Link>
-          </Button>
+          <KeyLink to="/shop" className="mt-6">Browse shop</KeyLink>
         </div>
       </AppShell>
     );
@@ -188,14 +184,14 @@ function CheckoutPage() {
           : "No account needed — continue as guest. Google is optional if you want your name and email filled in."}
       </p>
       {!user && authEnabled && (
-        <button
-          type="button"
+        <KeyButton
           onClick={() => signIn("grok-google", { callbackURL: "/checkout" })}
-          className="mb-6 inline-flex h-11 items-center gap-2 rounded-md border border-border bg-secondary px-3 text-sm font-medium hover:bg-secondary/80"
+          size="fit"
+          className="mb-6"
         >
           <GoogleMark className="size-4" />
           Optional: sign in with Google
-        </button>
+        </KeyButton>
       )}
       <form
         onSubmit={onSubmit}

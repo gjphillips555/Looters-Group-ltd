@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { authEnabled, signIn } from "@/lib/auth/client";
 import { BrandLogo } from "@/components/brand-logo";
 import { GoogleMark } from "@/components/google-mark";
+import { KeyButton, KeyLink } from "@/components/key-button";
 
 export const Route = createFileRoute("/login")({ component: Login });
 
@@ -20,25 +21,18 @@ function Login() {
           as a guest to shop and pay.
         </p>
         {authEnabled ? (
-          <button
-            type="button"
+          <KeyButton
             onClick={() => signIn("grok-google", { callbackURL: "/" })}
-            className="inline-flex h-12 w-full items-center justify-center gap-3 rounded-md border border-border bg-secondary px-4 text-sm font-medium text-foreground transition-colors hover:bg-secondary/80"
           >
             <GoogleMark className="size-5" />
             Continue with Google
-          </button>
+          </KeyButton>
         ) : (
           <p className="text-center text-sm text-muted-foreground">
             Sign-in is disabled.
           </p>
         )}
-        <Link
-          to="/"
-          className="inline-flex h-12 w-full items-center justify-center rounded-md border border-border px-4 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
-        >
-          Continue as guest
-        </Link>
+        <KeyLink to="/" size="default">Continue as guest</KeyLink>
       </div>
     </main>
   );

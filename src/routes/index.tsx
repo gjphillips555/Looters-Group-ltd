@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/app-shell";
 import { BrandTicker } from "@/components/brand-ticker";
 import { CategoryNav } from "@/components/category-nav";
+import { KeyLink } from "@/components/key-button";
 import { ProductGrid } from "@/components/product-grid";
 import { ARTWORK } from "@/lib/artwork";
 import { getCatalog } from "@/lib/catalog";
@@ -131,12 +132,7 @@ function Home() {
       />
 
       <div className="mt-6 flex justify-center">
-        <Link
-          to="/shop"
-          className="inline-flex h-11 items-center rounded-md bg-primary px-5 text-sm font-semibold text-primary-foreground hover:opacity-90"
-        >
-          All products
-        </Link>
+        <KeyLink to="/shop">All products</KeyLink>
       </div>
     </AppShell>
   );

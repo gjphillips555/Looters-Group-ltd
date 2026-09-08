@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ShoppingBag, Trash2, Truck, X } from "lucide-react";
+import { KeyLink } from "@/components/key-button";
 import { QuantityStepper } from "@/components/quantity-stepper";
 import { Button } from "@/components/ui/button";
 import { useCart, useCartTotals } from "@/lib/cart-store";
@@ -186,11 +187,15 @@ export function CartDrawer({
               <Button type="button" variant="outline" onClick={clear}>
                 Clear
               </Button>
-              <Button asChild className="flex-1">
-                <Link to="/checkout" search={cartCheckoutSearch} onClick={onClose}>
-                  Checkout
-                </Link>
-              </Button>
+              <KeyLink
+                to="/checkout"
+                search={cartCheckoutSearch}
+                onClick={onClose}
+                className="flex-1"
+                size="default"
+              >
+                Checkout
+              </KeyLink>
             </div>
           </footer>
         )}
