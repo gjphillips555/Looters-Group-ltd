@@ -2,6 +2,7 @@ import { useMemo, useState, type ReactNode } from "react";
 import { AlertCircle, Search } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
 import { Input } from "@/components/ui/input";
+import { useProductSearch } from "@/lib/product-search";
 import type { Product } from "@/lib/products";
 import { cn } from "@/lib/utils";
 
@@ -12,7 +13,8 @@ export function ProductGrid({
   products: Product[];
   error?: string;
 }) {
-  const [query, setQuery] = useState("");
+  const query = useProductSearch((s) => s.query);
+  const setQuery = useProductSearch((s) => s.setQuery);
   const [category, setCategory] = useState("all");
 
   const categories = useMemo(() => {
@@ -59,7 +61,7 @@ export function ProductGrid({
   return (
     <div className="space-y-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="relative flex-1">
+        <div className="relative flex-1 md:hidden">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={query}
