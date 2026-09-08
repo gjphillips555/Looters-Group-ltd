@@ -351,6 +351,8 @@ html.light .logo-hang-key {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
   min-height: 8.25rem;
   padding: 0.55rem 0.85rem 0.5rem;
   border-radius: 0 0 0.65rem 0.65rem;
@@ -361,6 +363,93 @@ html.light .logo-hang-key {
   line-height: 1.05;
   text-transform: none;
   letter-spacing: 0.02em;
+}
+
+.cmd-scan {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 0%) 0 2px,
+    rgb(0 0 0 / 28%) 2px 3px
+  );
+}
+
+.cmd-boot {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  min-height: 7.2rem;
+  place-items: center;
+  overflow: hidden;
+}
+
+.cmd-boot-label {
+  position: absolute;
+  top: 0.35rem;
+  left: 0.2rem;
+  font-size: 0.95rem;
+  color: #6f6;
+  letter-spacing: 0.12em;
+}
+
+.pixel-shark {
+  image-rendering: pixelated;
+  animation: shark-swim 2.5s linear forwards;
+  filter: drop-shadow(0 0 6px #4cf);
+}
+
+@keyframes shark-swim {
+  0% {
+    transform: translateX(-140%) rotate(-6deg);
+  }
+  35% {
+    transform: translateX(-10%) rotate(4deg);
+  }
+  65% {
+    transform: translateX(18%) rotate(-3deg);
+  }
+  100% {
+    transform: translateX(160%) rotate(6deg);
+  }
+}
+
+.cmd-logo-in {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  animation: cmd-glitch-in 420ms steps(6, end);
+}
+
+.cmd-pixel-logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0.15rem 0 0.2rem;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+@keyframes cmd-glitch-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-6px);
+    filter: contrast(2) saturate(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateX(3px);
+    filter: contrast(1.6) hue-rotate(-20deg);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
 }
 
 .cmd-line {
@@ -400,21 +489,26 @@ html.light .logo-hang-key {
 }
 
 .cmd-screen-sm {
-  min-height: 3rem;
-  padding: 0.2rem 0.45rem 0.15rem;
+  min-height: 3.15rem;
+  padding: 0.15rem 0.4rem 0.12rem;
 }
 
-.cmd-screen-sm .cmd-brand {
-  font-size: 1.35rem;
+.cmd-screen-sm .cmd-boot {
+  min-height: 2.8rem;
 }
 
-.cmd-screen-sm .cmd-computas {
-  font-size: 1.15rem;
+.cmd-screen-sm .pixel-shark {
+  width: 92px;
+  height: 42px;
 }
 
-.cmd-screen-sm .cmd-line,
-.cmd-screen-sm .cmd-cursor {
+.cmd-screen-sm .cmd-boot-label,
+.cmd-screen-sm .cmd-line {
   display: none;
+}
+
+.cmd-screen-sm .cmd-pixel-logo {
+  margin: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
