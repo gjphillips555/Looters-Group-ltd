@@ -4,7 +4,6 @@ import { BrandLogo } from "@/components/brand-logo";
 import { CartButton } from "@/components/cart-button";
 import { ShopSearch } from "@/components/shop-search";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { SITE_DOMAIN } from "@/lib/site";
 
 export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
   return (
@@ -14,13 +13,10 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
         <div className="relative mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:gap-4 sm:px-6">
           <Link
             to="/"
-            className="flex shrink-0 flex-col items-start gap-0.5 md:hidden"
+            className="flex shrink-0 items-start md:hidden"
             aria-label="Looters Computas home"
           >
             <BrandLogo className="h-12 w-auto max-w-[200px] object-contain" />
-            <span className="pl-0.5 text-[10px] font-medium leading-none tracking-wide text-muted-foreground">
-              {SITE_DOMAIN}
-            </span>
           </Link>
           <Link
             to="/"
@@ -32,9 +28,6 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
               className="pointer-events-none absolute -left-2.5 top-[4.75rem] h-[3.2rem] w-[18.25rem] rounded-b-2xl bg-background/85 backdrop-blur"
             />
             <BrandLogo className="absolute left-0 top-0 h-[6.75rem] w-auto max-w-[280px] object-contain object-left-top" />
-            <span className="absolute left-1 top-[6.9rem] text-[11px] font-medium leading-none tracking-wide text-muted-foreground">
-              {SITE_DOMAIN}
-            </span>
           </Link>
 
           <div className="ml-auto flex shrink-0 items-center gap-2">
