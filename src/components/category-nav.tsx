@@ -28,7 +28,7 @@ export function CategoryNav() {
   }
 
   return (
-    <div className="mb-8">
+    <div className="relative z-10 mb-10 mt-0 pb-4">
       <div className="hidden md:block">
         <div className="grid grid-cols-4 gap-3">
           {SHOP_CATEGORIES.map((c) => (
@@ -134,7 +134,7 @@ function ButtonCarousel({
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
     >
-      <div className="overflow-hidden px-10">
+      <div className="overflow-hidden px-10 pb-4 pt-1">
         <div
           className={cn(
             "flex w-full",
