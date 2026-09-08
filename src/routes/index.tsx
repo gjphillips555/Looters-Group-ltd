@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/app-shell";
+import { BrandLogo } from "@/components/brand-logo";
 import { BrandTicker } from "@/components/brand-ticker";
 import { CategoryNav } from "@/components/category-nav";
 import { KeyLink } from "@/components/key-button";
@@ -131,8 +132,9 @@ function Home() {
         unfiltered
       />
 
-      <div className="mt-6 flex justify-center">
+      <div className="mt-6 flex flex-col items-center gap-6">
         <KeyLink to="/shop">All products</KeyLink>
+        <BrandLogo className="h-16 w-auto max-w-[280px] object-contain sm:h-20 sm:max-w-[340px]" />
       </div>
     </AppShell>
   );
