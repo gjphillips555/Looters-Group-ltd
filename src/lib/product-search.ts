@@ -21,13 +21,38 @@ export function shopPath(id: ShopCategoryId) {
   return id === "all" ? "/shop" : `/shop/${id}`;
 }
 
+function norm(value: string | null | undefined) {
+  return (value ?? "").toLowerCase().replace(/_/g, "-");
+}
+
+/** Exclusive bucket from TradeMe path first, then name/title. */
+export function productKind(product: Product): Exclude<ShopCategoryId, "all"> {
+  const path = norm(product.categoryPath);
+  const name = norm(product.categoryName);
+  const title = norm(product.title);
+
+  if (
+    /\/laptops?(\/|$)/.test(path) ||
+    /(^|\s)laptops?(\s|$)/.test(name) ||
+    /\b(laptop|notebook|macbook)\b/.test(title)
+  ) {
+    return "laptops";
+  }
+
+  if (
+    /\/desktops?(\/|$)/.test(path) ||
+    /(^|\s)desktops?(\s|$)/.test(name) ||
+    /\b(desktop|optiplex|prodesk|elitedesk|sff|tower pc|gaming pc)\b/.test(title)
+  ) {
+    return "desktops";
+  }
+
+  return "components";
+}
+
 export function productInCategory(product: Product, category: ShopCategoryId) {
   if (category === "all") return true;
-  const hay = `${product.categoryName ?? ""} ${product.categoryPath ?? ""} ${product.title}`.toLowerCase();
-  if (category === "desktops") return hay.includes("desktop");
-  if (category === "laptops") return /laptop|notebook/.test(hay);
-  if (category === "components") return hay.includes("component");
-  return true;
+  return productKind(product) === category;
 }
 
 export const useProductSearch = create<{

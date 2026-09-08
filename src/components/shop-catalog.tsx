@@ -3,6 +3,7 @@ import { BrandTicker } from "@/components/brand-ticker";
 import { CategoryNav } from "@/components/category-nav";
 import { ProductGrid } from "@/components/product-grid";
 import {
+  productInCategory,
   SHOP_CATEGORIES,
   type ShopCategoryId,
 } from "@/lib/product-search";
@@ -17,6 +18,9 @@ export function ShopCatalog({
 }) {
   const label =
     SHOP_CATEGORIES.find((c) => c.id === category)?.label ?? "All products";
+  const products = catalog.products.filter((p) =>
+    productInCategory(p, category),
+  );
 
   return (
     <AppShell>
@@ -27,7 +31,7 @@ export function ShopCatalog({
         <p className="text-sm text-muted-foreground">Afterpay Available Now!</p>
       </div>
       <ProductGrid
-        products={catalog.products}
+        products={products}
         error={catalog.error}
         category={category}
         layout="grid"
