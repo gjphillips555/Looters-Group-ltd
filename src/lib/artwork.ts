@@ -3,6 +3,7 @@ export const ARTWORK = {
   logoDark: "/artwork/logo-dark.png",
   logoLight: "/artwork/logo-light.png",
   payments: "/artwork/payment-methods.png",
+  afterpay: "/artwork/afterpay.webp",
   favicon: "/artwork/favicon.svg",
   faviconPng: "/artwork/favicon-32.png",
   appleIcon: "/artwork/apple-icon.png",

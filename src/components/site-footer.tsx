@@ -7,7 +7,14 @@ export function SiteFooter() {
     <footer className="mt-16 border-t border-border">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 py-8 sm:px-6">
         <ShopSearch className="w-full max-w-md" />
-        <div className="w-full rounded-2xl bg-white p-5 sm:p-6">
+        <div className="flex w-full flex-col gap-5 rounded-2xl bg-white p-5 sm:gap-6 sm:p-6">
+          <img
+            src={ARTWORK.afterpay}
+            alt="Afterpay: Shop now. Pay later. Always interest-free. Split your purchase into 4 payments, payable every 2 weeks."
+            width={600}
+            height={600}
+            className="mx-auto h-auto w-full max-w-md"
+          />
           <img
             src={ARTWORK.payments}
             alt="Accepted payment methods: Amex, Apple Pay, Diners Club, Discover, Google Pay, JCB, Mastercard, PayPal and Visa"
