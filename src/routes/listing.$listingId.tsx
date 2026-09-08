@@ -258,9 +258,8 @@ function ProductPage() {
                 <Link to="/shop">Back to shop</Link>
               </Button>
             )}
+            <PayWithTradeMe href={product.listingUrl} />
           </div>
-
-          <PayWithTradeMe href={product.listingUrl} />
         </div>
       </div>
 
