@@ -1,5 +1,4 @@
 import { AppShell } from "@/components/app-shell";
-import { BrandTicker } from "@/components/brand-ticker";
 import { CategoryNav } from "@/components/category-nav";
 import { ProductGrid } from "@/components/product-grid";
 import {
@@ -24,7 +23,6 @@ export function ShopCatalog({
 
   return (
     <AppShell>
-      <BrandTicker />
       <CategoryNav />
       <div className="mb-4 flex items-center justify-between gap-4">
         <h1 className="font-display text-xl font-semibold">{label}</h1>

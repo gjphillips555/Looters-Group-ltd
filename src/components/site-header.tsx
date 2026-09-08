@@ -8,37 +8,36 @@ import { ThemeToggle } from "@/components/theme-toggle";
 export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
   return (
     <header className="sticky top-0 z-30 overflow-visible">
-      <div className="header-stack relative">
-        <div className="header-key">
-          <div className="header-key-cap">
-            <div className="relative mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:gap-4 sm:px-6">
-              <div className="flex shrink-0 md:hidden">
-                <CmdLogo compact />
-              </div>
+      <div className="header-key">
+        <div className="header-key-cap">
+          <div className="relative mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:gap-4 sm:px-6">
+            <div className="pointer-events-none absolute inset-y-0 left-0 right-0 hidden items-center justify-center md:flex">
+              <ShopSearch className="pointer-events-auto w-[200px] lg:w-[280px] xl:w-[320px]" />
+            </div>
 
-              <div className="pointer-events-none absolute inset-y-0 left-0 right-0 hidden items-center justify-center md:flex">
-                <ShopSearch className="pointer-events-auto w-[200px] lg:w-[280px] xl:w-[320px]" />
-              </div>
-
-              <div className="ml-auto flex shrink-0 items-center gap-2">
-                <MobileSearchToggle />
-                <ThemeToggle />
-                <AccountButton />
-                <CartButton onClick={onOpenCart} />
-              </div>
+            <div className="ml-auto flex shrink-0 items-center gap-2">
+              <MobileSearchToggle />
+              <ThemeToggle />
+              <AccountButton />
+              <CartButton onClick={onOpenCart} />
             </div>
           </div>
-
-          <Link
-            to="/"
-            className="logo-hang hidden md:block"
-            aria-label="Looters Computas home"
-          >
-            <span className="logo-hang-key">
-              <CmdLogo />
-            </span>
-          </Link>
         </div>
+
+        <div className="logo-hang md:hidden">
+          <span className="logo-hang-key">
+            <CmdLogo compact />
+          </span>
+        </div>
+        <Link
+          to="/"
+          className="logo-hang hidden md:block"
+          aria-label="Looters Computas home"
+        >
+          <span className="logo-hang-key">
+            <CmdLogo />
+          </span>
+        </Link>
       </div>
     </header>
   );

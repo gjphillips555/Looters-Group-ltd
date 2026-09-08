@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/app-shell";
 import { BrandLogo } from "@/components/brand-logo";
-import { BrandTicker } from "@/components/brand-ticker";
 import { CategoryNav } from "@/components/category-nav";
 import { KeyLink } from "@/components/key-button";
 import { ProductGrid } from "@/components/product-grid";
@@ -29,7 +28,6 @@ function Home() {
 
   return (
     <AppShell>
-      <BrandTicker />
       <CategoryNav />
 
       <div className="space-y-6">
