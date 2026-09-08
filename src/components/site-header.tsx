@@ -8,6 +8,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Input } from "@/components/ui/input";
 import { useCartTotals } from "@/lib/cart-store";
 import { useProductSearch } from "@/lib/product-search";
+import { SITE_DOMAIN } from "@/lib/site";
 import { authEnabled, signIn, signOut } from "@/lib/auth/client";
 import { hasGateSessionMarker } from "@/lib/auth/gate-session-marker";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
@@ -21,11 +22,13 @@ export function SiteHeader() {
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:gap-4 sm:px-6">
         <Link
           to="/"
-          className="flex shrink-0 items-center gap-3"
+          className="flex shrink-0 flex-col items-start gap-0.5"
           aria-label="Looters Computas home"
         >
           <BrandLogo />
-          <span className="sr-only">Looters Computas</span>
+          <span className="pl-0.5 text-[10px] font-medium leading-none tracking-wide text-muted-foreground sm:text-[11px]">
+            {SITE_DOMAIN}
+          </span>
         </Link>
 
         <HeaderSearch />

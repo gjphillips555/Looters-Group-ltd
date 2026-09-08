@@ -1,4 +1,5 @@
 import { ARTWORK } from "@/lib/artwork";
+import { SITE_DOMAIN, SITE_URL } from "@/lib/site";
 
 export function SiteFooter() {
   return (
@@ -20,6 +21,12 @@ export function SiteFooter() {
             LootersRetail@protonmail.com
           </a>
         </p>
+        <a
+          href={SITE_URL}
+          className="text-[11px] font-medium tracking-wide text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+        >
+          {SITE_DOMAIN}
+        </a>
       </div>
     </footer>
   );
