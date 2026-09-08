@@ -92,6 +92,7 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
               alt="Looters Computas"
               className="cmd-pixel-logo"
             />
+            {compact ? null : <span className="cmd-start">PRESS START</span>}
           </span>
           <OledHud compact={compact} date={clock.date} time={clock.time} />
         </>
