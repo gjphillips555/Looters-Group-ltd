@@ -90,11 +90,11 @@ function Home() {
             two weeks.
           </p>
           <img
-            src={ARTWORK.afterpay}
-            alt="Afterpay: Shop now. Pay later. Always interest-free."
-            width={600}
-            height={600}
-            className="mx-auto w-full max-w-md rounded-xl bg-white"
+            src={ARTWORK.afterpayNews}
+            alt="Afterpay: Shop now, pay it in 4 interest-free instalments."
+            width={2201}
+            height={1101}
+            className="w-full rounded-xl"
           />
           <div className="max-w-3xl space-y-4 text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
             <p>
