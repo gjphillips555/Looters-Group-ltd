@@ -509,11 +509,8 @@ html.light .oled-rim {
   object-fit: contain;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  filter:
-    contrast(1.2) saturate(1.35)
-    drop-shadow(-2px 0 #00e5ff)
-    drop-shadow(2px 0 #ff4ce6);
-}
+  filter: contrast(1.08);
+  max-height: 6.6rem;
 
 .cmd-start {
   font-size: 0.78rem;
