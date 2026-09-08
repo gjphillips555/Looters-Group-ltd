@@ -10,6 +10,8 @@ import {
 export const MEMBER_ID = "9233545";
 const API_BASE = "https://api.trademe.co.nz/v1";
 const CACHE_MS = 60_000;
+/** TradeMe top-level Computers category and every nested subcategory. */
+const COMPUTERS_CATEGORY = "0002";
 
 type TradeMeListing = {
   ListingId: number;
@@ -171,6 +173,19 @@ function shopCategory(path: string | null | undefined, fallback: string | null):
   return fallback;
 }
 
+function isComputersListing(listing: {
+  Category?: string;
+  CategoryPath?: string;
+}): boolean {
+  const number = listing.Category ?? "";
+  if (number === COMPUTERS_CATEGORY || number.startsWith(`${COMPUTERS_CATEGORY}-`)) {
+    return true;
+  }
+  const path = (listing.CategoryPath ?? "").toLowerCase().replace(/_/g, "-");
+  const trimmed = path.startsWith("/") ? path : `/${path}`;
+  return trimmed === "/computers" || trimmed.startsWith("/computers/");
+}
+
 function mapSeller(member: TradeMeMember | undefined): Seller | null {
   if (!member?.Nickname) return null;
   return {
@@ -250,11 +265,18 @@ function normalize(listing: TradeMeListing, detail: TradeMeListingDetail | null)
 
 async function loadCatalogFresh(): Promise<Catalog> {
   const data = await tmGet<TradeMeSearchResponse>(
-    `/Search/General.json?member_listing=${MEMBER_ID}&rows=100&sort_order=Default`,
+    `/Search/General.json?member_listing=${MEMBER_ID}&category=${COMPUTERS_CATEGORY}-&rows=100&sort_order=Default`,
   );
   const list = data.List ?? [];
   const details = await Promise.all(list.map((l) => fetchDetail(l.ListingId)));
-  const products = list.map((listing, i) => normalize(listing, details[i] ?? null));
+  const products = list
+    .map((listing, i) => {
+      const detail = details[i] ?? null;
+      const merged = { ...listing, ...(detail ?? {}) };
+      if (!isComputersListing(merged)) return null;
+      return normalize(listing, detail);
+    })
+    .filter((p): p is Product => p !== null);
   const seller =
     details.map((d) => mapSeller(d?.Member)).find(Boolean) ?? null;
   return { products, seller };
@@ -296,6 +318,7 @@ export const getProduct = createServerFn({ method: "GET" })
       if (!detail) return null;
       const memberId = detail.Member?.MemberId ?? detail.MemberId;
       if (memberId && String(memberId) !== MEMBER_ID) return null;
+      if (!isComputersListing(detail)) return null;
       return normalize(detail, detail);
     } catch (error) {
       console.error("[looters] product error:", error);
