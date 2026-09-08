@@ -24,8 +24,6 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
           </div>
         </div>
 
-        <span className="oled-rim" aria-hidden="true" />
-
         <div className="logo-hang md:hidden">
           <CmdLogo compact />
         </div>

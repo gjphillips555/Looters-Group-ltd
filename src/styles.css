@@ -327,41 +327,17 @@ html.light .header-key {
     0 0.7rem 1rem color-mix(in oklab, black 12%, transparent);
 }
 
-.oled-rim {
-  position: absolute;
-  z-index: 33;
-  left: max(0.3rem, calc((100% - 72rem) / 2 + 0.55rem));
-  top: 100%;
-  width: 12.4rem;
-  height: 4.35rem;
-  margin-top: -0.45rem;
-  border-radius: 0 0 1.45rem 1.45rem;
-  background: #141018;
-  box-shadow:
-    0 0.45rem 0 #0a080e,
-    0 0.7rem 1rem color-mix(in oklab, black 22%, transparent);
-}
-
-html.light .oled-rim {
-  background: #d9d4e2;
-  box-shadow:
-    0 0.45rem 0 #b7b0c4,
-    0 0.7rem 1rem color-mix(in oklab, black 12%, transparent);
-}
-
-@media (min-width: 768px) {
-  .oled-rim {
-    width: 15.5rem;
-    height: 5.15rem;
-  }
-}
-
 .logo-hang {
   position: absolute;
   z-index: 40;
   left: max(0.75rem, calc((100% - 72rem) / 2 + 1rem));
   top: 0.55rem;
   width: 11.5rem;
+  filter: drop-shadow(0 0.45rem 0 #0a080e);
+}
+
+html.light .logo-hang {
+  filter: drop-shadow(0 0.45rem 0 #b7b0c4);
 }
 
 @media (min-width: 768px) {
@@ -455,17 +431,16 @@ html.light .oled-rim {
 }
 
 .cmd-boot {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  height: 100%;
-  place-items: center;
-  overflow: hidden;
+  display: none;
 }
 
 .pixel-penguin {
-  width: 56px;
-  height: 56px;
+  position: absolute;
+  bottom: 0.15rem;
+  left: 0;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   animation: penguin-waddle 2.5s linear forwards;
@@ -495,22 +470,25 @@ html.light .oled-rim {
 
 .cmd-rest {
   display: grid;
+  position: relative;
+  z-index: 1;
   height: 100%;
   place-items: center;
   align-content: center;
-  gap: 0.15rem;
+  gap: 0.12rem;
+  overflow: hidden;
 }
 
 .cmd-pixel-logo {
   display: block;
   width: 100%;
   height: auto;
-  max-height: 8.1rem;
+  max-height: 5.1rem;
   object-fit: contain;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  filter: contrast(1.08);
-  max-height: 6.6rem;
+  animation: cmd-glitch-in 720ms steps(6, end);
+}
 
 .cmd-start {
   font-size: 0.78rem;

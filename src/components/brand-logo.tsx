@@ -74,29 +74,24 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
       role={compact ? "button" : undefined}
       aria-label={compact ? "Show time" : undefined}
     >
-      {booting ? (
-        <span className="cmd-boot" aria-hidden="true">
+      <span className="cmd-rest">
+        <img
+          src={ARTWORK.logoPixel}
+          alt="Looters Computas"
+          className="cmd-pixel-logo"
+        />
+        {compact ? null : <span className="cmd-start">PRESS START</span>}
+        {booting ? (
           <img
             src={ARTWORK.favicon}
             alt=""
             className="pixel-penguin"
-            width={64}
-            height={64}
+            width={40}
+            height={40}
           />
-        </span>
-      ) : (
-        <>
-          <span className="cmd-rest">
-            <img
-              src={ARTWORK.logoPixel}
-              alt="Looters Computas"
-              className="cmd-pixel-logo"
-            />
-            {compact ? null : <span className="cmd-start">PRESS START</span>}
-          </span>
-          <OledHud compact={compact} date={clock.date} time={clock.time} />
-        </>
-      )}
+        ) : null}
+      </span>
+      <OledHud compact={compact} date={clock.date} time={clock.time} />
     </span>
   );
 }
