@@ -45,12 +45,6 @@ export function SiteFooter({ onOpenCart }: { onOpenCart: () => void }) {
         >
           {SITE_DOMAIN}
         </a>
-        <a
-          href="/cutout.html"
-          className="text-[11px] font-medium tracking-wide text-neutral-500 underline-offset-2 hover:text-neutral-900 hover:underline"
-        >
-          Cutout — background remover
-        </a>
       </div>
     </footer>
   );
