@@ -15,6 +15,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ListingListingIdRouteImport } from './routes/listing.$listingId'
 import { Route as OrderOrderIdRouteImport } from './routes/order.$orderId'
+import { Route as ShopCategoryRouteImport } from './routes/shop.$category'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -47,6 +48,11 @@ const OrderOrderIdRoute = OrderOrderIdRouteImport.update({
   path: '/order/$orderId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShopCategoryRoute = ShopCategoryRouteImport.update({
+  id: '/$category',
+  path: '/$category',
+  getParentRoute: () => ShopRoute,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -57,18 +63,20 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
   '/login': typeof LoginRoute
-  '/shop': typeof ShopRoute
+  '/shop': typeof ShopRouteWithChildren
   '/listing/$listingId': typeof ListingListingIdRoute
   '/order/$orderId': typeof OrderOrderIdRoute
+  '/shop/$category': typeof ShopCategoryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
   '/login': typeof LoginRoute
-  '/shop': typeof ShopRoute
+  '/shop': typeof ShopRouteWithChildren
   '/listing/$listingId': typeof ListingListingIdRoute
   '/order/$orderId': typeof OrderOrderIdRoute
+  '/shop/$category': typeof ShopCategoryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
@@ -76,9 +84,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
   '/login': typeof LoginRoute
-  '/shop': typeof ShopRoute
+  '/shop': typeof ShopRouteWithChildren
   '/listing/$listingId': typeof ListingListingIdRoute
   '/order/$orderId': typeof OrderOrderIdRoute
+  '/shop/$category': typeof ShopCategoryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
@@ -90,6 +99,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/listing/$listingId'
     | '/order/$orderId'
+    | '/shop/$category'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -99,6 +109,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/listing/$listingId'
     | '/order/$orderId'
+    | '/shop/$category'
     | '/api/auth/$'
   id:
     | '__root__'
@@ -108,6 +119,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/listing/$listingId'
     | '/order/$orderId'
+    | '/shop/$category'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
@@ -115,7 +127,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CheckoutRoute: typeof CheckoutRoute
   LoginRoute: typeof LoginRoute
-  ShopRoute: typeof ShopRoute
+  ShopRoute: typeof ShopRouteWithChildren
   ListingListingIdRoute: typeof ListingListingIdRoute
   OrderOrderIdRoute: typeof OrderOrderIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -165,6 +177,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrderOrderIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shop/$category': {
+      id: '/shop/$category'
+      path: '/$category'
+      fullPath: '/shop/$category'
+      preLoaderRoute: typeof ShopCategoryRouteImport
+      parentRoute: typeof ShopRoute
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -175,11 +194,21 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ShopRouteChildren {
+  ShopCategoryRoute: typeof ShopCategoryRoute
+}
+
+const ShopRouteChildren: ShopRouteChildren = {
+  ShopCategoryRoute: ShopCategoryRoute,
+}
+
+const ShopRouteWithChildren = ShopRoute._addFileChildren(ShopRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CheckoutRoute: CheckoutRoute,
   LoginRoute: LoginRoute,
-  ShopRoute: ShopRoute,
+  ShopRoute: ShopRouteWithChildren,
   ListingListingIdRoute: ListingListingIdRoute,
   OrderOrderIdRoute: OrderOrderIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,

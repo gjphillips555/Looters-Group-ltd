@@ -6,7 +6,6 @@ import { CategoryNav } from "@/components/category-nav";
 import { ProductGrid } from "@/components/product-grid";
 import { ARTWORK } from "@/lib/artwork";
 import { getCatalog } from "@/lib/catalog";
-import { useProductSearch } from "@/lib/product-search";
 
 export const Route = createFileRoute("/")({
   loader: () => getCatalog(),
@@ -25,7 +24,6 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const catalog = Route.useLoaderData();
-  const setCategory = useProductSearch((s) => s.setCategory);
 
   return (
     <AppShell>
@@ -135,7 +133,6 @@ function Home() {
       <div className="mt-6 flex justify-center">
         <Link
           to="/shop"
-          onClick={() => setCategory("all")}
           className="inline-flex h-11 items-center rounded-md bg-primary px-5 text-sm font-semibold text-primary-foreground hover:opacity-90"
         >
           All products

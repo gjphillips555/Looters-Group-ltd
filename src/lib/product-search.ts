@@ -10,6 +10,17 @@ export const SHOP_CATEGORIES: { id: ShopCategoryId; label: string }[] = [
   { id: "all", label: "All products" },
 ];
 
+export const SHOP_CATEGORY_PAGES = ["desktops", "laptops", "components"] as const;
+export type ShopCategoryPage = (typeof SHOP_CATEGORY_PAGES)[number];
+
+export function isShopCategoryPage(value: string): value is ShopCategoryPage {
+  return (SHOP_CATEGORY_PAGES as readonly string[]).includes(value);
+}
+
+export function shopPath(id: ShopCategoryId) {
+  return id === "all" ? "/shop" : `/shop/${id}`;
+}
+
 export function productInCategory(product: Product, category: ShopCategoryId) {
   if (category === "all") return true;
   const hay = `${product.categoryName ?? ""} ${product.categoryPath ?? ""} ${product.title}`.toLowerCase();

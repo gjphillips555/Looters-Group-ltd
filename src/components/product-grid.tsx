@@ -10,6 +10,7 @@ import { ProductCard } from "@/components/product-card";
 import {
   productInCategory,
   useProductSearch,
+  type ShopCategoryId,
 } from "@/lib/product-search";
 import type { Product } from "@/lib/products";
 import { cn } from "@/lib/utils";
@@ -18,13 +19,18 @@ export function ProductGrid({
   products,
   error,
   unfiltered = false,
+  category: categoryProp,
+  layout = "carousel",
 }: {
   products: Product[];
   error?: string;
   unfiltered?: boolean;
+  category?: ShopCategoryId;
+  layout?: "carousel" | "grid";
 }) {
   const query = useProductSearch((s) => s.query);
-  const category = useProductSearch((s) => s.category);
+  const storeCategory = useProductSearch((s) => s.category);
+  const category = categoryProp ?? storeCategory;
 
   const filtered = useMemo(() => {
     if (unfiltered) return products;
@@ -68,7 +74,21 @@ export function ProductGrid({
     );
   }
 
-  return <ProductCarousel products={filtered} />;
+  return layout === "grid" ? (
+    <ProductTiles products={filtered} />
+  ) : (
+    <ProductCarousel products={filtered} />
+  );
+}
+
+function ProductTiles({ products }: { products: Product[] }) {
+  return (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {products.map((product) => (
+        <ProductCard key={product.id} product={product} className="h-full" />
+      ))}
+    </div>
+  );
 }
 
 function useDesktop() {

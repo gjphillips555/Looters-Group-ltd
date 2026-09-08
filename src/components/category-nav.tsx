@@ -4,20 +4,27 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   SHOP_CATEGORIES,
   type ShopCategoryId,
-  useProductSearch,
 } from "@/lib/product-search";
 import { cn } from "@/lib/utils";
 
 export function CategoryNav() {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const category = useProductSearch((s) => s.category);
-  const setCategory = useProductSearch((s) => s.setCategory);
-  const onShop = pathname === "/shop";
+
+  const active: ShopCategoryId | undefined =
+    pathname === "/shop/desktops"
+      ? "desktops"
+      : pathname === "/shop/laptops"
+        ? "laptops"
+        : pathname === "/shop/components"
+          ? "components"
+          : pathname === "/shop"
+            ? "all"
+            : undefined;
 
   function select(id: ShopCategoryId) {
-    setCategory(id);
-    if (!onShop) void navigate({ to: "/shop" });
+    if (id === "all") void navigate({ to: "/shop" });
+    else void navigate({ to: "/shop/$category", params: { category: id } });
   }
 
   return (
@@ -28,7 +35,7 @@ export function CategoryNav() {
             <CategoryButton
               key={c.id}
               label={c.label}
-              active={onShop && category === c.id}
+              active={active === c.id}
               onClick={() => select(c.id)}
             />
           ))}
@@ -36,7 +43,7 @@ export function CategoryNav() {
         <div className="mt-3 flex justify-center">
           <CategoryButton
             label="All products"
-            active={onShop && category === "all"}
+            active={active === "all"}
             onClick={() => select("all")}
             className="min-w-[220px]"
           />
@@ -45,7 +52,7 @@ export function CategoryNav() {
 
       <div className="md:hidden">
         <ButtonCarousel
-          category={onShop ? category : undefined}
+          category={active}
           onSelect={select}
         />
       </div>
