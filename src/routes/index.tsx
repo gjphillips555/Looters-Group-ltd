@@ -48,10 +48,10 @@ function Home() {
         </div>
       </section>
 
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="font-display text-xl font-semibold">In stock</h2>
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <h2 className="font-display text-xl font-semibold">Browse the loot</h2>
         <p className="text-sm text-muted-foreground">
-          {catalog.products.length} live
+          {catalog.products.length} finds below
         </p>
       </div>
 

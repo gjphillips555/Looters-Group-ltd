@@ -113,27 +113,32 @@ async function tmGet<T>(path: string): Promise<T> {
   return (await res.json()) as T;
 }
 
+function upgradePhoto(url: string, size: "full" | "plus"): string {
+  return url.replace(/\/photoserver\/[a-z]+\//i, `/photoserver/${size}/`);
+}
+
 function bestPhotos(detail: TradeMeListingDetail, fallback: TradeMeListing): string[] {
   const fromDetail = (detail.Photos ?? [])
     .map((p) => {
       const v = p.Value;
       return (
+        v?.PlusSize ||
+        v?.FullSize ||
         v?.Large ||
         v?.Gallery ||
-        v?.PlusSize ||
         v?.Medium ||
-        v?.FullSize ||
         v?.List ||
         null
       );
     })
-    .filter((u): u is string => Boolean(u));
+    .filter((u): u is string => Boolean(u))
+    .map((u) => upgradePhoto(u, "plus"));
   if (fromDetail.length > 0) return fromDetail;
   const fallbacks = [
     ...(fallback.PhotoUrls ?? []),
     fallback.PictureHref,
   ].filter((u): u is string => Boolean(u));
-  return fallbacks;
+  return fallbacks.map((u) => upgradePhoto(u, "full"));
 }
 
 function mapShipping(options: TradeMeShippingOption[] | undefined): ShippingOption[] {
