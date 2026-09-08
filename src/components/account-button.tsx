@@ -32,9 +32,11 @@ export function AccountButton() {
         type="button"
         onClick={() => signIn("grok-google", { callbackURL: "/" })}
         aria-label="Sign in with Google (optional)"
-        className="grid size-11 shrink-0 place-items-center rounded-full border border-border bg-white transition-opacity hover:opacity-90"
+        className="kb-key kb-key-sm"
       >
-        <GoogleMark className="size-5" />
+        <span className="kb-cap">
+          <GoogleMark className="size-5" />
+        </span>
       </button>
     );
   }
@@ -47,17 +49,19 @@ export function AccountButton() {
         type="button"
         onClick={() => setMenuOpen((v) => !v)}
         aria-label={`${label} account`}
-        className="grid size-11 shrink-0 place-items-center overflow-hidden rounded-full border border-border bg-secondary"
+        className="kb-key kb-key-sm"
       >
-        {user.profileImageUrl ? (
-          <img
-            src={user.profileImageUrl}
-            alt=""
-            className="size-11 object-cover"
-          />
-        ) : (
-          <span className="text-sm font-semibold">{label.charAt(0).toUpperCase()}</span>
-        )}
+        <span className="kb-cap overflow-hidden p-0">
+          {user.profileImageUrl ? (
+            <img
+              src={user.profileImageUrl}
+              alt=""
+              className="size-full object-cover"
+            />
+          ) : (
+            <span className="text-sm font-semibold">{label.charAt(0).toUpperCase()}</span>
+          )}
+        </span>
       </button>
       {menuOpen && (
         <>

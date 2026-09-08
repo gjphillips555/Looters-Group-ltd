@@ -212,7 +212,7 @@ html.light .logo-mark {
   color: #f4f0fa;
   font-family: var(--font-mark);
   font-weight: 700;
-  font-size: clamp(0.78rem, 1.6vw, 1.05rem);
+  font-size: clamp(0.95rem, 2.1vw, 1.28rem);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -252,6 +252,26 @@ html.light .kb-key .kb-cap {
 html.light .kb-key[data-active="true"] .kb-cap {
   background: linear-gradient(180deg, #8a4ee0, #7030c0);
   color: #fff;
+}
+
+.kb-key-sm {
+  height: 2.75rem;
+  min-width: 2.75rem;
+  width: auto;
+  padding: 0 0.22rem 0.28rem;
+  border-radius: 0.55rem;
+}
+
+.kb-key-sm .kb-cap {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.4rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  padding: 0 0.45rem;
+  gap: 0.35rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
