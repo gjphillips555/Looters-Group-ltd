@@ -68,15 +68,12 @@ function CategoryButton({
     <button
       type="button"
       onClick={onClick}
-      className={cn(
-        "h-14 w-full rounded-xl border px-4 text-sm font-semibold tracking-wide transition-colors",
-        active
-          ? "border-primary bg-primary text-primary-foreground"
-          : "border-border bg-card text-foreground hover:border-primary/50 hover:bg-secondary",
-        className,
-      )}
+      data-active={active ? "true" : "false"}
+      className={cn("logo-mark-btn w-full", className)}
     >
-      {label}
+      <span className="logo-mark block text-[1.65rem] sm:text-[1.9rem] md:text-[2.1rem]">
+        {label}
+      </span>
     </button>
   );
 }

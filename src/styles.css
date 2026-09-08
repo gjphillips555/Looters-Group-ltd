@@ -6,6 +6,7 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-mark: "Luckiest Guy", "Sora", ui-sans-serif, system-ui, sans-serif;
 
   --color-background: oklch(0.17 0.03 300);
   --color-foreground: oklch(0.96 0.01 300);
@@ -142,6 +143,43 @@ html.light {
   max-width: 86px;
   object-fit: contain;
   flex-shrink: 0;
+}
+
+.logo-mark {
+  font-family: var(--font-mark);
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  line-height: 1.05;
+  color: #c44dff;
+  -webkit-text-stroke: 5px #111018;
+  paint-order: stroke fill;
+  text-shadow: 2px 3px 0 #111018;
+}
+
+html.light .logo-mark {
+  color: #161018;
+  -webkit-text-stroke: 5px #ffffff;
+  text-shadow: 2px 3px 0 #1a1224;
+}
+
+.logo-mark-btn {
+  border: 0;
+  background: transparent;
+  padding: 0.35rem 0.4rem;
+  filter: brightness(0.92);
+  transition:
+    transform 180ms ease,
+    filter 180ms ease;
+}
+
+.logo-mark-btn:hover {
+  filter: brightness(1.08);
+  transform: scale(1.04);
+}
+
+.logo-mark-btn[data-active="true"] {
+  filter: brightness(1.12);
+  transform: scale(1.06);
 }
 
 @media (prefers-reduced-motion: reduce) {
