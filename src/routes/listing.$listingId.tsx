@@ -148,11 +148,7 @@ function ProductPage() {
               {product.priceLabel}
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
-              {canBuy
-                ? product.maxQty <= 1
-                  ? "1 available · GST inclusive"
-                  : `Up to ${product.maxQty} · GST inclusive`
-                : "Price on request"}
+              {canBuy ? "GST inclusive" : "Price on request"}
             </p>
           </div>
 

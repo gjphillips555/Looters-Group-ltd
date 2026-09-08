@@ -94,13 +94,9 @@ export function ProductCard({
             <p className="font-display text-lg font-bold text-accent">
               {product.priceLabel}
             </p>
-            <p className="text-xs text-muted-foreground">
-              {canBuy
-                ? singleOnly
-                  ? "1 available"
-                  : `Up to ${product.maxQty}`
-                : "View details"}
-            </p>
+            {canBuy ? null : (
+              <p className="text-xs text-muted-foreground">View details</p>
+            )}
           </div>
 
           {canBuy ? (
