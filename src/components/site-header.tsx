@@ -17,18 +17,20 @@ export function SiteHeader() {
   const { itemCount } = useCartTotals();
 
   return (
-    <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:gap-4 sm:px-6">
-        <Link
-          to="/"
-          className="flex shrink-0 flex-col items-start gap-0.5"
-          aria-label="Looters Computas home"
-        >
-          <BrandLogo />
-          <span className="pl-0.5 text-[10px] font-medium leading-none tracking-wide text-muted-foreground sm:text-[11px]">
-            {SITE_DOMAIN}
-          </span>
-        </Link>
+    <header className="sticky top-0 z-30 overflow-visible">
+      <div className="relative">
+        <div className="pointer-events-none absolute inset-0 border-b border-border bg-background/85 backdrop-blur" />
+        <div className="relative mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:gap-4 sm:px-6">
+          <Link
+            to="/"
+            className="relative z-40 h-14 w-[210px] shrink-0 sm:h-16 sm:w-[260px]"
+            aria-label="Looters Computas home"
+          >
+            <BrandLogo className="absolute left-0 top-0 h-[5.75rem] w-auto max-w-[240px] object-contain object-left-top drop-shadow-[0_8px_16px_rgba(0,0,0,0.28)] sm:h-[6.75rem] sm:max-w-[280px]" />
+            <span className="absolute left-1 top-[5.85rem] text-[10px] font-medium leading-none tracking-wide text-muted-foreground sm:top-[6.9rem] sm:text-[11px]">
+              {SITE_DOMAIN}
+            </span>
+          </Link>
 
         <div className="ml-auto flex shrink-0 items-center gap-2">
           <ShopSearch className="hidden w-[200px] shrink-0 md:block lg:w-[240px]" />
@@ -47,6 +49,7 @@ export function SiteHeader() {
               </span>
             )}
           </button>
+        </div>
         </div>
       </div>
 
