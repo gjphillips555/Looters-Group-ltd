@@ -1,6 +1,6 @@
 import { useState, type MouseEvent } from "react";
 import { Link } from "@tanstack/react-router";
-import { Check, ShoppingCart } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { getProduct } from "@/lib/catalog";
@@ -11,18 +11,35 @@ import { cn } from "@/lib/utils";
 export function ProductCard({
   product,
   className,
+  cycleImages = false,
 }: {
   product: Product;
   className?: string;
+  cycleImages?: boolean;
 }) {
   const add = useCart((s) => s.add);
   const lines = useCart((s) => s.lines);
   const [added, setAdded] = useState(false);
   const [adding, setAdding] = useState(false);
+  const [shot, setShot] = useState(0);
   const canBuy = product.buyNow && product.amount > 0;
   const inCart = isInCart(product.id, lines);
   const singleOnly = product.maxQty <= 1;
   const alreadyMaxed = inCart && singleOnly;
+  const gallery =
+    product.photos.length > 0
+      ? product.photos
+      : product.photo
+        ? [product.photo]
+        : [];
+  const canCycle = cycleImages && gallery.length > 1;
+  const current = gallery[shot] ?? product.photo;
+
+  function step(e: MouseEvent, delta: number) {
+    e.preventDefault();
+    e.stopPropagation();
+    setShot((i) => (i + delta + gallery.length) % gallery.length);
+  }
 
   async function handleAdd(e: MouseEvent) {
     e.preventDefault();
@@ -47,33 +64,66 @@ export function ProductCard({
 
   return (
     <article className={cn("group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-primary/50", className)}>
-      <Link
-        to="/listing/$listingId"
-        params={{ listingId: product.id }}
-        className="relative aspect-square overflow-hidden bg-secondary/40"
-      >
-        {product.photo ? (
-          <img
-            src={product.photo}
-            alt={product.title}
-            width={800}
-            height={800}
-            sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-            loading="lazy"
-            decoding="async"
-          />
-        ) : (
-          <div className="grid h-full place-items-center text-sm text-muted-foreground">
-            No photo
-          </div>
-        )}
+      <div className="relative aspect-square overflow-hidden bg-secondary/40">
+        <Link
+          to="/listing/$listingId"
+          params={{ listingId: product.id }}
+          className="block h-full w-full"
+        >
+          {current ? (
+            <img
+              src={current}
+              alt={product.title}
+              width={800}
+              height={800}
+              sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              loading="lazy"
+              decoding="async"
+            />
+          ) : (
+            <div className="grid h-full place-items-center text-sm text-muted-foreground">
+              No photo
+            </div>
+          )}
+        </Link>
         {product.isNew && (
           <span className="absolute left-3 top-3 rounded-full bg-accent px-2.5 py-1 text-xs font-semibold text-accent-foreground">
             New
           </span>
         )}
-      </Link>
+        {canCycle && (
+          <>
+            <button
+              type="button"
+              aria-label="Previous photo"
+              onClick={(e) => step(e, -1)}
+              className="absolute left-2 top-1/2 z-10 grid size-8 -translate-y-1/2 place-items-center rounded-full border border-border bg-background/90 shadow-sm hover:bg-secondary"
+            >
+              <ChevronLeft className="size-4" />
+            </button>
+            <button
+              type="button"
+              aria-label="Next photo"
+              onClick={(e) => step(e, 1)}
+              className="absolute right-2 top-1/2 z-10 grid size-8 -translate-y-1/2 place-items-center rounded-full border border-border bg-background/90 shadow-sm hover:bg-secondary"
+            >
+              <ChevronRight className="size-4" />
+            </button>
+            <div className="pointer-events-none absolute bottom-2 left-1/2 z-10 flex -translate-x-1/2 gap-1">
+              {gallery.map((_, i) => (
+                <span
+                  key={i}
+                  className={cn(
+                    "size-1.5 rounded-full",
+                    i === shot ? "bg-accent" : "bg-white/70",
+                  )}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
 
       <div className="flex flex-1 flex-col gap-3 p-4">
         {product.categoryName && (
