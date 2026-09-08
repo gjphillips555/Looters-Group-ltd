@@ -6,6 +6,7 @@ export const ARTWORK = {
   afterpay: "/artwork/afterpay.webp",
   favicon: "/artwork/favicon.svg",
   faviconPng: "/artwork/favicon-32.png",
+  favicon16: "/artwork/favicon-16.png",
   appleIcon: "/artwork/apple-icon.png",
   og: "/artwork/og.jpg",
   storefront: "/artwork/storefront.jpg",
