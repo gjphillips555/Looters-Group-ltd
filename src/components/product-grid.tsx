@@ -1,5 +1,12 @@
-import { useMemo, useState, type ReactNode } from "react";
-import { AlertCircle, Search } from "lucide-react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+  type ReactNode,
+} from "react";
+import { AlertCircle, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
 import { Input } from "@/components/ui/input";
 import { useProductSearch } from "@/lib/product-search";
@@ -97,13 +104,168 @@ export function ProductGrid({
           No products match that search.
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-          {filtered.map((product) => (
-            <ProductCard key={product.id} product={product} />
+        <ProductCarousel products={filtered} />
+      )}
+    </div>
+  );
+}
+
+function useDesktop() {
+  const [desktop, setDesktop] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const sync = () => setDesktop(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+  return desktop;
+}
+
+function ProductCarousel({ products }: { products: Product[] }) {
+  const desktop = useDesktop();
+  const perView = desktop ? Math.min(3, products.length) : 1;
+  const maxIndex = Math.max(0, products.length - perView);
+  const [index, setIndex] = useState(0);
+  const drag = useRef({ x: 0, active: false, dx: 0 });
+
+  useEffect(() => {
+    setIndex((i) => Math.min(i, maxIndex));
+  }, [maxIndex, products.length]);
+
+  function go(next: number) {
+    setIndex(Math.max(0, Math.min(maxIndex, next)));
+  }
+
+  function onPointerDown(e: ReactPointerEvent<HTMLDivElement>) {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    drag.current = { x: e.clientX, active: true, dx: 0 };
+  }
+
+  function onPointerMove(e: ReactPointerEvent<HTMLDivElement>) {
+    if (!drag.current.active) return;
+    drag.current.dx = e.clientX - drag.current.x;
+  }
+
+  function onPointerUp() {
+    if (!drag.current.active) return;
+    const dx = drag.current.dx;
+    drag.current.active = false;
+    if (dx > 50) go(index - 1);
+    else if (dx < -50) go(index + 1);
+  }
+
+  const slidePct = desktop ? 100 / perView : 72;
+  const trackTransform = desktop
+    ? `translateX(-${index * slidePct}%)`
+    : `translateX(calc(14% - ${index} * 72%))`;
+
+  return (
+    <div className="space-y-4">
+      <div
+        className="relative"
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+      >
+        <div className="overflow-hidden">
+          <div
+            className="flex w-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+            style={{ transform: trackTransform }}
+          >
+            {products.map((product, i) => {
+              const faded = !desktop && i !== index;
+              return (
+                <div
+                  key={product.id}
+                  className="relative shrink-0 px-1.5 md:px-2"
+                  style={{ flexBasis: `${slidePct}%` }}
+                >
+                  <div
+                    className={cn(
+                      "h-full transition-[opacity,transform] duration-500",
+                      faded ? "scale-95 opacity-40" : "scale-100 opacity-100",
+                    )}
+                  >
+                    <ProductCard product={product} className="h-full" />
+                  </div>
+                  {faded && (
+                    <button
+                      type="button"
+                      className="absolute inset-0 z-10"
+                      aria-label={`Show ${product.title}`}
+                      onClick={() => go(i)}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {maxIndex > 0 && (
+          <>
+            <CarouselArrow
+              side="left"
+              disabled={index <= 0}
+              onClick={() => go(index - 1)}
+            />
+            <CarouselArrow
+              side="right"
+              disabled={index >= maxIndex}
+              onClick={() => go(index + 1)}
+            />
+          </>
+        )}
+      </div>
+
+      {products.length > perView && (
+        <div className="flex items-center justify-center gap-1.5">
+          {Array.from({ length: maxIndex + 1 }, (_, i) => (
+            <button
+              key={i}
+              type="button"
+              aria-label={`Go to set ${i + 1}`}
+              onClick={() => go(i)}
+              className={cn(
+                "h-2 rounded-full transition-all",
+                i === index
+                  ? "w-6 bg-accent"
+                  : "w-2 bg-muted-foreground/35 hover:bg-muted-foreground/60",
+              )}
+            />
           ))}
         </div>
       )}
     </div>
+  );
+}
+
+function CarouselArrow({
+  side,
+  disabled,
+  onClick,
+}: {
+  side: "left" | "right";
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  const Icon = side === "left" ? ChevronLeft : ChevronRight;
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={side === "left" ? "Previous products" : "Next products"}
+      className={cn(
+        "absolute top-1/2 z-20 grid size-11 -translate-y-1/2 place-items-center rounded-full border border-border bg-background/90 text-foreground shadow-lg backdrop-blur transition-opacity",
+        side === "left" ? "left-1 md:-left-3" : "right-1 md:-right-3",
+        disabled ? "opacity-30" : "hover:bg-secondary",
+      )}
+    >
+      <Icon className="size-5" />
+    </button>
   );
 }
 

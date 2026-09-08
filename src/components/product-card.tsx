@@ -6,8 +6,15 @@ import { Button } from "@/components/ui/button";
 import { getProduct } from "@/lib/catalog";
 import { cartProductFrom, isInCart, useCart } from "@/lib/cart-store";
 import type { Product } from "@/lib/products";
+import { cn } from "@/lib/utils";
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({
+  product,
+  className,
+}: {
+  product: Product;
+  className?: string;
+}) {
   const add = useCart((s) => s.add);
   const lines = useCart((s) => s.lines);
   const [added, setAdded] = useState(false);
@@ -39,7 +46,7 @@ export function ProductCard({ product }: { product: Product }) {
   }
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-primary/50">
+    <article className={cn("group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-primary/50", className)}>
       <Link
         to="/listing/$listingId"
         params={{ listingId: product.id }}
