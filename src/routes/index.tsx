@@ -134,7 +134,7 @@ function Home() {
 
       <div className="mt-6 flex flex-col items-center gap-6">
         <KeyLink to="/shop">All products</KeyLink>
-        <BrandLogo className="h-16 w-auto max-w-[280px] object-contain sm:h-20 sm:max-w-[340px]" />
+        <BrandLogo className="h-28 w-auto max-w-[420px] object-contain sm:h-36 sm:max-w-[520px]" />
       </div>
     </AppShell>
   );
