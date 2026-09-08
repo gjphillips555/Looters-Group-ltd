@@ -114,7 +114,11 @@ function OledHud({
     <span className="oled-hud">
       <span className="oled-top">
         <span className="oled-date">{date}</span>
-        <BatteryIcon />
+        <span className="oled-status-icons">
+          <WifiIcon />
+          <BluetoothIcon />
+          <BatteryIcon />
+        </span>
       </span>
       <span className="oled-time">{time}</span>
       {compact ? null : (
@@ -124,10 +128,16 @@ function OledHud({
         </span>
       )}
       <span className="oled-pills">
-        <span className="oled-pill">WIN</span>
+        <span className="oled-pill">
+          <WindowsIcon />
+          WIN
+        </span>
         <span className="oled-pill oled-pill-wifi">
           <WifiIcon />
           2.4G
+        </span>
+        <span className="oled-pill">
+          <BluetoothIcon />
         </span>
         <span className="oled-pill">NUM</span>
         <span className="oled-pill">A</span>
@@ -155,6 +165,38 @@ function WifiIcon() {
       <path d="M2 5.2c3.4-3.2 8.6-3.2 12 0" fill="none" stroke="currentColor" strokeWidth="1.5" />
       <path d="M4.2 7.3c2.2-2 5.4-2 7.6 0" fill="none" stroke="currentColor" strokeWidth="1.5" />
       <circle cx="8" cy="10" r="1.15" fill="currentColor" />
+    </svg>
+  );
+}
+
+function WindowsIcon() {
+  return (
+    <svg className="oled-win" viewBox="0 0 14 14" aria-hidden="true">
+      <rect x="0.5" y="0.5" width="6" height="6" fill="currentColor" />
+      <rect x="7.5" y="0.5" width="6" height="6" fill="currentColor" />
+      <rect x="0.5" y="7.5" width="6" height="6" fill="currentColor" />
+      <rect x="7.5" y="7.5" width="6" height="6" fill="currentColor" />
+    </svg>
+  );
+}
+
+function BluetoothIcon() {
+  return (
+    <svg className="oled-bt" viewBox="0 0 12 16" aria-hidden="true">
+      <path
+        d="M6 1.2 10.4 5.2 7.3 8 10.4 10.8 6 14.8V1.2Z"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M2.4 4.6 6 8 2.4 11.4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
