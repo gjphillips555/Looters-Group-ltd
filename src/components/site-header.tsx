@@ -16,18 +16,20 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
             className="flex shrink-0 items-start md:hidden"
             aria-label="Looters Computas home"
           >
-            <BrandLogo className="h-12 w-auto max-w-[200px] object-contain" />
+            <BrandLogo
+              variant="oled"
+              className="h-12 w-auto max-w-[210px] object-contain"
+            />
           </Link>
           <Link
             to="/"
-            className="relative z-40 hidden h-16 w-[260px] shrink-0 md:block"
+            className="relative z-40 hidden h-16 w-[300px] shrink-0 md:block"
             aria-label="Looters Computas home"
           >
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute -left-2.5 top-[4.75rem] h-[2.2rem] w-[18.25rem] rounded-b-2xl bg-background/85 backdrop-blur"
+            <BrandLogo
+              variant="oled"
+              className="absolute left-0 top-1 h-[5.5rem] w-auto max-w-[320px] object-contain object-left-top"
             />
-            <BrandLogo className="absolute left-0 top-0 h-[6.75rem] w-auto max-w-[280px] object-contain object-left-top" />
           </Link>
 
           <div className="pointer-events-none absolute inset-y-0 left-0 right-0 hidden items-center justify-center md:flex">

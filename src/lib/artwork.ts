@@ -2,6 +2,7 @@
 export const ARTWORK = {
   logoDark: "/artwork/logo.png",
   logoLight: "/artwork/logo.png",
+  logoOled: "/artwork/logo-oled.png",
   payments: "/artwork/payment-methods.png",
   afterpay: "/artwork/afterpay.webp",
   afterpayNews: "/artwork/afterpay-news.webp",
