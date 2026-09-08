@@ -30,9 +30,8 @@ export function SiteHeader() {
           </span>
         </Link>
 
-        <ShopSearch className="hidden w-[200px] shrink-0 md:block lg:w-[240px]" />
-
         <div className="ml-auto flex shrink-0 items-center gap-2">
+          <ShopSearch className="hidden w-[200px] shrink-0 md:block lg:w-[240px]" />
           <ThemeToggle />
           <HeaderAccount />
           <button
