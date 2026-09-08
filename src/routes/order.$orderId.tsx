@@ -4,7 +4,7 @@ import { CheckCircle2 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { PayWithPaypal } from "@/components/pay-with-paypal";
 import { Button } from "@/components/ui/button";
-import { getOrder, type PlacedOrder } from "@/lib/orders";
+import { getOrder, markOrderPaid, saveOrder, type PlacedOrder } from "@/lib/orders";
 import { nzd } from "@/lib/products";
 import { packingLabel } from "@/lib/shipping";
 import { useCart } from "@/lib/cart-store";
@@ -23,12 +23,17 @@ function OrderPage() {
   const [order, setOrder] = useState<PlacedOrder | null | undefined>(undefined);
 
   useEffect(() => {
-    setOrder(getOrder(orderId) ?? null);
-  }, [orderId]);
-
-  useEffect(() => {
-    if (paid) clear();
-  }, [paid, clear]);
+    const found = getOrder(orderId) ?? null;
+    if (paid && found) {
+      const next = { ...found, paid: true as const };
+      saveOrder(next);
+      setOrder(next);
+      if (found.source !== "buynow") clear();
+      void markOrderPaid({ data: { id: orderId } }).catch(() => undefined);
+      return;
+    }
+    setOrder(found);
+  }, [orderId, paid, clear]);
 
   if (order === undefined) {
     return (
@@ -75,12 +80,21 @@ function OrderPage() {
           </p>
           <p className="text-sm leading-relaxed text-muted-foreground">
             {paid
-              ? "PayPal will email a receipt. We'll pack once the payment lands."
+              ? "PayPal will email a receipt. We have your delivery details from checkout so we can pack once payment lands. Card details stay with PayPal."
               : "Finish with PayPal so we can confirm the total and pack your order."}
           </p>
           <div className="flex w-full flex-col gap-2 sm:flex-row">
             {!paid && (
-              <PayWithPaypal orderId={order.id} amount={order.total} />
+              <PayWithPaypal
+                orderId={order.id}
+                amount={order.total}
+                customer={order.customer}
+                itemName={
+                  order.lines.length === 1
+                    ? order.lines[0].title.slice(0, 120)
+                    : `LootersRetail order ${order.id}`
+                }
+              />
             )}
             <Button asChild variant={paid ? "default" : "outline"} className="flex-1">
               <Link to="/">Keep shopping</Link>

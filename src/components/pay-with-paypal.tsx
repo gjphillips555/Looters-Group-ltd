@@ -1,5 +1,6 @@
 import { nzd } from "@/lib/products";
 import { submitPayPalCheckout } from "@/lib/paypal";
+import type { Customer } from "@/lib/orders";
 
 export function PayPalMark({ className }: { className?: string }) {
   return (
@@ -25,26 +26,39 @@ export function PayWithPaypal({
   orderId,
   amount,
   disabled,
+  customer,
+  itemName,
+  cancelPath = "/checkout",
   onBeforePay,
 }: {
   orderId: string;
   amount: number;
   disabled?: boolean;
-  onBeforePay?: () => boolean | void;
+  customer?: Customer;
+  itemName?: string;
+  cancelPath?: string;
+  onBeforePay?: () => boolean | void | Promise<boolean | void>;
 }) {
   return (
     <button
       type="button"
       disabled={disabled}
       onClick={() => {
-        if (onBeforePay && onBeforePay() === false) return;
-        const origin = window.location.origin;
-        submitPayPalCheckout({
-          orderId,
-          amount,
-          returnUrl: `${origin}/order/${orderId}?paid=1`,
-          cancelUrl: `${origin}/checkout`,
-        });
+        void (async () => {
+          if (onBeforePay) {
+            const ok = await onBeforePay();
+            if (ok === false) return;
+          }
+          const origin = window.location.origin;
+          submitPayPalCheckout({
+            orderId,
+            amount,
+            itemName,
+            customer,
+            returnUrl: `${origin}/order/${orderId}?paid=1`,
+            cancelUrl: `${origin}${cancelPath}`,
+          });
+        })();
       }}
       className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-paypal px-4 text-sm font-semibold text-paypal-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
     >

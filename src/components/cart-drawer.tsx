@@ -3,6 +3,7 @@ import { ShoppingBag, Trash2, Truck, X } from "lucide-react";
 import { QuantityStepper } from "@/components/quantity-stepper";
 import { Button } from "@/components/ui/button";
 import { useCart, useCartTotals } from "@/lib/cart-store";
+import { cartCheckoutSearch } from "@/lib/orders";
 import { nzd } from "@/lib/products";
 import { packingLabel } from "@/lib/shipping";
 
@@ -186,7 +187,7 @@ export function CartDrawer({
                 Clear
               </Button>
               <Button asChild className="flex-1">
-                <Link to="/checkout" onClick={onClose}>
+                <Link to="/checkout" search={cartCheckoutSearch} onClick={onClose}>
                   Checkout
                 </Link>
               </Button>

@@ -1,41 +1,96 @@
 import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/app-shell";
+import { GoogleMark } from "@/components/google-mark";
 import { PayWithPaypal } from "@/components/pay-with-paypal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useCart, useCartTotals } from "@/lib/cart-store";
+import { authEnabled, signIn } from "@/lib/auth/client";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { cartProductFrom, useCart, useCartTotals, type CartLine } from "@/lib/cart-store";
+import { getProduct } from "@/lib/catalog";
+import {
+  customerLooksComplete,
+  emptyCustomer,
+  loadSavedCustomer,
+  newOrderId,
+  placeOrder,
+  saveOrder,
+  type Customer,
+  type OrderSource,
+} from "@/lib/orders";
 import { NZ_REGIONS, nzd } from "@/lib/products";
-import { packingLabel } from "@/lib/shipping";
-import { newOrderId, saveOrder, type Customer } from "@/lib/orders";
+import { packingLabel, packingQuote } from "@/lib/shipping";
 
 export const Route = createFileRoute("/checkout")({
+  validateSearch: (search: Record<string, unknown>) => {
+    const buy = typeof search.buy === "string" && /^\d+$/.test(search.buy) ? search.buy : undefined;
+    const ship = typeof search.ship === "string" ? search.ship : undefined;
+    const qtyRaw = Number(search.qty);
+    const qty = Number.isFinite(qtyRaw) ? Math.max(1, Math.min(99, Math.round(qtyRaw))) : 1;
+    return { buy, ship, qty };
+  },
+  loaderDeps: ({ search }) => ({ buy: search.buy, ship: search.ship, qty: search.qty }),
+  loader: async ({ deps }) => {
+    if (!deps.buy) return { buyNow: null as Awaited<ReturnType<typeof getProduct>> };
+    const product = await getProduct({ data: { id: deps.buy } });
+    return { buyNow: product };
+  },
   component: CheckoutPage,
 });
 
-const emptyCustomer: Customer = {
-  name: "",
-  email: "",
-  phone: "",
-  address: "",
-  suburb: "",
-  city: "",
-  region: "Wellington",
-  notes: "",
-};
-
 function CheckoutPage() {
-  const { lines, subtotal, shippingTotal, total, itemCount, shippingReady, packages } =
-    useCartTotals();
+  const { buy, ship, qty } = Route.useSearch();
+  const { buyNow } = Route.useLoaderData();
+  const cart = useCartTotals();
   const setShipping = useCart((s) => s.setShipping);
   const { user } = useCurrentUserState();
   const [customer, setCustomer] = useState<Customer>(emptyCustomer);
   const [error, setError] = useState<string | null>(null);
   const [orderId] = useState(() => newOrderId());
+  const [buyShip, setBuyShip] = useState(ship ?? "");
 
+  useEffect(() => {
+    setCustomer((prev) => {
+      const saved = loadSavedCustomer();
+      return {
+        ...saved,
+        name: prev.name || saved.name,
+        email: prev.email || saved.email,
+      };
+    });
+  }, []);
+
+  const isBuyNow = Boolean(buy);
+  const source: OrderSource = isBuyNow ? "buynow" : "cart";
+
+  const buyLine: CartLine | null = useMemo(() => {
+    if (!buyNow) return null;
+    const cap = Math.max(1, buyNow.maxQty);
+    const chosen =
+      buyShip && buyNow.shipping.some((s) => s.id === buyShip)
+        ? buyShip
+        : "";
+    return {
+      ...cartProductFrom(buyNow),
+      qty: Math.min(cap, qty),
+      shippingId: chosen,
+    };
+  }, [buyNow, buyShip, qty]);
+
+  const lines = isBuyNow ? (buyLine ? [buyLine] : []) : cart.lines;
+  const packing = packingQuote(lines);
+  const subtotal = lines.reduce((n, l) => n + l.qty * l.amount, 0);
+  const shippingTotal = packing.ready ? packing.shippingTotal : 0;
+  const itemCount = packing.itemCount;
+  const shippingReady = packing.ready && lines.length > 0;
+  const total = subtotal + shippingTotal;
   const gstPortion = total - total / 1.15;
+  const itemName =
+    isBuyNow && buyLine
+      ? buyLine.title.slice(0, 120)
+      : `LootersRetail order ${orderId}`;
 
   useEffect(() => {
     if (!user) return;
@@ -50,29 +105,19 @@ function CheckoutPage() {
     setCustomer((prev) => ({ ...prev, [key]: value }));
   }
 
-  const detailsOk = useMemo(() => {
-    return (
-      customer.name.trim().length > 1 &&
-      /.+@.+\..+/.test(customer.email) &&
-      customer.phone.trim().length >= 7 &&
-      customer.address.trim().length > 2 &&
-      customer.city.trim().length > 1 &&
-      customer.region.trim().length > 1
-    );
-  }, [customer]);
-
+  const detailsOk = customerLooksComplete(customer);
   const canPay = lines.length > 0 && detailsOk && shippingReady;
 
-  function persistOrder() {
+  async function persistOrder() {
     if (!canPay) {
       setError(
         shippingReady
           ? "Please complete your contact and delivery details."
-          : "Select a shipping option on every item to tally PayPal.",
+          : "Select a shipping option to tally PayPal.",
       );
       return false;
     }
-    saveOrder({
+    const order = {
       id: orderId,
       createdAt: new Date().toISOString(),
       customer,
@@ -80,13 +125,36 @@ function CheckoutPage() {
       subtotal,
       shippingTotal,
       total,
-    });
+      source,
+    };
+    saveOrder(order);
+    try {
+      await placeOrder({ data: order });
+    } catch (err) {
+      console.error("[looters] placeOrder", err);
+    }
     return true;
   }
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
-    persistOrder();
+    void persistOrder();
+  }
+
+  if (isBuyNow && !buyNow) {
+    return (
+      <AppShell>
+        <div className="py-24 text-center">
+          <h1 className="font-display text-2xl font-semibold">Item unavailable</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            That product may have sold. Add something else from the shop.
+          </p>
+          <Button asChild className="mt-6">
+            <Link to="/">Browse shop</Link>
+          </Button>
+        </div>
+      </AppShell>
+    );
   }
 
   if (lines.length === 0) {
@@ -105,17 +173,36 @@ function CheckoutPage() {
     );
   }
 
+  const cancelPath = isBuyNow && buy
+    ? `/checkout?buy=${buy}&ship=${encodeURIComponent(buyShip)}&qty=${qty}`
+    : "/checkout";
+
   return (
     <AppShell>
-      <h1 className="mb-6 font-display text-3xl font-semibold tracking-tight">
-        Checkout
+      <h1 className="mb-2 font-display text-3xl font-semibold tracking-tight">
+        {isBuyNow ? "Buy now" : "Checkout"}
       </h1>
+      <p className="mb-6 text-sm text-muted-foreground">
+        {user
+          ? `Signed in as ${user.displayName ?? user.primaryEmail}. Paying as a guest is also fine.`
+          : "No account needed — continue as guest. Google is optional if you want your name and email filled in."}
+      </p>
+      {!user && authEnabled && (
+        <button
+          type="button"
+          onClick={() => signIn("grok-google", { callbackURL: "/checkout" })}
+          className="mb-6 inline-flex h-11 items-center gap-2 rounded-md border border-border bg-secondary px-3 text-sm font-medium hover:bg-secondary/80"
+        >
+          <GoogleMark className="size-4" />
+          Optional: sign in with Google
+        </button>
+      )}
       <form
         onSubmit={onSubmit}
         className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]"
       >
         <section className="space-y-5 rounded-2xl border border-border bg-card p-5 sm:p-6">
-          <h2 className="font-display text-lg font-semibold">Your details</h2>
+          <h2 className="font-display text-lg font-semibold">Delivery details</h2>
           <Field label="Full name" htmlFor="name">
             <Input
               id="name"
@@ -200,8 +287,9 @@ function CheckoutPage() {
             />
           </Field>
           <p className="text-xs leading-relaxed text-muted-foreground">
-            Choose shipping on each item so we can pack in threes and send you
-            to PayPal with the right total.
+            We store name, email, phone and delivery address with the order so
+            we can pack and ship. Card details stay with PayPal — we never see
+            them.
           </p>
         </section>
 
@@ -231,8 +319,11 @@ function CheckoutPage() {
                 {line.shipping.length > 0 && (
                   <select
                     aria-label={`Shipping for ${line.title}`}
-                    value={line.shippingId}
-                    onChange={(e) => setShipping(line.id, e.target.value)}
+                    value={isBuyNow ? buyShip : line.shippingId}
+                    onChange={(e) => {
+                      if (isBuyNow) setBuyShip(e.target.value);
+                      else setShipping(line.id, e.target.value);
+                    }}
                     className="h-10 w-full rounded-md border border-input bg-background px-2.5 text-xs outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
                   >
                     <option value="">Select shipping</option>
@@ -273,13 +364,16 @@ function CheckoutPage() {
             </div>
           </dl>
           <p className="text-xs text-muted-foreground">
-            {packingLabel(itemCount, packages, shippingReady)}
+            {packingLabel(itemCount, packing.packages, shippingReady)}
           </p>
           {error && <p className="text-sm text-destructive">{error}</p>}
           <PayWithPaypal
             orderId={orderId}
             amount={shippingReady ? total : 0}
             disabled={!canPay}
+            customer={customer}
+            itemName={itemName}
+            cancelPath={cancelPath}
             onBeforePay={persistOrder}
           />
         </aside>

@@ -16,7 +16,8 @@ function Login() {
           Sign in
         </h1>
         <p className="text-center text-sm text-muted-foreground">
-          Use your Google account to save your details.
+          Google is optional. Use it to save your name and email, or carry on
+          as a guest to shop and pay.
         </p>
         {authEnabled ? (
           <button
@@ -32,6 +33,12 @@ function Login() {
             Sign-in is disabled.
           </p>
         )}
+        <Link
+          to="/"
+          className="inline-flex h-12 w-full items-center justify-center rounded-md border border-border px-4 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+        >
+          Continue as guest
+        </Link>
       </div>
     </main>
   );

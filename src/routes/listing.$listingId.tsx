@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { Check, ExternalLink, ShoppingCart, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
+import { PayPalMark } from "@/components/pay-with-paypal";
 import { Button } from "@/components/ui/button";
 import { QuantityStepper } from "@/components/quantity-stepper";
 import { getProduct } from "@/lib/catalog";
 import { cartProductFrom, isInCart, useCart } from "@/lib/cart-store";
+import { cartCheckoutSearch } from "@/lib/orders";
 import { nzd } from "@/lib/products";
 
 export const Route = createFileRoute("/listing/$listingId")({
@@ -37,6 +39,7 @@ function ProductNotFound() {
 
 function ProductPage() {
   const product = Route.useLoaderData();
+  const navigate = useNavigate();
   const add = useCart((s) => s.add);
   const setQty = useCart((s) => s.setQty);
   const setShipping = useCart((s) => s.setShipping);
@@ -45,28 +48,44 @@ function ProductPage() {
   const [photoIndex, setPhotoIndex] = useState(0);
   const [added, setAdded] = useState(false);
   const [shippingId, setShippingId] = useState(line?.shippingId ?? "");
+  const [qty, setLocalQty] = useState(1);
   const canBuy = product.buyNow && product.amount > 0;
   const inCart = isInCart(product.id, lines);
   const photos = product.photos.length > 0 ? product.photos : product.photo ? [product.photo] : [];
   const activePhoto = photos[photoIndex] ?? photos[0];
   const needsShipping = product.shipping.length > 0;
+  const buyQty = inCart && line ? line.qty : qty;
 
   function pickShipping(id: string) {
     setShippingId(id);
     if (inCart) setShipping(product.id, id);
   }
 
-  function handleAdd() {
+  function requireShipping() {
     if (needsShipping && !shippingId) {
       toast.error("Select a shipping option first");
-      return;
+      return false;
     }
+    return true;
+  }
+
+  function handleAdd() {
+    if (!requireShipping()) return;
     if (!inCart) {
       add(cartProductFrom(product), shippingId);
+      if (qty > 1) setQty(product.id, Math.min(product.maxQty, qty));
     }
     setAdded(true);
     toast.success("Added to cart", { description: product.title });
     window.setTimeout(() => setAdded(false), 1200);
+  }
+
+  function handlePayPal() {
+    if (!requireShipping()) return;
+    void navigate({
+      to: "/checkout",
+      search: { buy: product.id, ship: shippingId, qty: buyQty },
+    });
   }
 
   return (
@@ -182,40 +201,60 @@ function ProductPage() {
             </dl>
           )}
 
-          <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="flex flex-col gap-3">
             {canBuy ? (
               <>
-                {inCart && product.maxQty > 1 && line && (
+                {product.maxQty > 1 && (
                   <QuantityStepper
-                    value={line.qty}
+                    value={buyQty}
                     max={product.maxQty}
-                    onChange={(q) => setQty(product.id, q)}
+                    onChange={(q) => {
+                      if (inCart) setQty(product.id, q);
+                      else setLocalQty(q);
+                    }}
                   />
                 )}
-                <Button
-                  type="button"
-                  className="flex-1"
-                  onClick={handleAdd}
-                  disabled={inCart && product.maxQty <= 1}
-                >
-                  {added || (inCart && product.maxQty <= 1) ? (
-                    <Check />
-                  ) : (
-                    <ShoppingCart />
-                  )}
-                  {inCart && product.maxQty <= 1
-                    ? "In cart"
-                    : added
-                      ? "Added"
-                      : inCart
-                        ? "Add another"
-                        : "Add to cart"}
-                </Button>
-                {inCart && (
-                  <Button asChild variant="outline">
-                    <Link to="/checkout">Checkout</Link>
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <Button
+                    type="button"
+                    className="flex-1"
+                    onClick={handleAdd}
+                    disabled={inCart && product.maxQty <= 1}
+                  >
+                    {added || (inCart && product.maxQty <= 1) ? (
+                      <Check />
+                    ) : (
+                      <ShoppingCart />
+                    )}
+                    {inCart && product.maxQty <= 1
+                      ? "In cart"
+                      : added
+                        ? "Added"
+                        : inCart
+                          ? "Add another"
+                          : "Add to cart"}
                   </Button>
-                )}
+                  {inCart && (
+                    <Button asChild variant="outline">
+                      <Link to="/checkout" search={cartCheckoutSearch}>Checkout cart</Link>
+                    </Button>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={handlePayPal}
+                  className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-paypal px-4 text-sm font-semibold text-paypal-foreground transition-opacity hover:opacity-90"
+                >
+                  <PayPalMark className="size-6" />
+                  Pay with PayPal
+                  {shippingId
+                    ? ` · ${nzd(product.amount * buyQty + (product.shipping.find((s) => s.id === shippingId)?.price ?? 0))}`
+                    : ""}
+                </button>
+                <p className="text-xs text-muted-foreground">
+                  Pays for this item only. Guest checkout — no Google account
+                  required. Select shipping first so the total is correct.
+                </p>
               </>
             ) : (
               <Button asChild variant="outline">

@@ -77,7 +77,7 @@ function HeaderAccount() {
       <button
         type="button"
         onClick={() => signIn("grok-google", { callbackURL: "/" })}
-        aria-label="Sign in with Google"
+        aria-label="Sign in with Google (optional)"
         className="grid size-11 shrink-0 place-items-center rounded-full border border-border bg-white transition-opacity hover:opacity-90"
       >
         <GoogleMark className="size-5" />
