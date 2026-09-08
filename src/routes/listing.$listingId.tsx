@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { Check, ExternalLink, MapPin, ShoppingCart, Truck } from "lucide-react";
+import { Check, ExternalLink, ShoppingCart, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
@@ -15,42 +15,54 @@ export const Route = createFileRoute("/listing/$listingId")({
     if (!product) throw notFound();
     return product;
   },
-  component: ListingPage,
-  notFoundComponent: ListingNotFound,
+  component: ProductPage,
+  notFoundComponent: ProductNotFound,
 });
 
-function ListingNotFound() {
+function ProductNotFound() {
   return (
     <AppShell>
       <div className="py-24 text-center">
-        <h1 className="font-display text-2xl font-semibold">Listing not found</h1>
+        <h1 className="font-display text-2xl font-semibold">Product not found</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           That item may have sold or been taken down.
         </p>
         <Button asChild className="mt-6">
-          <Link to="/">Back to listings</Link>
+          <Link to="/">Back to shop</Link>
         </Button>
       </div>
     </AppShell>
   );
 }
 
-function ListingPage() {
+function ProductPage() {
   const product = Route.useLoaderData();
   const add = useCart((s) => s.add);
   const setQty = useCart((s) => s.setQty);
+  const setShipping = useCart((s) => s.setShipping);
   const lines = useCart((s) => s.lines);
   const line = lines.find((l) => l.id === product.id);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [added, setAdded] = useState(false);
+  const [shippingId, setShippingId] = useState(line?.shippingId ?? "");
   const canBuy = product.buyNow && product.amount > 0;
   const inCart = isInCart(product.id, lines);
   const photos = product.photos.length > 0 ? product.photos : product.photo ? [product.photo] : [];
   const activePhoto = photos[photoIndex] ?? photos[0];
+  const needsShipping = product.shipping.length > 0;
+
+  function pickShipping(id: string) {
+    setShippingId(id);
+    if (inCart) setShipping(product.id, id);
+  }
 
   function handleAdd() {
+    if (needsShipping && !shippingId) {
+      toast.error("Select a shipping option first");
+      return;
+    }
     if (!inCart) {
-      add(cartProductFrom(product));
+      add(cartProductFrom(product), shippingId);
     }
     setAdded(true);
     toast.success("Added to cart", { description: product.title });
@@ -61,7 +73,7 @@ function ListingPage() {
     <AppShell>
       <p className="mb-6 text-sm text-muted-foreground">
         <Link to="/" className="hover:text-foreground">
-          Listings
+          Shop
         </Link>
         <span className="mx-2">/</span>
         <span className="text-foreground">{product.categoryName ?? "Item"}</span>
@@ -111,45 +123,52 @@ function ListingPage() {
           <h1 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
             {product.title}
           </h1>
-          {product.region && (
-            <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              <MapPin className="size-4" />
-              {[product.suburb, product.region].filter(Boolean).join(", ")}
-            </p>
-          )}
 
           <div>
             <p className="font-display text-3xl font-bold text-accent">
               {product.priceLabel}
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
-              {product.buyNow
+              {canBuy
                 ? product.maxQty <= 1
-                  ? "Buy Now · 1 available · GST inclusive"
-                  : `Buy Now · up to ${product.maxQty} · GST inclusive`
-                : "Auction on TradeMe"}
+                  ? "1 available · GST inclusive"
+                  : `Up to ${product.maxQty} · GST inclusive`
+                : "Price on request"}
             </p>
           </div>
 
-          {canBuy && product.shipping.length > 0 && (
-            <div className="rounded-xl border border-border bg-secondary/30 p-4">
-              <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                <Truck className="size-3.5" /> Shipping options
-              </p>
+          {needsShipping && (
+            <fieldset className="rounded-xl border border-border bg-secondary/30 p-4">
+              <legend className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <Truck className="size-3.5" /> Choose shipping
+              </legend>
               <ul className="space-y-1.5">
                 {product.shipping.map((s) => (
-                  <li
-                    key={s.id}
-                    className="flex items-center justify-between gap-2 text-sm"
-                  >
-                    <span className="text-muted-foreground">{s.label}</span>
-                    <span className="font-medium tabular-nums">
-                      {s.price > 0 ? nzd(s.price) : "Free"}
-                    </span>
+                  <li key={s.id}>
+                    <label className="flex cursor-pointer items-center justify-between gap-3 rounded-lg px-1 py-1.5 text-sm hover:bg-secondary/60">
+                      <span className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          name={`ship-${product.id}`}
+                          value={s.id}
+                          checked={shippingId === s.id}
+                          onChange={() => pickShipping(s.id)}
+                          className="size-4 accent-primary"
+                        />
+                        <span className="text-muted-foreground">{s.label}</span>
+                      </span>
+                      <span className="font-medium tabular-nums">
+                        {s.price > 0 ? nzd(s.price) : "Free"}
+                      </span>
+                    </label>
                   </li>
                 ))}
               </ul>
-            </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Up to 3 items share the dearest option. Extra packs of 3 add
+                the next dearest.
+              </p>
+            </fieldset>
           )}
 
           {product.attributes.length > 0 && (
@@ -199,22 +218,21 @@ function ListingPage() {
                 )}
               </>
             ) : (
-              <Button asChild>
-                <a href={product.listingUrl} target="_blank" rel="noopener noreferrer">
-                  View auction on TradeMe <ExternalLink />
-                </a>
+              <Button asChild variant="outline">
+                <Link to="/">Back to shop</Link>
               </Button>
             )}
           </div>
 
-          <a
-            href={product.listingUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
-          >
-            Open original TradeMe listing <ExternalLink className="size-3.5" />
-          </a>
+          <Button asChild variant="outline" className="w-full sm:w-auto">
+            <a
+              href={product.listingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Pay via TradeMe <ExternalLink />
+            </a>
+          </Button>
         </div>
       </div>
 

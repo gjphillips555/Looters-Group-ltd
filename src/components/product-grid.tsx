@@ -40,9 +40,9 @@ export function ProductGrid({
     return (
       <div className="mx-auto flex max-w-md flex-col items-center gap-2 py-24 text-center text-muted-foreground">
         <AlertCircle className="size-8 text-destructive" />
-        <p className="font-medium text-foreground">Couldn't load listings</p>
+        <p className="font-medium text-foreground">Couldn't load products</p>
         <p className="text-sm">
-          The TradeMe catalog is temporarily unavailable. Please try again shortly.
+          The catalog is temporarily unavailable. Please try again shortly.
         </p>
       </div>
     );
@@ -51,7 +51,7 @@ export function ProductGrid({
   if (products.length === 0) {
     return (
       <div className="py-24 text-center text-muted-foreground">
-        No live listings right now — check back soon.
+        No products right now — check back soon.
       </div>
     );
   }
@@ -64,9 +64,9 @@ export function ProductGrid({
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search listings"
+            placeholder="Search products"
             className="pl-9"
-            aria-label="Search listings"
+            aria-label="Search products"
           />
         </div>
         {categories.length > 1 && (
@@ -92,7 +92,7 @@ export function ProductGrid({
 
       {filtered.length === 0 ? (
         <div className="py-16 text-center text-sm text-muted-foreground">
-          No listings match that search.
+          No products match that search.
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">

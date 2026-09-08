@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Product, ShippingOption } from "@/lib/products";
 import { preferredShippingId, type Island } from "@/lib/products";
+import { packingQuote } from "@/lib/shipping";
 
 export type CartProduct = {
   id: string;
@@ -18,7 +19,7 @@ export type CartLine = CartProduct & { qty: number; shippingId: string };
 
 type CartState = {
   lines: CartLine[];
-  add: (product: CartProduct) => void;
+  add: (product: CartProduct, shippingId?: string) => void;
   setQty: (id: string, qty: number) => void;
   setShipping: (id: string, shippingId: string) => void;
   applyIsland: (island: Island) => void;
@@ -56,7 +57,7 @@ export const useCart = create<CartState>()(
   persist(
     (set) => ({
       lines: [],
-      add: (product) =>
+      add: (product, shippingId) =>
         set((prev) => {
           const cap = Math.max(1, product.maxQty);
           const existing = prev.lines.find((l) => l.id === product.id);
@@ -67,11 +68,14 @@ export const useCart = create<CartState>()(
               ),
             };
           }
-          const shippingId = product.shipping[0]?.id ?? "";
           return {
             lines: [
               ...prev.lines,
-              { ...toCartProduct(product), qty: 1, shippingId },
+              {
+                ...toCartProduct(product),
+                qty: 1,
+                shippingId: shippingId ?? "",
+              },
             ],
           };
         }),
@@ -95,6 +99,7 @@ export const useCart = create<CartState>()(
       applyIsland: (island) =>
         set((prev) => ({
           lines: prev.lines.map((l) => {
+            if (l.shippingId) return l;
             const nextId = preferredShippingId(l.shipping, island);
             return nextId ? { ...l, shippingId: nextId } : l;
           }),
@@ -103,7 +108,7 @@ export const useCart = create<CartState>()(
         set((prev) => ({ lines: prev.lines.filter((l) => l.id !== id) })),
       clear: () => set({ lines: [] }),
     }),
-    { name: "looters-cart" },
+    { name: "looters-cart-v2" },
   ),
 );
 
@@ -111,18 +116,20 @@ export function useCartTotals() {
   const lines = useCart((s) => s.lines);
   let itemCount = 0;
   let subtotal = 0;
-  let shippingTotal = 0;
   for (const l of lines) {
-    const ship = l.shipping.find((s) => s.id === l.shippingId);
     itemCount += l.qty;
     subtotal += l.qty * l.amount;
-    shippingTotal += ship?.price ?? 0;
   }
+  const packing = packingQuote(lines);
+  const shippingTotal = packing.ready ? packing.shippingTotal : 0;
   return {
     lines,
     itemCount,
     subtotal,
     shippingTotal,
+    shippingReady: packing.ready,
+    packages: packing.packages,
+    packing,
     total: subtotal + shippingTotal,
   };
 }

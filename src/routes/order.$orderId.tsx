@@ -1,22 +1,34 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CheckCircle2, ExternalLink, Mail } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
+import { PayWithPaypal } from "@/components/pay-with-paypal";
 import { Button } from "@/components/ui/button";
-import { getOrder, orderMailto, type PlacedOrder } from "@/lib/orders";
+import { getOrder, type PlacedOrder } from "@/lib/orders";
 import { nzd } from "@/lib/products";
+import { packingLabel } from "@/lib/shipping";
+import { useCart } from "@/lib/cart-store";
 
 export const Route = createFileRoute("/order/$orderId")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    paid: search.paid === "1" || search.paid === 1,
+  }),
   component: OrderPage,
 });
 
 function OrderPage() {
   const { orderId } = Route.useParams();
+  const { paid } = Route.useSearch();
+  const clear = useCart((s) => s.clear);
   const [order, setOrder] = useState<PlacedOrder | null | undefined>(undefined);
 
   useEffect(() => {
     setOrder(getOrder(orderId) ?? null);
   }, [orderId]);
+
+  useEffect(() => {
+    if (paid) clear();
+  }, [paid, clear]);
 
   if (order === undefined) {
     return (
@@ -44,28 +56,33 @@ function OrderPage() {
     );
   }
 
+  const packing = packingLabel(
+    order.lines.reduce((n, l) => n + l.qty, 0),
+    Math.ceil(order.lines.reduce((n, l) => n + l.qty, 0) / 3),
+    true,
+  );
+
   return (
     <AppShell>
       <div className="mx-auto max-w-2xl">
         <div className="mb-8 flex flex-col items-start gap-3 rounded-2xl border border-border bg-card p-6 sm:p-8">
           <CheckCircle2 className="size-10 text-accent" />
           <h1 className="font-display text-3xl font-semibold tracking-tight">
-            Order placed
+            {paid ? "Payment sent" : "Order saved"}
           </h1>
           <p className="text-sm text-muted-foreground">
             Reference <span className="font-medium text-foreground">{order.id}</span>
           </p>
           <p className="text-sm leading-relaxed text-muted-foreground">
-            Email this order to LootersRetail so we can confirm stock and
-            payment, or complete each Buy Now on TradeMe with Ping or Afterpay.
+            {paid
+              ? "PayPal will email a receipt. We'll pack once the payment lands."
+              : "Finish with PayPal so we can confirm the total and pack your order."}
           </p>
           <div className="flex w-full flex-col gap-2 sm:flex-row">
-            <Button asChild className="flex-1">
-              <a href={orderMailto(order)}>
-                <Mail /> Email order to LootersRetail
-              </a>
-            </Button>
-            <Button asChild variant="outline">
+            {!paid && (
+              <PayWithPaypal orderId={order.id} amount={order.total} />
+            )}
+            <Button asChild variant={paid ? "default" : "outline"} className="flex-1">
               <Link to="/">Keep shopping</Link>
             </Button>
           </div>
@@ -86,18 +103,9 @@ function OrderPage() {
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium">{line.title}</p>
                     <p className="text-xs text-muted-foreground">
-                      Qty {line.qty} · {nzd(line.amount * line.qty)} ·{" "}
-                      {ship?.label ?? "Shipping"}{" "}
-                      {ship && ship.price > 0 ? nzd(ship.price) : "Free"}
+                      Qty {line.qty} · {nzd(line.amount * line.qty)}
+                      {ship ? ` · ${ship.label}` : ""}
                     </p>
-                    <a
-                      href={line.listingUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-1 inline-flex items-center gap-1 text-xs text-primary hover:underline"
-                    >
-                      Pay on TradeMe <ExternalLink className="size-3" />
-                    </a>
                   </div>
                 </li>
               );
@@ -119,6 +127,7 @@ function OrderPage() {
               <dd className="tabular-nums text-accent">{nzd(order.total)}</dd>
             </div>
           </dl>
+          <p className="mt-3 text-xs text-muted-foreground">{packing}</p>
           <div className="mt-5 rounded-lg bg-secondary/40 p-3 text-sm text-muted-foreground">
             <p className="font-medium text-foreground">Deliver to</p>
             <p>

@@ -60,7 +60,7 @@ export function orderMailto(order: PlacedOrder) {
         `- ${l.title}`,
         `  Qty ${l.qty} × ${nzd(l.amount)} = ${nzd(l.qty * l.amount)}`,
         `  Shipping: ${ship?.label ?? "TBC"} (${ship && ship.price > 0 ? nzd(ship.price) : "Free"})`,
-        `  TradeMe: ${l.listingUrl}`,
+        `  Item: ${l.listingUrl}`,
       ].join("\n");
     })
     .join("\n\n");

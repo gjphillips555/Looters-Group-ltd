@@ -276,7 +276,7 @@ export const getCatalog = createServerFn({ method: "GET" }).handler(async () => 
     return {
       products: [] as Product[],
       seller: null,
-      error: "Unable to load listings right now.",
+      error: "Unable to load products right now.",
     } satisfies Catalog;
   }
 });
@@ -284,7 +284,7 @@ export const getCatalog = createServerFn({ method: "GET" }).handler(async () => 
 export const getProduct = createServerFn({ method: "GET" })
   .validator((input: unknown) => {
     const id = String((input as { id?: unknown } | null)?.id ?? "");
-    if (!/^\d+$/.test(id)) throw new Error("Invalid listing id");
+    if (!/^\d+$/.test(id)) throw new Error("Invalid product id");
     return { id };
   })
   .handler(async ({ data }): Promise<Product | null> => {

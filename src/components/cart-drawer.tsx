@@ -4,6 +4,7 @@ import { QuantityStepper } from "@/components/quantity-stepper";
 import { Button } from "@/components/ui/button";
 import { useCart, useCartTotals } from "@/lib/cart-store";
 import { nzd } from "@/lib/products";
+import { packingLabel } from "@/lib/shipping";
 
 const GST_RATE = 0.15;
 
@@ -15,7 +16,15 @@ export function CartDrawer({
   onClose: () => void;
 }) {
   const { setQty, setShipping, remove, clear } = useCart();
-  const { lines, itemCount, subtotal, shippingTotal, total } = useCartTotals();
+  const {
+    lines,
+    itemCount,
+    subtotal,
+    shippingTotal,
+    shippingReady,
+    packages,
+    total,
+  } = useCartTotals();
   const gstPortion = total - total / (1 + GST_RATE);
 
   return (
@@ -61,59 +70,56 @@ export function CartDrawer({
               <div className="space-y-2">
                 <ShoppingBag className="mx-auto size-10 text-muted-foreground" />
                 <p className="text-sm text-muted-foreground">
-                  Your cart is empty. Add some Buy Now finds.
+                  Your cart is empty. Add some finds.
                 </p>
               </div>
             </div>
           ) : (
             <ul className="space-y-5">
-              {lines.map((line) => {
-                const selectedShip = line.shipping.find(
-                  (s) => s.id === line.shippingId,
-                );
-                return (
-                  <li key={line.id} className="flex flex-col gap-3">
-                    <div className="flex gap-3">
-                      <div className="size-16 shrink-0 overflow-hidden rounded-md bg-secondary/40">
-                        {line.photo ? (
-                          <img
-                            src={line.photo}
-                            alt=""
-                            className="h-full w-full object-cover"
-                          />
-                        ) : null}
-                      </div>
-                      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-                        <p className="line-clamp-2 text-sm font-medium leading-snug">
-                          {line.title}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {nzd(line.amount)} each
-                        </p>
-                        <div className="mt-auto flex items-center justify-between">
-                          <QuantityStepper
-                            size="sm"
-                            value={line.qty}
-                            max={line.maxQty}
-                            onChange={(q) => setQty(line.id, q)}
-                          />
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-semibold tabular-nums">
-                              {nzd(line.amount * line.qty)}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => remove(line.id)}
-                              aria-label={`Remove ${line.title}`}
-                              className="grid size-9 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/15 hover:text-destructive"
-                            >
-                              <Trash2 className="size-4" />
-                            </button>
-                          </div>
+              {lines.map((line) => (
+                <li key={line.id} className="flex flex-col gap-3">
+                  <div className="flex gap-3">
+                    <div className="size-16 shrink-0 overflow-hidden rounded-md bg-secondary/40">
+                      {line.photo ? (
+                        <img
+                          src={line.photo}
+                          alt=""
+                          className="h-full w-full object-cover"
+                        />
+                      ) : null}
+                    </div>
+                    <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                      <p className="line-clamp-2 text-sm font-medium leading-snug">
+                        {line.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {nzd(line.amount)} each
+                      </p>
+                      <div className="mt-auto flex items-center justify-between">
+                        <QuantityStepper
+                          size="sm"
+                          value={line.qty}
+                          max={line.maxQty}
+                          onChange={(q) => setQty(line.id, q)}
+                        />
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-semibold tabular-nums">
+                            {nzd(line.amount * line.qty)}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => remove(line.id)}
+                            aria-label={`Remove ${line.title}`}
+                            className="grid size-9 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/15 hover:text-destructive"
+                          >
+                            <Trash2 className="size-4" />
+                          </button>
                         </div>
                       </div>
                     </div>
+                  </div>
 
+                  {line.shipping.length > 0 && (
                     <div className="rounded-lg border border-border/70 bg-secondary/30 p-2.5">
                       <label
                         htmlFor={`ship-${line.id}`}
@@ -127,21 +133,17 @@ export function CartDrawer({
                         onChange={(e) => setShipping(line.id, e.target.value)}
                         className="h-10 w-full rounded-md border border-border bg-background px-2.5 text-xs text-foreground outline-none focus:border-primary"
                       >
+                        <option value="">Select shipping</option>
                         {line.shipping.map((s) => (
                           <option key={s.id} value={s.id}>
                             {s.label} — {s.price > 0 ? nzd(s.price) : "Free"}
                           </option>
                         ))}
                       </select>
-                      {selectedShip && selectedShip.price > 0 && (
-                        <p className="mt-1.5 text-right text-xs text-muted-foreground">
-                          + {nzd(selectedShip.price)} shipping
-                        </p>
-                      )}
                     </div>
-                  </li>
-                );
-              })}
+                  )}
+                </li>
+              ))}
             </ul>
           )}
         </div>
@@ -156,7 +158,11 @@ export function CartDrawer({
               <div className="flex justify-between text-muted-foreground">
                 <dt>Shipping</dt>
                 <dd className="tabular-nums">
-                  {shippingTotal > 0 ? nzd(shippingTotal) : "Free"}
+                  {shippingReady
+                    ? shippingTotal > 0
+                      ? nzd(shippingTotal)
+                      : "Free"
+                    : "Select options"}
                 </dd>
               </div>
               <div className="flex justify-between text-muted-foreground">
@@ -165,12 +171,15 @@ export function CartDrawer({
               </div>
               <div className="flex justify-between border-t border-border pt-1.5 text-base font-semibold">
                 <dt>Total</dt>
-                <dd className="tabular-nums text-accent">{nzd(total)}</dd>
+                <dd className="tabular-nums text-accent">
+                  {shippingReady ? nzd(total) : nzd(subtotal)}
+                </dd>
               </div>
             </dl>
             <p className="text-xs leading-relaxed text-muted-foreground">
-              Prices and shipping are pulled live from TradeMe and shown exactly
-              as listed. Totals are calculated on your device.
+              {packingLabel(itemCount, packages, shippingReady)}. Packs of 3
+              share the dearest option; every extra 3 items add the next
+              dearest.
             </p>
             <div className="flex gap-2">
               <Button type="button" variant="outline" onClick={clear}>
@@ -178,7 +187,7 @@ export function CartDrawer({
               </Button>
               <Button asChild className="flex-1">
                 <Link to="/checkout" onClick={onClose}>
-                  Checkout · {nzd(total)}
+                  Checkout
                 </Link>
               </Button>
             </div>
