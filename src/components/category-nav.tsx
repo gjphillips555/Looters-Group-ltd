@@ -30,8 +30,8 @@ export function CategoryNav() {
   return (
     <div className="mb-8">
       <div className="hidden md:block">
-        <div className="grid grid-cols-3 gap-3">
-          {SHOP_CATEGORIES.filter((c) => c.id !== "all").map((c) => (
+        <div className="grid grid-cols-4 gap-3">
+          {SHOP_CATEGORIES.map((c) => (
             <CategoryButton
               key={c.id}
               label={c.label}
@@ -39,14 +39,6 @@ export function CategoryNav() {
               onClick={() => select(c.id)}
             />
           ))}
-        </div>
-        <div className="mt-3 flex justify-center">
-          <CategoryButton
-            label="All products"
-            active={active === "all"}
-            onClick={() => select("all")}
-            className="min-w-[220px]"
-          />
         </div>
       </div>
 

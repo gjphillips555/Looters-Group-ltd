@@ -6,7 +6,7 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
-  --font-mark: "Luckiest Guy", "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-mark: "Oswald", "Sora", ui-sans-serif, system-ui, sans-serif;
 
   --color-background: oklch(0.17 0.03 300);
   --color-foreground: oklch(0.96 0.01 300);
@@ -150,13 +150,15 @@ html.light {
 
 .logo-mark {
   font-family: var(--font-mark);
-  font-weight: 400;
-  letter-spacing: 0.03em;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 0.04em;
   line-height: 1.05;
+  text-transform: uppercase;
   color: #ffffff;
-  -webkit-text-stroke: 5px #111018;
+  -webkit-text-stroke: 4px #111018;
   paint-order: stroke fill;
-  text-shadow: 2px 3px 0 #111018;
+  text-shadow: 2px 2px 0 #111018;
   transition: color 160ms ease;
 }
 
