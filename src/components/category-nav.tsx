@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   SHOP_CATEGORIES,
@@ -8,8 +9,16 @@ import {
 import { cn } from "@/lib/utils";
 
 export function CategoryNav() {
+  const navigate = useNavigate();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const category = useProductSearch((s) => s.category);
   const setCategory = useProductSearch((s) => s.setCategory);
+  const onShop = pathname === "/shop";
+
+  function select(id: ShopCategoryId) {
+    setCategory(id);
+    if (!onShop) void navigate({ to: "/shop" });
+  }
 
   return (
     <div className="mb-8">
@@ -19,16 +28,16 @@ export function CategoryNav() {
             <CategoryButton
               key={c.id}
               label={c.label}
-              active={category === c.id}
-              onClick={() => setCategory(c.id)}
+              active={onShop && category === c.id}
+              onClick={() => select(c.id)}
             />
           ))}
         </div>
         <div className="mt-3 flex justify-center">
           <CategoryButton
             label="All products"
-            active={category === "all"}
-            onClick={() => setCategory("all")}
+            active={onShop && category === "all"}
+            onClick={() => select("all")}
             className="min-w-[220px]"
           />
         </div>
@@ -36,8 +45,8 @@ export function CategoryNav() {
 
       <div className="md:hidden">
         <ButtonCarousel
-          category={category}
-          onSelect={setCategory}
+          category={onShop ? category : undefined}
+          onSelect={select}
         />
       </div>
     </div>
@@ -76,7 +85,7 @@ function ButtonCarousel({
   category,
   onSelect,
 }: {
-  category: ShopCategoryId;
+  category?: ShopCategoryId;
   onSelect: (id: ShopCategoryId) => void;
 }) {
   const items = SHOP_CATEGORIES;
@@ -133,7 +142,10 @@ function ButtonCarousel({
     >
       <div className="overflow-hidden px-10">
         <div
-          className={cn("flex w-full", anim && "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]")}
+          className={cn(
+            "flex w-full",
+            anim && "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          )}
           style={{ transform: `translateX(-${index * 50}%)` }}
           onTransitionEnd={(e) => {
             if (e.target !== e.currentTarget) return;

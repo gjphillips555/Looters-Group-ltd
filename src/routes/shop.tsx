@@ -1,0 +1,33 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { AppShell } from "@/components/app-shell";
+import { BrandTicker } from "@/components/brand-ticker";
+import { CategoryNav } from "@/components/category-nav";
+import { ProductGrid } from "@/components/product-grid";
+import { getCatalog } from "@/lib/catalog";
+import { SHOP_CATEGORIES, useProductSearch } from "@/lib/product-search";
+
+export const Route = createFileRoute("/shop")({
+  loader: () => getCatalog(),
+  component: ShopPage,
+});
+
+function ShopPage() {
+  const catalog = Route.useLoaderData();
+  const category = useProductSearch((s) => s.category);
+  const label =
+    SHOP_CATEGORIES.find((c) => c.id === category)?.label ?? "All products";
+
+  return (
+    <AppShell>
+      <BrandTicker />
+      <CategoryNav />
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <h1 className="font-display text-xl font-semibold">{label}</h1>
+        <p className="text-sm text-muted-foreground">
+          {catalog.products.length} finds
+        </p>
+      </div>
+      <ProductGrid products={catalog.products} error={catalog.error} />
+    </AppShell>
+  );
+}

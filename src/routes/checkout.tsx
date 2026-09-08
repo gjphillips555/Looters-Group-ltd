@@ -150,7 +150,7 @@ function CheckoutPage() {
             That product may have sold. Add something else from the shop.
           </p>
           <Button asChild className="mt-6">
-            <Link to="/">Browse shop</Link>
+            <Link to="/shop">Browse shop</Link>
           </Button>
         </div>
       </AppShell>
@@ -166,7 +166,7 @@ function CheckoutPage() {
             Add a product before checking out.
           </p>
           <Button asChild className="mt-6">
-            <Link to="/">Browse shop</Link>
+            <Link to="/shop">Browse shop</Link>
           </Button>
         </div>
       </AppShell>

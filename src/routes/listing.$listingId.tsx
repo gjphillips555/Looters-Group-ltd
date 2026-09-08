@@ -30,7 +30,7 @@ function ProductNotFound() {
           That item may have sold or been taken down.
         </p>
         <Button asChild className="mt-6">
-          <Link to="/">Back to shop</Link>
+          <Link to="/shop">Back to shop</Link>
         </Button>
       </div>
     </AppShell>
@@ -91,7 +91,7 @@ function ProductPage() {
   return (
     <AppShell>
       <p className="mb-6 text-sm text-muted-foreground">
-        <Link to="/" className="hover:text-foreground">
+        <Link to="/shop" className="hover:text-foreground">
           Shop
         </Link>
         <span className="mx-2">/</span>
@@ -258,7 +258,7 @@ function ProductPage() {
               </>
             ) : (
               <Button asChild variant="outline">
-                <Link to="/">Back to shop</Link>
+                <Link to="/shop">Back to shop</Link>
               </Button>
             )}
           </div>

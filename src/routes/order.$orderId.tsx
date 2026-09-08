@@ -54,7 +54,7 @@ function OrderPage() {
             This confirmation is stored on this device only.
           </p>
           <Button asChild className="mt-6">
-            <Link to="/">Back to shop</Link>
+            <Link to="/shop">Back to shop</Link>
           </Button>
         </div>
       </AppShell>
@@ -97,7 +97,7 @@ function OrderPage() {
               />
             )}
             <Button asChild variant={paid ? "default" : "outline"} className="flex-1">
-              <Link to="/">Keep shopping</Link>
+              <Link to="/shop">Keep shopping</Link>
             </Button>
           </div>
         </div>

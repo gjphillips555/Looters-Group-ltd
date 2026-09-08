@@ -17,7 +17,7 @@ export function ShopSearch({
   const setQuery = useProductSearch((s) => s.setQuery);
 
   function goShop() {
-    if (pathname !== "/") void navigate({ to: "/" });
+    if (pathname !== "/shop") void navigate({ to: "/shop" });
   }
 
   return (
