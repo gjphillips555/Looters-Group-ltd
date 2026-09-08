@@ -8,7 +8,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
   return (
     <header className="sticky top-0 z-30 overflow-visible">
-      <div className="relative">
+      <div className="header-stack relative">
         <div className="header-key">
           <div className="header-key-cap">
             <div className="relative mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:gap-4 sm:px-6">

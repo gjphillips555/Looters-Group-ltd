@@ -7,7 +7,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [cartOpen, setCartOpen] = useState(false);
 
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="flex min-h-dvh flex-col overflow-x-clip">
       <SiteHeader onOpenCart={() => setCartOpen(true)} />
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">
         {children}

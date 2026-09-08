@@ -68,7 +68,6 @@ html.light {
 
   html {
     color-scheme: dark;
-    overflow-x: clip;
   }
 
   html.light {
@@ -78,7 +77,6 @@ html.light {
   body {
     @apply bg-background font-sans text-foreground antialiased;
     min-height: 100dvh;
-    overflow-x: clip;
     transition:
       background-color 180ms ease,
       color 180ms ease;
@@ -114,7 +112,7 @@ html.light {
   position: relative;
   left: 50%;
   right: 50%;
-  margin-top: 0.55rem;
+  margin-top: -2.4rem;
   margin-bottom: 0.35rem;
   margin-left: -50vw;
   margin-right: -50vw;
@@ -301,6 +299,16 @@ a.kb-key {
   color: inherit;
 }
 
+.header-stack {
+  overflow: visible;
+}
+
+@media (min-width: 768px) {
+  .header-stack {
+    padding-bottom: 9.8rem;
+  }
+}
+
 .header-key {
   background: #141018;
   padding-bottom: 0.45rem;
@@ -484,6 +492,8 @@ html.light .logo-hang-key {
   flex-direction: column;
   justify-content: space-between;
   color: #c6e031;
+  font-family: var(--font-oled);
+  font-weight: 600;
 }
 
 .logo-hang:hover .boot-done .cmd-rest,
@@ -514,8 +524,9 @@ html.light .logo-hang-key {
 
 .oled-time {
   display: block;
-  font-size: 1.85rem;
-  letter-spacing: 0.08em;
+  font-size: 3.05rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-align: center;
   line-height: 1;
 }
@@ -603,7 +614,7 @@ html.light .logo-hang-key {
 }
 
 .cmd-screen-sm .oled-time {
-  font-size: 1.35rem;
+  font-size: 1.45rem;
 }
 
 .cmd-screen-sm .cmd-pixel-logo {
