@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/app-shell";
 import { BrandTicker } from "@/components/brand-ticker";
+import { CategoryNav } from "@/components/category-nav";
 import { ProductGrid } from "@/components/product-grid";
 import { ARTWORK } from "@/lib/artwork";
 import { getCatalog } from "@/lib/catalog";
@@ -26,6 +27,7 @@ function Home() {
   return (
     <AppShell>
       <BrandTicker />
+      <CategoryNav />
       <section className="mb-8 grid items-center gap-6 rounded-2xl border border-border bg-card px-4 py-5 sm:grid-cols-[minmax(0,240px)_1fr] sm:gap-8 sm:px-6 sm:py-6 lg:grid-cols-[minmax(0,280px)_1fr] lg:px-8">
         <img
           src={ARTWORK.buildSpec}

@@ -1,13 +1,12 @@
 import { useState, useSyncExternalStore } from "react";
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Search, ShoppingCart } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { ShoppingCart } from "lucide-react";
 import { CartDrawer } from "@/components/cart-drawer";
 import { BrandLogo } from "@/components/brand-logo";
 import { GoogleMark } from "@/components/google-mark";
+import { ShopSearch } from "@/components/shop-search";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Input } from "@/components/ui/input";
 import { useCartTotals } from "@/lib/cart-store";
-import { useProductSearch } from "@/lib/product-search";
 import { SITE_DOMAIN } from "@/lib/site";
 import { authEnabled, signIn, signOut } from "@/lib/auth/client";
 import { hasGateSessionMarker } from "@/lib/auth/gate-session-marker";
@@ -31,7 +30,7 @@ export function SiteHeader() {
           </span>
         </Link>
 
-        <HeaderSearch />
+        <ShopSearch className="hidden w-[200px] shrink-0 md:block lg:w-[240px]" />
 
         <div className="ml-auto flex shrink-0 items-center gap-2">
           <ThemeToggle />
@@ -59,39 +58,6 @@ export function SiteHeader() {
 
 const subscribeToNothing = () => () => {};
 const noGateSessionOnServer = () => false;
-
-function HeaderSearch() {
-  const navigate = useNavigate();
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const query = useProductSearch((s) => s.query);
-  const setQuery = useProductSearch((s) => s.setQuery);
-
-  function goShop() {
-    if (pathname !== "/") void navigate({ to: "/" });
-  }
-
-  return (
-    <form
-      className="relative hidden min-w-0 flex-1 md:block"
-      onSubmit={(e) => {
-        e.preventDefault();
-        goShop();
-      }}
-    >
-      <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-      <Input
-        value={query}
-        onChange={(e) => {
-          setQuery(e.target.value);
-          goShop();
-        }}
-        placeholder="Search products"
-        aria-label="Search products"
-        className="h-10 bg-secondary/40 pl-9"
-      />
-    </form>
-  );
-}
 
 function HeaderAccount() {
   const { user, isPending } = useCurrentUserState();

@@ -4,6 +4,7 @@ export const ARTWORK = {
   logoLight: "/artwork/logo-light.png",
   payments: "/artwork/payment-methods.png",
   favicon: "/artwork/favicon.svg",
+  faviconPng: "/artwork/favicon-32.png",
   appleIcon: "/artwork/apple-icon.png",
   og: "/artwork/og.jpg",
   buildSpec: "/artwork/build-spec.webp",
