@@ -1,0 +1,41 @@
+/** Individual brand marks extracted to /public/artwork/brands */
+export const BRANDS = [
+  { file: "intel.png", name: "Intel" },
+  { file: "amd.png", name: "AMD" },
+  { file: "nvidia.png", name: "NVIDIA" },
+  { file: "radeon.png", name: "Radeon" },
+  { file: "microsoft.png", name: "Microsoft" },
+  { file: "western-digital.png", name: "Western Digital" },
+  { file: "asus.png", name: "ASUS" },
+  { file: "msi.png", name: "MSI" },
+  { file: "evga.png", name: "EVGA" },
+  { file: "gigabyte.png", name: "GIGABYTE" },
+  { file: "corsair.png", name: "CORSAIR" },
+  { file: "kingston.png", name: "Kingston" },
+  { file: "razer.png", name: "Razer" },
+  { file: "nzxt.png", name: "NZXT" },
+  { file: "samsung.png", name: "Samsung" },
+  { file: "be-quiet.png", name: "be quiet!" },
+  { file: "adata.png", name: "ADATA" },
+  { file: "inwin.png", name: "InWin" },
+  { file: "thermaltake.png", name: "Thermaltake" },
+  { file: "enermax.png", name: "Enermax" },
+  { file: "deepcool.png", name: "Deepcool" },
+  { file: "seagate.png", name: "Seagate" },
+  { file: "raidmax.png", name: "RAIDMAX" },
+  { file: "asetek.png", name: "Asetek" },
+  { file: "gskill.png", name: "G.SKILL" },
+  { file: "zotac.png", name: "ZOTAC" },
+  { file: "asrock.png", name: "ASRock" },
+  { file: "seasonic.png", name: "Seasonic" },
+  { file: "gamdias.png", name: "GAMDIAS" },
+  { file: "sceptre.png", name: "Sceptre" },
+  { file: "creative.png", name: "Creative" },
+  { file: "vive.png", name: "VIVE" },
+  { file: "hyperx.png", name: "HyperX" },
+  { file: "vertagear.png", name: "Vertagear" },
+] as const;
+
+export function brandSrc(file: string) {
+  return `/artwork/brands/${file}`;
+}

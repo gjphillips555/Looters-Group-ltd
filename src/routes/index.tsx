@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/app-shell";
+import { BrandTicker } from "@/components/brand-ticker";
 import { ClockWidget } from "@/components/clock-widget";
 import { ProductGrid } from "@/components/product-grid";
 import { getCatalog } from "@/lib/catalog";
@@ -14,6 +15,7 @@ function Home() {
 
   return (
     <AppShell>
+      <BrandTicker />
       <section className="mb-8 flex flex-col gap-3 rounded-2xl border border-border bg-card px-6 py-8 sm:px-8">
         <ClockWidget />
         <h1 className="text-balance font-display text-3xl font-bold tracking-tight sm:text-4xl">
