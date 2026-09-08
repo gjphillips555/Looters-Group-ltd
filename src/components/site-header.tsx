@@ -23,11 +23,21 @@ export function SiteHeader() {
         <div className="relative mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:gap-4 sm:px-6">
           <Link
             to="/"
-            className="relative z-40 h-14 w-[210px] shrink-0 sm:h-16 sm:w-[260px]"
+            className="flex shrink-0 flex-col items-start gap-0.5 md:hidden"
             aria-label="Looters Computas home"
           >
-            <BrandLogo className="absolute left-0 top-0 h-[5.75rem] w-auto max-w-[240px] object-contain object-left-top drop-shadow-[0_8px_16px_rgba(0,0,0,0.28)] sm:h-[6.75rem] sm:max-w-[280px]" />
-            <span className="absolute left-1 top-[5.85rem] text-[10px] font-medium leading-none tracking-wide text-muted-foreground sm:top-[6.9rem] sm:text-[11px]">
+            <BrandLogo className="h-12 w-auto max-w-[200px] object-contain" />
+            <span className="pl-0.5 text-[10px] font-medium leading-none tracking-wide text-muted-foreground">
+              {SITE_DOMAIN}
+            </span>
+          </Link>
+          <Link
+            to="/"
+            className="relative z-40 hidden h-16 w-[260px] shrink-0 md:block"
+            aria-label="Looters Computas home"
+          >
+            <BrandLogo className="absolute left-0 top-0 h-[6.75rem] w-auto max-w-[280px] object-contain object-left-top drop-shadow-[0_8px_16px_rgba(0,0,0,0.28)]" />
+            <span className="absolute left-1 top-[6.9rem] text-[11px] font-medium leading-none tracking-wide text-muted-foreground">
               {SITE_DOMAIN}
             </span>
           </Link>

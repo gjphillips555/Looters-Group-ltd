@@ -111,12 +111,13 @@ html.light {
   position: relative;
   left: 50%;
   right: 50%;
-  margin-top: 2.75rem;
+  margin-top: -2rem;
   margin-bottom: 1.5rem;
   margin-left: -50vw;
   margin-right: -50vw;
   width: 100vw;
   overflow: hidden;
+  z-index: 0;
   border-block: 1px solid var(--color-border);
   background: #fff;
   height: 32px;
