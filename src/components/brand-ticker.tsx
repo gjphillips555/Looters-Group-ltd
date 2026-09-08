@@ -7,7 +7,7 @@ export function BrandTicker() {
     <div
       className="brand-ticker"
       role="img"
-      aria-label="Brands we stock: Intel, AMD, NVIDIA, ASUS, MSI, Corsair, Samsung, and more"
+      aria-label="Brands we stock: Intel, AMD, NVIDIA, ASUS ROG, MSI, Corsair, Razer, Logitech G, Attack Shark, and more"
     >
       <div className="brand-ticker-track">
         {loop.map((brand, i) => (
@@ -15,7 +15,7 @@ export function BrandTicker() {
             key={`${brand.file}-${i}`}
             src={brandSrc(brand.file)}
             alt={i < BRANDS.length ? brand.name : ""}
-            height={22}
+            height={16}
             draggable={false}
           />
         ))}

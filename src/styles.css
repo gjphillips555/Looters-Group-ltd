@@ -111,24 +111,24 @@ html.light {
   left: 50%;
   right: 50%;
   margin-top: -2rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   margin-left: -50vw;
   margin-right: -50vw;
   width: 100vw;
   overflow: hidden;
   border-block: 1px solid var(--color-border);
   background: #fff;
-  height: 44px;
+  height: 32px;
 }
 
 .brand-ticker-track {
   display: flex;
   align-items: center;
-  gap: 2.4rem;
+  gap: 1.65rem;
   width: max-content;
   height: 100%;
-  padding-inline: 1.4rem;
-  animation: brand-ticker 55s linear infinite;
+  padding-inline: 1.1rem;
+  animation: brand-ticker 48s linear infinite;
 }
 
 .brand-ticker:hover .brand-ticker-track {
@@ -137,9 +137,9 @@ html.light {
 
 .brand-ticker-track img {
   display: block;
-  height: 22px;
+  height: 16px;
   width: auto;
-  max-width: 96px;
+  max-width: 86px;
   object-fit: contain;
   flex-shrink: 0;
 }
