@@ -15,3 +15,17 @@ export function BrandLogo({
     />
   );
 }
+
+export function CmdLogo({ compact = false }: { compact?: boolean }) {
+  return (
+    <span className={compact ? "cmd-screen cmd-screen-sm" : "cmd-screen"}>
+      <span className="cmd-line">{`C:\\LOOTERS>type logo.sys`}</span>
+      <span className="cmd-brand">LOOTERS</span>
+      <span className="cmd-brand cmd-computas">COMPUTAS</span>
+      <span className="cmd-line">
+        {`C:\\LOOTERS>`}
+        <span className="cmd-cursor" />
+      </span>
+    </span>
+  );
+}
