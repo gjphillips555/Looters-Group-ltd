@@ -1,7 +1,7 @@
 /** All shop graphics live in /public/artwork and are served from /artwork/. */
 export const ARTWORK = {
   logoDark: "/artwork/logo.png",
-  logoLight: "/artwork/logo-light.png",
+  logoLight: "/artwork/logo.png",
   payments: "/artwork/payment-methods.png",
   afterpay: "/artwork/afterpay.webp",
   afterpayNews: "/artwork/afterpay-news.webp",
