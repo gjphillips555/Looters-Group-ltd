@@ -17,71 +17,118 @@ export function BrandLogo({
   );
 }
 
+function aucklandParts() {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Pacific/Auckland",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).formatToParts(new Date());
+  const g = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((p) => p.type === type)?.value ?? "00";
+  return {
+    date: `${g("year")}/${g("month")}/${g("day")}`,
+    time: `${g("hour")}:${g("minute")}:${g("second")}`,
+  };
+}
+
 export function CmdLogo({ compact = false }: { compact?: boolean }) {
-  const [scene, setScene] = useState<"shark" | "logo">(() =>
+  const [scene, setScene] = useState<"penguin" | "hud">(() =>
     typeof window !== "undefined" &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      ? "logo"
-      : "shark",
+      ? "hud"
+      : "penguin",
   );
+  const [clock, setClock] = useState(aucklandParts);
 
   useEffect(() => {
-    if (scene === "logo") return;
-    const id = window.setTimeout(() => setScene("logo"), 2600);
+    if (scene === "hud") return;
+    const id = window.setTimeout(() => setScene("hud"), 2600);
     return () => window.clearTimeout(id);
   }, [scene]);
 
+  useEffect(() => {
+    const id = window.setInterval(() => setClock(aucklandParts()), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+
   return (
     <span className={compact ? "cmd-screen cmd-screen-sm" : "cmd-screen"}>
-      <span className="cmd-scan" aria-hidden="true" />
-      {scene === "shark" ? (
+      {scene === "penguin" ? (
         <span className="cmd-boot" aria-hidden="true">
-          <span className="cmd-boot-label">BOOT</span>
-          <PixelShark />
+          <img
+            src={ARTWORK.favicon}
+            alt=""
+            className="pixel-penguin"
+            width={64}
+            height={64}
+          />
         </span>
       ) : (
-        <span className="cmd-logo-in">
-          <span className="cmd-line">{`C:\\LOOTERS>type logo.sys`}</span>
-          <img
-            src={ARTWORK.logoPixel}
-            alt="Looters Computas"
-            className="cmd-pixel-logo"
-          />
-          <span className="cmd-line">
-            {`C:\\LOOTERS>`}
-            <span className="cmd-cursor" />
-          </span>
-        </span>
+        <OledHud compact={compact} date={clock.date} time={clock.time} />
       )}
     </span>
   );
 }
 
-function PixelShark() {
+function OledHud({
+  compact,
+  date,
+  time,
+}: {
+  compact: boolean;
+  date: string;
+  time: string;
+}) {
   return (
-    <svg
-      className="pixel-shark"
-      viewBox="0 0 40 18"
-      width="168"
-      height="76"
-      shapeRendering="crispEdges"
-    >
-      <g fill="#9ad8ff">
-        <rect x="8" y="7" width="18" height="6" />
-        <rect x="6" y="8" width="2" height="4" />
-        <rect x="26" y="8" width="6" height="4" />
-        <rect x="32" y="9" width="4" height="2" />
-        <rect x="14" y="4" width="4" height="3" />
-        <rect x="16" y="2" width="3" height="2" />
-        <rect x="12" y="13" width="5" height="3" />
-        <rect x="10" y="15" width="3" height="2" />
-      </g>
-      <g fill="#7030c0">
-        <rect x="20" y="5" width="3" height="2" />
-        <rect x="22" y="13" width="4" height="2" />
-      </g>
-      <rect x="28" y="9" width="2" height="2" fill="#111018" />
-      <rect x="34" y="9" width="2" height="2" fill="#fff" />
+    <span className="oled-hud">
+      <span className="oled-top">
+        <span className="oled-date">{date}</span>
+        <BatteryIcon />
+      </span>
+      <span className="oled-time">{time}</span>
+      {compact ? null : (
+        <span className="oled-brand">
+          <span>LOOTERS</span>
+          <span>COMPUTAS</span>
+        </span>
+      )}
+      <span className="oled-pills">
+        <span className="oled-pill">WIN</span>
+        <span className="oled-pill oled-pill-wifi">
+          <WifiIcon />
+          2.4G
+        </span>
+        <span className="oled-pill">NUM</span>
+        <span className="oled-pill">A</span>
+        <span className="oled-pill">MIN</span>
+      </span>
+    </span>
+  );
+}
+
+function BatteryIcon() {
+  return (
+    <svg className="oled-battery" viewBox="0 0 28 14" aria-hidden="true">
+      <rect x="1" y="2" width="23" height="10" rx="2" fill="none" stroke="currentColor" strokeWidth="1.6" />
+      <rect x="24.5" y="5" width="2.5" height="4" rx="0.6" fill="currentColor" />
+      <rect x="3.2" y="4.2" width="5" height="5.6" rx="0.6" fill="currentColor" />
+      <rect x="9.2" y="4.2" width="5" height="5.6" rx="0.6" fill="currentColor" />
+      <rect x="15.2" y="4.2" width="5" height="5.6" rx="0.6" fill="currentColor" />
+    </svg>
+  );
+}
+
+function WifiIcon() {
+  return (
+    <svg className="oled-wifi" viewBox="0 0 16 12" aria-hidden="true">
+      <path d="M2 5.2c3.4-3.2 8.6-3.2 12 0" fill="none" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M4.2 7.3c2.2-2 5.4-2 7.6 0" fill="none" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="8" cy="10" r="1.15" fill="currentColor" />
     </svg>
   );
 }
