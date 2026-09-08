@@ -25,7 +25,7 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
           >
             <span
               aria-hidden="true"
-              className="pointer-events-none absolute -left-2.5 top-[4.75rem] h-[3.2rem] w-[18.25rem] rounded-b-2xl bg-background/85 backdrop-blur"
+              className="pointer-events-none absolute -left-2.5 top-[4.75rem] h-[2.2rem] w-[18.25rem] rounded-b-2xl bg-background/85 backdrop-blur"
             />
             <BrandLogo className="absolute left-0 top-0 h-[6.75rem] w-auto max-w-[280px] object-contain object-left-top" />
           </Link>
