@@ -6,5 +6,6 @@ export const ARTWORK = {
   favicon: "/artwork/favicon.svg",
   appleIcon: "/artwork/apple-icon.png",
   og: "/artwork/og.jpg",
-  lootzy: "/artwork/lootzy.png",
+  buildSpec: "/artwork/build-spec.webp",
+  buildSpecFallback: "/artwork/build-spec.jpg",
 } as const;

@@ -15,7 +15,10 @@ export function BrandTicker() {
             key={`${brand.file}-${i}`}
             src={brandSrc(brand.file)}
             alt={i < BRANDS.length ? brand.name : ""}
+            width={86}
             height={16}
+            loading="lazy"
+            decoding="async"
             draggable={false}
           />
         ))}

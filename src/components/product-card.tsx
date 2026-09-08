@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Check, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { getProduct } from "@/lib/catalog";
 import { cartProductFrom, isInCart, useCart } from "@/lib/cart-store";
 import type { Product } from "@/lib/products";
 
@@ -10,20 +11,31 @@ export function ProductCard({ product }: { product: Product }) {
   const add = useCart((s) => s.add);
   const lines = useCart((s) => s.lines);
   const [added, setAdded] = useState(false);
+  const [adding, setAdding] = useState(false);
   const canBuy = product.buyNow && product.amount > 0;
   const inCart = isInCart(product.id, lines);
   const singleOnly = product.maxQty <= 1;
   const alreadyMaxed = inCart && singleOnly;
 
-  function handleAdd(e: MouseEvent) {
+  async function handleAdd(e: MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    add(cartProductFrom(product));
-    setAdded(true);
-    toast.success("Added to cart", {
-      description: "Pick shipping in your cart to tally PayPal.",
-    });
-    window.setTimeout(() => setAdded(false), 1200);
+    if (adding || alreadyMaxed) return;
+    setAdding(true);
+    try {
+      const full = await getProduct({ data: { id: product.id } });
+      add(cartProductFrom(full ?? product));
+      setAdded(true);
+      toast.success("Added to cart", {
+        description: "Pick shipping in your cart to tally PayPal.",
+      });
+      window.setTimeout(() => setAdded(false), 1200);
+    } catch {
+      add(cartProductFrom(product));
+      toast.success("Added to cart");
+    } finally {
+      setAdding(false);
+    }
   }
 
   return (
@@ -37,8 +49,11 @@ export function ProductCard({ product }: { product: Product }) {
           <img
             src={product.photo}
             alt={product.title}
+            width={400}
+            height={400}
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
             loading="lazy"
+            decoding="async"
           />
         ) : (
           <div className="grid h-full place-items-center text-sm text-muted-foreground">
@@ -85,14 +100,14 @@ export function ProductCard({ product }: { product: Product }) {
               type="button"
               size="sm"
               onClick={handleAdd}
-              disabled={alreadyMaxed}
+              disabled={alreadyMaxed || adding}
             >
               {added || alreadyMaxed ? (
                 <Check className="size-4" />
               ) : (
                 <ShoppingCart className="size-4" />
               )}
-              {alreadyMaxed ? "In cart" : added ? "Added" : "Add"}
+              {alreadyMaxed ? "In cart" : added ? "Added" : adding ? "Adding" : "Add"}
             </Button>
           ) : (
             <Button asChild size="sm" variant="outline">

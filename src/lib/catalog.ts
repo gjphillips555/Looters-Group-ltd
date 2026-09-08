@@ -9,7 +9,7 @@ import {
 
 export const MEMBER_ID = "9233545";
 const API_BASE = "https://api.trademe.co.nz/v1";
-const CACHE_MS = 60_000;
+const CACHE_MS = 5 * 60_000;
 /** TradeMe top-level Computers category and every nested subcategory. */
 const COMPUTERS_CATEGORY = "0002";
 
@@ -104,7 +104,7 @@ function tmHeaders(): Record<string, string> {
 async function tmGet<T>(path: string): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     headers: tmHeaders(),
-    signal: AbortSignal.timeout(12_000),
+    signal: AbortSignal.timeout(8_000),
   });
   if (!res.ok) {
     const body = await res.text().catch(() => "");
@@ -118,11 +118,11 @@ function bestPhotos(detail: TradeMeListingDetail, fallback: TradeMeListing): str
     .map((p) => {
       const v = p.Value;
       return (
-        v?.FullSize ||
-        v?.PlusSize ||
         v?.Large ||
         v?.Gallery ||
+        v?.PlusSize ||
         v?.Medium ||
+        v?.FullSize ||
         v?.List ||
         null
       );
@@ -265,21 +265,13 @@ function normalize(listing: TradeMeListing, detail: TradeMeListingDetail | null)
 
 async function loadCatalogFresh(): Promise<Catalog> {
   const data = await tmGet<TradeMeSearchResponse>(
-    `/Search/General.json?member_listing=${MEMBER_ID}&category=${COMPUTERS_CATEGORY}-&rows=100&sort_order=Default`,
+    `/Search/General.json?member_listing=${MEMBER_ID}&category=${COMPUTERS_CATEGORY}-&rows=50&sort_order=Default`,
   );
   const list = data.List ?? [];
-  const details = await Promise.all(list.map((l) => fetchDetail(l.ListingId)));
   const products = list
-    .map((listing, i) => {
-      const detail = details[i] ?? null;
-      const merged = { ...listing, ...(detail ?? {}) };
-      if (!isComputersListing(merged)) return null;
-      return normalize(listing, detail);
-    })
-    .filter((p): p is Product => p !== null);
-  const seller =
-    details.map((d) => mapSeller(d?.Member)).find(Boolean) ?? null;
-  return { products, seller };
+    .filter((listing) => isComputersListing(listing))
+    .map((listing) => normalize(listing, null));
+  return { products, seller: null };
 }
 
 async function getCachedCatalog(): Promise<Catalog> {
@@ -313,13 +305,22 @@ export const getProduct = createServerFn({ method: "GET" })
     try {
       const catalog = await getCachedCatalog();
       const hit = catalog.products.find((p) => p.id === data.id);
-      if (hit) return hit;
       const detail = await fetchDetail(Number(data.id));
-      if (!detail) return null;
+      if (!detail) return hit ?? null;
       const memberId = detail.Member?.MemberId ?? detail.MemberId;
-      if (memberId && String(memberId) !== MEMBER_ID) return null;
-      if (!isComputersListing(detail)) return null;
-      return normalize(detail, detail);
+      if (memberId && String(memberId) !== MEMBER_ID) return hit ?? null;
+      if (!isComputersListing(detail)) return hit ?? null;
+      const product = normalize(detail, detail);
+      if (cache) {
+        cache.catalog = {
+          ...cache.catalog,
+          products: cache.catalog.products.map((p) =>
+            p.id === product.id ? product : p,
+          ),
+          seller: cache.catalog.seller ?? mapSeller(detail.Member),
+        };
+      }
+      return product;
     } catch (error) {
       console.error("[looters] product error:", error);
       return null;
