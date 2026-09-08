@@ -121,7 +121,7 @@ function Home() {
       <div className="mb-4 mt-10 flex items-center justify-between gap-4">
         <h2 className="font-display text-xl font-semibold">Browse the loot</h2>
         <p className="text-sm text-muted-foreground">
-          {catalog.products.length} finds below
+          Afterpay available
         </p>
       </div>
       <ProductGrid
