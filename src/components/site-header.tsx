@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { AccountButton } from "@/components/account-button";
 import { BrandLogo } from "@/components/brand-logo";
 import { CartButton } from "@/components/cart-button";
-import { ShopSearch } from "@/components/shop-search";
+import { MobileSearchToggle, ShopSearch } from "@/components/shop-search";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
@@ -30,8 +30,12 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
             <BrandLogo className="absolute left-0 top-0 h-[6.75rem] w-auto max-w-[280px] object-contain object-left-top" />
           </Link>
 
+          <div className="pointer-events-none absolute inset-y-0 left-0 right-0 hidden items-center justify-center md:flex">
+            <ShopSearch className="pointer-events-auto w-[200px] lg:w-[280px] xl:w-[320px]" />
+          </div>
+
           <div className="ml-auto flex shrink-0 items-center gap-2">
-            <ShopSearch className="hidden w-[200px] shrink-0 md:block lg:w-[240px]" />
+            <MobileSearchToggle />
             <ThemeToggle />
             <AccountButton />
             <CartButton onClick={onOpenCart} />
