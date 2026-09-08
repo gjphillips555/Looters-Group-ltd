@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Key mock — category buttons</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=IBM+Plex+Sans:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #16121c;
+        --desk: #1c1724;
+        --key: #2a2433;
+        --key-top: #353044;
+        --legend: #f6f3fb;
+        --purple: #7030c0;
+        --purple-lit: #9b5cff;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--legend); }
+      body {
+        font-family: "IBM Plex Sans", system-ui, sans-serif;
+        min-height: 100dvh;
+        display: grid;
+        place-items: center;
+        padding: 32px 16px 48px;
+      }
+      .wrap { width: min(920px, 100%); }
+      h1 {
+        font-family: Oswald, sans-serif;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin: 0 0 8px;
+        font-size: 1.4rem;
+      }
+      p { margin: 0 0 28px; color: #9a90a8; font-size: 0.95rem; line-height: 1.5; }
+      .deck {
+        background: linear-gradient(180deg, #241e2e, #141018);
+        border: 1px solid rgba(255,255,255,.08);
+        border-radius: 22px;
+        padding: 28px 22px 32px;
+        box-shadow: 0 24px 50px rgba(0,0,0,.35);
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 1.1fr 1.1fr 1.35fr 0.75fr;
+        gap: 14px;
+      }
+      @media (max-width: 640px) {
+        .row { grid-template-columns: 1fr 1fr; }
+      }
+      .key {
+        appearance: none;
+        border: 0;
+        cursor: pointer;
+        position: relative;
+        height: 72px;
+        padding: 0 10px 8px;
+        border-radius: 12px;
+        background: #1a1620;
+        box-shadow:
+          0 8px 0 #0c0a10,
+          0 12px 18px rgba(0,0,0,.35);
+        transition:
+          transform 80ms ease,
+          box-shadow 80ms ease;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .key .cap {
+        display: grid;
+        place-items: center;
+        height: 100%;
+        border-radius: 10px;
+        background: linear-gradient(180deg, var(--key-top), var(--key));
+        border: 1px solid rgba(255,255,255,.08);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
+        color: var(--legend);
+        font-family: Oswald, sans-serif;
+        font-weight: 700;
+        font-size: clamp(0.78rem, 2.2vw, 1.05rem);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .key:hover .cap { filter: brightness(1.08); }
+      .key:active,
+      .key.is-down {
+        transform: translateY(7px);
+        box-shadow:
+          0 1px 0 #0c0a10,
+          0 4px 8px rgba(0,0,0,.3);
+      }
+      .key.is-down .cap {
+        background: linear-gradient(180deg, #5a28a0, var(--purple));
+        color: #fff;
+        text-shadow: 0 0 12px rgba(155, 92, 255, .8);
+        border-color: rgba(255,255,255,.18);
+      }
+      .hint { margin-top: 18px; font-size: 0.8rem; color: #9a90a8; }
+      a { color: #cbb4ff; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Category keys</h1>
+      <p>Click a key. It drops, the shadow collapses, purple fills the cap. Click again to pop it back. Only one stays down.</p>
+      <div class="deck">
+        <div class="row" id="row">
+          <button class="key" type="button" data-id="desktops"><span class="cap">Desktops</span></button>
+          <button class="key" type="button" data-id="laptops"><span class="cap">Laptops</span></button>
+          <button class="key" type="button" data-id="components"><span class="cap">Components</span></button>
+          <button class="key" type="button" data-id="all"><span class="cap">All</span></button>
+        </div>
+      </div>
+      <p class="hint">Mock only — shop buttons are unchanged. <a href="/">Back to shop</a></p>
+    </div>
+    <script>
+      const keys = [...document.querySelectorAll(".key")];
+      keys.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const on = btn.classList.contains("is-down");
+          keys.forEach((k) => k.classList.remove("is-down"));
+          if (!on) btn.classList.add("is-down");
+        });
+      });
+    </script>
+  </body>
+</html>

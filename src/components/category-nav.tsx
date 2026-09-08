@@ -68,11 +68,9 @@ function CategoryButton({
       type="button"
       onClick={onClick}
       data-active={active ? "true" : "false"}
-      className={cn("logo-mark-btn w-full", className)}
+      className={cn("kb-key", className)}
     >
-      <span className="logo-mark block text-[1.65rem] sm:text-[1.9rem] md:text-[2.1rem]">
-        {label}
-      </span>
+      <span className="kb-cap">{label === "All products" ? "All" : label}</span>
     </button>
   );
 }

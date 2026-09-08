@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as KeysRouteImport } from './routes/keys'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ListingListingIdRouteImport } from './routes/listing.$listingId'
@@ -26,6 +27,11 @@ const IndexRoute = IndexRouteImport.update({
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KeysRoute = KeysRouteImport.update({
+  id: '/keys',
+  path: '/keys',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -62,6 +68,7 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
+  '/keys': typeof KeysRoute
   '/login': typeof LoginRoute
   '/shop': typeof ShopRouteWithChildren
   '/listing/$listingId': typeof ListingListingIdRoute
@@ -72,6 +79,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
+  '/keys': typeof KeysRoute
   '/login': typeof LoginRoute
   '/shop': typeof ShopRouteWithChildren
   '/listing/$listingId': typeof ListingListingIdRoute
@@ -83,6 +91,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
+  '/keys': typeof KeysRoute
   '/login': typeof LoginRoute
   '/shop': typeof ShopRouteWithChildren
   '/listing/$listingId': typeof ListingListingIdRoute
@@ -95,6 +104,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/checkout'
+    | '/keys'
     | '/login'
     | '/shop'
     | '/listing/$listingId'
@@ -105,6 +115,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/checkout'
+    | '/keys'
     | '/login'
     | '/shop'
     | '/listing/$listingId'
@@ -115,6 +126,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/checkout'
+    | '/keys'
     | '/login'
     | '/shop'
     | '/listing/$listingId'
@@ -126,6 +138,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CheckoutRoute: typeof CheckoutRoute
+  KeysRoute: typeof KeysRoute
   LoginRoute: typeof LoginRoute
   ShopRoute: typeof ShopRouteWithChildren
   ListingListingIdRoute: typeof ListingListingIdRoute
@@ -147,6 +160,13 @@ declare module '@tanstack/react-router' {
       path: '/checkout'
       fullPath: '/checkout'
       preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/keys': {
+      id: '/keys'
+      path: '/keys'
+      fullPath: '/keys'
+      preLoaderRoute: typeof KeysRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -207,6 +227,7 @@ const ShopRouteWithChildren = ShopRoute._addFileChildren(ShopRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CheckoutRoute: CheckoutRoute,
+  KeysRoute: KeysRoute,
   LoginRoute: LoginRoute,
   ShopRoute: ShopRouteWithChildren,
   ListingListingIdRoute: ListingListingIdRoute,

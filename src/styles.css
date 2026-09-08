@@ -185,6 +185,75 @@ html.light .logo-mark {
   color: #7030c0;
 }
 
+.kb-key {
+  appearance: none;
+  border: 0;
+  width: 100%;
+  height: 4.25rem;
+  padding: 0 0.5rem 0.45rem;
+  border-radius: 0.8rem;
+  background: #141018;
+  box-shadow:
+    0 0.45rem 0 #0a080e,
+    0 0.7rem 1rem color-mix(in oklab, black 35%, transparent);
+  transition:
+    transform 80ms ease,
+    box-shadow 80ms ease;
+}
+
+.kb-key .kb-cap {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  border-radius: 0.65rem;
+  border: 1px solid color-mix(in oklab, white 10%, transparent);
+  background: linear-gradient(180deg, #3a3348, #2a2436);
+  box-shadow: inset 0 1px 0 color-mix(in oklab, white 16%, transparent);
+  color: #f4f0fa;
+  font-family: var(--font-mark);
+  font-weight: 700;
+  font-size: clamp(0.78rem, 1.6vw, 1.05rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.kb-key:hover .kb-cap {
+  filter: brightness(1.08);
+}
+
+.kb-key:active,
+.kb-key[data-active="true"] {
+  transform: translateY(0.4rem);
+  box-shadow:
+    0 0.08rem 0 #0a080e,
+    0 0.25rem 0.5rem color-mix(in oklab, black 30%, transparent);
+}
+
+.kb-key[data-active="true"] .kb-cap {
+  background: linear-gradient(180deg, #8a4ee0, #7030c0);
+  color: #fff;
+  border-color: color-mix(in oklab, white 18%, transparent);
+  text-shadow: 0 0 0.7rem color-mix(in oklab, #9b5cff 70%, transparent);
+}
+
+html.light .kb-key {
+  background: #d9d4e2;
+  box-shadow:
+    0 0.45rem 0 #b7b0c4,
+    0 0.7rem 1rem color-mix(in oklab, black 12%, transparent);
+}
+
+html.light .kb-key .kb-cap {
+  background: linear-gradient(180deg, #f7f4fb, #e6e1ee);
+  color: #1b1524;
+  border-color: color-mix(in oklab, black 10%, transparent);
+}
+
+html.light .kb-key[data-active="true"] .kb-cap {
+  background: linear-gradient(180deg, #8a4ee0, #7030c0);
+  color: #fff;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
