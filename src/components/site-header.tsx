@@ -15,7 +15,6 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
               <div className="flex shrink-0 md:hidden">
                 <CmdLogo compact />
               </div>
-              <div className="hidden h-14 w-[24.5rem] shrink-0 md:block" />
 
               <div className="pointer-events-none absolute inset-y-0 left-0 right-0 hidden items-center justify-center md:flex">
                 <ShopSearch className="pointer-events-auto w-[200px] lg:w-[280px] xl:w-[320px]" />
@@ -29,17 +28,17 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
               </div>
             </div>
           </div>
-        </div>
 
-        <Link
-          to="/"
-          className="logo-hang hidden md:block"
-          aria-label="Looters Computas home"
-        >
-          <span className="logo-hang-key">
-            <CmdLogo />
-          </span>
-        </Link>
+          <Link
+            to="/"
+            className="logo-hang hidden md:block"
+            aria-label="Looters Computas home"
+          >
+            <span className="logo-hang-key">
+              <CmdLogo />
+            </span>
+          </Link>
+        </div>
       </div>
     </header>
   );
