@@ -1,7 +1,11 @@
 import { KeyButton } from "@/components/key-button";
+import { useDenCombo } from "@/lib/den-combo";
 import { scrollPage } from "@/lib/shop-nav";
 
 export function PageScrollKeys() {
+  const armed = useDenCombo((s) => s.armed);
+  const bump = useDenCombo((s) => s.bump);
+
   return (
     <div className="pg-float" aria-label="Page scroll">
       <KeyButton
@@ -14,7 +18,12 @@ export function PageScrollKeys() {
       <KeyButton
         size="sm"
         aria-label="Jump to bottom"
-        onClick={() => scrollPage("down")}
+        active={armed}
+        className={armed ? "pg-armed" : undefined}
+        onClick={() => {
+          const locked = bump();
+          if (!locked) scrollPage("down");
+        }}
       >
         PgDn
       </KeyButton>

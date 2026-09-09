@@ -8,10 +8,12 @@ export function ShopSearch({
   className,
   inputClassName,
   autoFocus = false,
+  placeholder = "Search Products",
 }: {
   className?: string;
   inputClassName?: string;
   autoFocus?: boolean;
+  placeholder?: string;
 }) {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -39,7 +41,7 @@ export function ShopSearch({
             setQuery(e.target.value);
             goShop();
           }}
-          placeholder="Search"
+          placeholder={placeholder}
           aria-label="Search products"
           className={cn("kb-search-input", inputClassName)}
         />
@@ -76,8 +78,8 @@ export function MobileSearchToggle() {
         </span>
       </button>
       {open ? (
-        <div className="absolute right-0 top-[calc(100%+0.55rem)] z-50 w-[min(18.5rem,calc(100vw-1.5rem))] rounded-xl border border-border bg-background p-2 shadow-xl">
-          <ShopSearch autoFocus />
+        <div className="absolute left-0 top-[calc(100%+0.55rem)] z-50 w-[min(18.5rem,calc(100vw-1.5rem))] rounded-xl border border-border bg-background p-2 shadow-xl">
+          <ShopSearch autoFocus placeholder="Search Products:" />
         </div>
       ) : null}
     </div>

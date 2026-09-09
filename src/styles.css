@@ -1482,3 +1482,207 @@ html.light .header-key-cap-solid {
   box-shadow: 0 0.28rem 0 #4a4038, 0 0 10px #c44dffaa;
 }
 
+.kb-key.pg-armed {
+  z-index: 0;
+  transform: translateY(0.18rem);
+  animation: pg-red 0.5s steps(1, end) infinite;
+}
+
+.kb-key.pg-armed .kb-cap {
+  background: linear-gradient(180deg, #ff8a8a, #e11d1d) !important;
+  color: #fff !important;
+  border-color: #ffb0b0;
+}
+
+@keyframes pg-red {
+  50% {
+    box-shadow:
+      0 0.08rem 0 #7a1010,
+      0 0 0 color-mix(in oklab, red 0%, transparent);
+    filter: brightness(0.85);
+  }
+}
+
+.den-shell {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: #0b0b0c;
+  color: #d6de3a;
+  font-family: var(--font-cmd), ui-monospace, monospace;
+}
+
+.den-card {
+  width: min(26rem, 100%);
+  padding: 1.4rem 1.3rem 1.2rem;
+  border: 1px solid #2a3310;
+  background: #111208;
+  box-shadow: 0 0 40px #0a1200;
+}
+
+.den-wide {
+  width: min(42rem, 100%);
+}
+
+.den-kicker {
+  margin: 0.6rem 0 0.2rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #7a8844;
+}
+
+.den-card h1 {
+  margin: 0 0 1rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.den-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.den-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: #a3b15a;
+}
+
+.den-form input,
+.den-letter input {
+  background: #050603;
+  border: 1px solid #3a4418;
+  color: #e8f08a;
+  padding: 0.45rem 0.55rem;
+  font: inherit;
+}
+
+.den-hint {
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: #8a9658;
+}
+
+.den-error {
+  color: #ff5a5a;
+  font-size: 0.78rem;
+}
+
+.den-switch,
+.den-google {
+  margin-top: 0.7rem;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  color: #d6de3a;
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+  text-align: center;
+}
+
+.den-google {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 1px solid #3a4418;
+  padding: 0.45rem;
+}
+
+.den-mail {
+  min-height: 100dvh;
+  background: #e8e4dc;
+  color: #1a1a1a;
+  display: grid;
+  place-items: start center;
+  padding: 2rem 1rem;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.den-letter {
+  width: min(36rem, 100%);
+  background: #fff;
+  padding: 1.4rem 1.5rem 1.6rem;
+  border: 1px solid #d0cbc2;
+  box-shadow: 0 12px 30px color-mix(in oklab, black 12%, transparent);
+}
+
+.den-letter header {
+  border-bottom: 1px solid #ece8e1;
+  margin-bottom: 1rem;
+  padding-bottom: 0.7rem;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.den-letter form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.den-letter input {
+  border: 1px solid #ccc;
+  color: #111;
+  background: #fff;
+  padding: 0.5rem 0.6rem;
+  font: inherit;
+}
+
+.den-letter button {
+  align-self: flex-start;
+  padding: 0.4rem 0.8rem;
+}
+
+.den-won {
+  margin-top: 1rem;
+  padding: 0.9rem;
+  background: #d4f7d0;
+  color: #145214;
+  border: 1px solid #8edc88;
+}
+
+.den-won p:first-child {
+  font-weight: 700;
+  margin: 0 0 0.6rem;
+}
+
+.den-forum h2 {
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.den-pending,
+.den-board {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+}
+
+.den-pending li,
+.den-board li {
+  border-top: 1px solid #2a3310;
+  padding: 0.55rem 0;
+  font-size: 0.8rem;
+}
+
+.den-actions {
+  display: inline-flex;
+  gap: 0.4rem;
+  margin-left: 0.6rem;
+}
+
+.den-actions button {
+  font: inherit;
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+

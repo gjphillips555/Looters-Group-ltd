@@ -1,9 +1,11 @@
 import { CmdLogo } from "@/components/brand-logo";
 import { CategoryDial } from "@/components/category-dial";
 import { KeyButton, KeyLink } from "@/components/key-button";
+import { useDenCombo } from "@/lib/den-combo";
 import { useOledMode } from "@/lib/oled-mode";
 import { SHOP_CATEGORIES } from "@/lib/product-search";
 import { CYCLE_LABEL, useShopCategory } from "@/lib/shop-nav";
+import { useNavigate } from "@tanstack/react-router";
 
 export function KeyboardPad() {
   const { active, cycle } = useShopCategory();
@@ -11,6 +13,9 @@ export function KeyboardPad() {
   const toggleHelp = useOledMode((s) => s.toggleHelp);
   const closeHelp = useOledMode((s) => s.closeHelp);
   const showFlash = useOledMode((s) => s.showFlash);
+  const navigate = useNavigate();
+  const armed = useDenCombo((s) => s.armed);
+  const disarm = useDenCombo((s) => s.disarm);
 
   function step(delta: number) {
     const n = SHOP_CATEGORIES.length;
@@ -41,12 +46,19 @@ export function KeyboardPad() {
           {" "}
         </KeyLink>
         <KeyLink
-          to="/"
+          to={armed ? "/hidden" : "/"}
           size="sm"
           tone="orange"
           className="kb-enter-h"
-          aria-label="Enter, home"
-          onClick={() => closeHelp()}
+          aria-label={armed ? "Open den" : "Enter, home"}
+          onClick={(e) => {
+            closeHelp();
+            if (armed) {
+              e.preventDefault();
+              disarm();
+              void navigate({ to: "/hidden" });
+            }
+          }}
         >
           ↵
         </KeyLink>

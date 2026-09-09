@@ -11,13 +11,16 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as HiddenRouteImport } from './routes/hidden'
 import { Route as KeysRouteImport } from './routes/keys'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ShopRouteImport } from './routes/shop'
+import { Route as HiddenForumRouteImport } from './routes/hidden.forum'
 import { Route as ListingListingIdRouteImport } from './routes/listing.$listingId'
 import { Route as OrderOrderIdRouteImport } from './routes/order.$orderId'
 import { Route as ShopCategoryRouteImport } from './routes/shop.$category'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as HiddenLetterTokenRouteImport } from './routes/hidden.letter.$token'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -27,6 +30,11 @@ const IndexRoute = IndexRouteImport.update({
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HiddenRoute = HiddenRouteImport.update({
+  id: '/hidden',
+  path: '/hidden',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KeysRoute = KeysRouteImport.update({
@@ -43,6 +51,11 @@ const ShopRoute = ShopRouteImport.update({
   id: '/shop',
   path: '/shop',
   getParentRoute: () => rootRouteImport,
+} as any)
+const HiddenForumRoute = HiddenForumRouteImport.update({
+  id: '/forum',
+  path: '/forum',
+  getParentRoute: () => HiddenRoute,
 } as any)
 const ListingListingIdRoute = ListingListingIdRouteImport.update({
   id: '/listing/$listingId',
@@ -64,80 +77,104 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HiddenLetterTokenRoute = HiddenLetterTokenRouteImport.update({
+  id: '/letter/$token',
+  path: '/letter/$token',
+  getParentRoute: () => HiddenRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
+  '/hidden': typeof HiddenRouteWithChildren
   '/keys': typeof KeysRoute
   '/login': typeof LoginRoute
   '/shop': typeof ShopRouteWithChildren
+  '/hidden/forum': typeof HiddenForumRoute
   '/listing/$listingId': typeof ListingListingIdRoute
   '/order/$orderId': typeof OrderOrderIdRoute
   '/shop/$category': typeof ShopCategoryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/hidden/letter/$token': typeof HiddenLetterTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
+  '/hidden': typeof HiddenRouteWithChildren
   '/keys': typeof KeysRoute
   '/login': typeof LoginRoute
   '/shop': typeof ShopRouteWithChildren
+  '/hidden/forum': typeof HiddenForumRoute
   '/listing/$listingId': typeof ListingListingIdRoute
   '/order/$orderId': typeof OrderOrderIdRoute
   '/shop/$category': typeof ShopCategoryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/hidden/letter/$token': typeof HiddenLetterTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
+  '/hidden': typeof HiddenRouteWithChildren
   '/keys': typeof KeysRoute
   '/login': typeof LoginRoute
   '/shop': typeof ShopRouteWithChildren
+  '/hidden/forum': typeof HiddenForumRoute
   '/listing/$listingId': typeof ListingListingIdRoute
   '/order/$orderId': typeof OrderOrderIdRoute
   '/shop/$category': typeof ShopCategoryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/hidden/letter/$token': typeof HiddenLetterTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/checkout'
+    | '/hidden'
     | '/keys'
     | '/login'
     | '/shop'
+    | '/hidden/forum'
     | '/listing/$listingId'
     | '/order/$orderId'
     | '/shop/$category'
     | '/api/auth/$'
+    | '/hidden/letter/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/checkout'
+    | '/hidden'
     | '/keys'
     | '/login'
     | '/shop'
+    | '/hidden/forum'
     | '/listing/$listingId'
     | '/order/$orderId'
     | '/shop/$category'
     | '/api/auth/$'
+    | '/hidden/letter/$token'
   id:
     | '__root__'
     | '/'
     | '/checkout'
+    | '/hidden'
     | '/keys'
     | '/login'
     | '/shop'
+    | '/hidden/forum'
     | '/listing/$listingId'
     | '/order/$orderId'
     | '/shop/$category'
     | '/api/auth/$'
+    | '/hidden/letter/$token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CheckoutRoute: typeof CheckoutRoute
+  HiddenRoute: typeof HiddenRouteWithChildren
   KeysRoute: typeof KeysRoute
   LoginRoute: typeof LoginRoute
   ShopRoute: typeof ShopRouteWithChildren
@@ -162,6 +199,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/hidden': {
+      id: '/hidden'
+      path: '/hidden'
+      fullPath: '/hidden'
+      preLoaderRoute: typeof HiddenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/keys': {
       id: '/keys'
       path: '/keys'
@@ -182,6 +226,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/shop'
       preLoaderRoute: typeof ShopRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/hidden/forum': {
+      id: '/hidden/forum'
+      path: '/forum'
+      fullPath: '/hidden/forum'
+      preLoaderRoute: typeof HiddenForumRouteImport
+      parentRoute: typeof HiddenRoute
     }
     '/listing/$listingId': {
       id: '/listing/$listingId'
@@ -211,8 +262,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/hidden/letter/$token': {
+      id: '/hidden/letter/$token'
+      path: '/letter/$token'
+      fullPath: '/hidden/letter/$token'
+      preLoaderRoute: typeof HiddenLetterTokenRouteImport
+      parentRoute: typeof HiddenRoute
+    }
   }
 }
+
+interface HiddenRouteChildren {
+  HiddenForumRoute: typeof HiddenForumRoute
+  HiddenLetterTokenRoute: typeof HiddenLetterTokenRoute
+}
+
+const HiddenRouteChildren: HiddenRouteChildren = {
+  HiddenForumRoute: HiddenForumRoute,
+  HiddenLetterTokenRoute: HiddenLetterTokenRoute,
+}
+
+const HiddenRouteWithChildren =
+  HiddenRoute._addFileChildren(HiddenRouteChildren)
 
 interface ShopRouteChildren {
   ShopCategoryRoute: typeof ShopCategoryRoute
@@ -227,6 +298,7 @@ const ShopRouteWithChildren = ShopRoute._addFileChildren(ShopRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CheckoutRoute: CheckoutRoute,
+  HiddenRoute: HiddenRouteWithChildren,
   KeysRoute: KeysRoute,
   LoginRoute: LoginRoute,
   ShopRoute: ShopRouteWithChildren,
