@@ -327,21 +327,43 @@ html.light .header-key {
     0 0.7rem 1rem color-mix(in oklab, black 12%, transparent);
 }
 
+.oled-cradle {
+  pointer-events: none;
+  position: absolute;
+  z-index: 33;
+  left: max(0.3rem, calc((100% - 72rem) / 2 + 0.55rem));
+  top: 100%;
+  width: 12.4rem;
+  height: 4.7rem;
+  margin-top: -0.45rem;
+  padding: 0 0.45rem 0.45rem;
+  border-radius: 0 0 1.35rem 1.35rem;
+  background: #141018;
+  box-shadow:
+    0 0.45rem 0 #0a080e,
+    0 0.7rem 1rem color-mix(in oklab, black 22%, transparent);
+}
+
+html.light .oled-cradle {
+  background: #d9d4e2;
+  box-shadow:
+    0 0.45rem 0 #b7b0c4,
+    0 0.7rem 1rem color-mix(in oklab, black 12%, transparent);
+}
+
+@media (min-width: 768px) {
+  .oled-cradle {
+    width: 15.5rem;
+    height: 5.35rem;
+  }
+}
+
 .logo-hang {
   position: absolute;
   z-index: 40;
   left: max(0.75rem, calc((100% - 72rem) / 2 + 1rem));
   top: 0.55rem;
   width: 11.5rem;
-  padding: 0 0.9rem 0.45rem;
-  border-radius: 1.15rem;
-  background: #0a080e;
-  filter: drop-shadow(0 0.45rem 0 #0a080e);
-}
-
-html.light .logo-hang {
-  background: #b7b0c4;
-  filter: drop-shadow(0 0.45rem 0 #b7b0c4);
 }
 
 @media (min-width: 768px) {
