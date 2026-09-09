@@ -270,7 +270,10 @@ function normalize(
   return {
     id: String(listing.ListingId),
     title: merged.Title,
-    categoryPath: merged.CategoryPath ?? merged.Category ?? null,
+    categoryPath: merged.CategoryPath ?? null,
+    categoryNumber: String(merged.Category ?? listing.Category ?? "")
+      .replace(/-+$/g, "")
+      .replace(/[^\d-]/g, "") || null,
     categoryName: catName,
     priceLabel,
     amount,

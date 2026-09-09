@@ -13,6 +13,7 @@ export type Product = {
   id: string;
   title: string;
   categoryPath: string | null;
+  categoryNumber: string | null;
   categoryName: string | null;
   priceLabel: string;
   amount: number;
