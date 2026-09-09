@@ -610,6 +610,44 @@ html.light .kb-board {
   border-color: color-mix(in oklab, #f6c07a 55%, transparent);
 }
 
+.kb-enter-v .kb-cap {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0.18rem 0.08rem 0.2rem;
+}
+
+.kb-enter-legends {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-items: center;
+}
+
+.kb-enter-pipe {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 0.85;
+  font-size: 0.78rem;
+  font-weight: 400;
+}
+
+.kb-enter-pipe b,
+.kb-enter-pipe i {
+  font-style: normal;
+  font-weight: 400;
+}
+
+.kb-enter-home {
+  font-size: 0.58rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
 .kb-enter-h .kb-cap {
   font-size: 1.05rem;
 }

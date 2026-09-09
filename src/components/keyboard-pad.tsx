@@ -48,7 +48,13 @@ export function KeyboardPad() {
             closeHelp();
           }}
         >
-          {" "}
+          <span className="kb-enter-legends">
+            <span className="kb-enter-pipe">
+              <b>|</b>
+              <i>\</i>
+            </span>
+            <span className="kb-enter-home">Home</span>
+          </span>
         </KeyLink>
         <KeyButton
           size="sm"
