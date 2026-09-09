@@ -1,31 +1,14 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
-import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   SHOP_CATEGORIES,
   type ShopCategoryId,
 } from "@/lib/product-search";
+import { useShopCategory } from "@/lib/shop-nav";
 import { cn } from "@/lib/utils";
 
 export function CategoryNav() {
-  const navigate = useNavigate();
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-
-  const active: ShopCategoryId | undefined =
-    pathname === "/shop/desktops"
-      ? "desktops"
-      : pathname === "/shop/laptops"
-        ? "laptops"
-        : pathname === "/shop/components"
-          ? "components"
-          : pathname === "/shop"
-            ? "all"
-            : undefined;
-
-  function select(id: ShopCategoryId) {
-    if (id === "all") void navigate({ to: "/shop" });
-    else void navigate({ to: "/shop/$category", params: { category: id } });
-  }
+  const { active, select } = useShopCategory();
 
   return (
     <div className="relative z-10 mb-10 mt-0 pb-4">

@@ -38,17 +38,20 @@ export function KeyLink({
   children,
   size = "fit",
   onClick,
+  active,
   ...props
 }: LinkProps & {
   className?: string;
   children: ReactNode;
   size?: KeySize;
   onClick?: MouseEventHandler<HTMLAnchorElement>;
+  active?: boolean;
 }) {
   return (
     <Link
       className={cn("kb-key", sizeClass(size), className)}
       onClick={onClick}
+      data-active={active ? "true" : "false"}
       {...props}
     >
       <span className="kb-cap">{children}</span>
