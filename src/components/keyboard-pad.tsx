@@ -49,10 +49,7 @@ export function KeyboardPad() {
           }}
         >
           <span className="kb-enter-legends">
-            <span className="kb-enter-pipe">
-              <b>|</b>
-              <i>\</i>
-            </span>
+            <span className="kb-enter-pipe">PrtSc</span>
             <span className="kb-enter-home">Home</span>
           </span>
         </KeyLink>

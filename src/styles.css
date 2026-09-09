@@ -628,18 +628,9 @@ html.light .kb-board {
 }
 
 .kb-enter-pipe {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  line-height: 0.85;
-  font-size: 0.78rem;
+  font-size: 0.52rem;
   font-weight: 400;
-}
-
-.kb-enter-pipe b,
-.kb-enter-pipe i {
-  font-style: normal;
-  font-weight: 400;
+  letter-spacing: 0.04em;
 }
 
 .kb-enter-home {
