@@ -2,9 +2,12 @@ import { create } from "zustand";
 
 export const OLED_HELP = [
   { title: "DIAL", lines: ["SPIN TO CYCLE", "OR TAP < >"] },
-  { title: "OLED", lines: ["CLICK = CLOCK", "CONTINUE? EXITS"] },
-  { title: "KEYS", lines: ["< ,   > .", "? /  HELP"] },
-  { title: "BKSP", lines: ["BACKSPACE = BACK", "ENTER = HOME"] },
+  { title: "OLED", lines: ["CLICK = CLOCK", "CAT NAME STAYS"] },
+  { title: "CATS", lines: ["< ,   PREV", "> .   NEXT"] },
+  { title: "ENTER", lines: ["ENTER = HOME", "BKSP = BACK"] },
+  { title: "LIGHT", lines: ["F5 LIGHT  F6 DARK", "LUMI = RGB GLOW"] },
+  { title: "BASIC", lines: ["BASIC = SIMPLE", "FISH = THIS KB"] },
+  { title: "HELP", lines: ["DIAL TURNS PAGES", "? EXITS HELP"] },
 ] as const;
 
 export const useOledMode = create<{
