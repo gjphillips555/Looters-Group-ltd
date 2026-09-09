@@ -10,6 +10,7 @@ export function CategoryDial({ className }: { className?: string }) {
   const help = useOledMode((s) => s.help);
   const cycleHelp = useOledMode((s) => s.cycleHelp);
   const rot = useRef(0);
+  const arrow = useRef(0);
   const last = useRef(0);
   const acc = useRef(0);
   const dragging = useRef(false);
@@ -19,6 +20,11 @@ export function CategoryDial({ className }: { className?: string }) {
   function setRot(deg: number) {
     rot.current = deg;
     el.current?.style.setProperty("--as-rot", `${deg}deg`);
+  }
+
+  function setArrow(deg: number) {
+    arrow.current = deg;
+    el.current?.style.setProperty("--dial-arrow", `${deg}deg`);
   }
 
   function angleOf(e: ReactPointerEvent) {
@@ -35,6 +41,14 @@ export function CategoryDial({ className }: { className?: string }) {
       return;
     }
     cycle(delta);
+  }
+
+  function spinClick() {
+    el.current?.classList.add("is-spinning");
+    setArrow(arrow.current + 180);
+    setRot(rot.current + 180);
+    window.setTimeout(() => el.current?.classList.remove("is-spinning"), 520);
+    step(1);
   }
 
   function onPointerDown(e: ReactPointerEvent<HTMLButtonElement>) {
@@ -73,7 +87,7 @@ export function CategoryDial({ className }: { className?: string }) {
     } catch {
       /* already released */
     }
-    if (!moved.current) step(1);
+    if (!moved.current) spinClick();
   }
 
   const label = help
@@ -96,15 +110,14 @@ export function CategoryDial({ className }: { className?: string }) {
       <span className="as-dial-face" aria-hidden="true" />
       <span className="dial-hint" aria-hidden="true">
         <svg viewBox="0 0 64 64" className="dial-hint-svg">
-          <circle cx="32" cy="32" r="30" fill="#041018" />
           <path
-            d="M44.5 22.5c6 4.2 9 12.2 6.2 19.4-3.2 8.2-12.4 12.8-21 10.6"
+            d="M44.5 18.5c8.2 5.2 12.2 15.4 8.2 25.2-4.2 10.4-16 16.2-27 13.2"
             fill="none"
             stroke="#7ad7e8"
-            strokeWidth="5.5"
+            strokeWidth="7"
             strokeLinecap="round"
           />
-          <path d="M46 16.5 48 28 36.5 26z" fill="#7ad7e8" />
+          <path d="M48 10.5 52.5 27.5 34 23z" fill="#7ad7e8" />
         </svg>
       </span>
       <span className="sr-only">{label}</span>

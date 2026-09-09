@@ -658,20 +658,28 @@ html.light .kb-board {
   z-index: 4;
   display: grid;
   place-items: center;
-  opacity: 0;
+  opacity: 0.22;
   pointer-events: none;
-  transition: opacity 120ms ease;
+  transform: scale(0.9);
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
 }
 
 .as-dial:hover .dial-hint,
-.as-dial:focus-visible .dial-hint {
-  opacity: 1;
+.as-dial:focus-visible .dial-hint,
+.as-dial.is-spinning .dial-hint {
+  opacity: 0.95;
+  transform: scale(1.08);
 }
 
 .dial-hint-svg {
-  width: 92%;
-  height: 92%;
-  filter: drop-shadow(0 0 6px #7ad7e8);
+  width: 88%;
+  height: 88%;
+  transform: rotate(var(--dial-arrow, 0deg));
+  transform-origin: 50% 50%;
+  transition: transform 480ms cubic-bezier(0.22, 1, 0.36, 1);
+  filter: drop-shadow(0 0 5px #7ad7e8);
 }
 
 .kb-bksp {
@@ -1229,6 +1237,7 @@ html.light .kb-deck {
 
 .as-dial {
   --as-rot: 0deg;
+  --dial-arrow: 0deg;
   position: relative;
   z-index: 1;
   width: 2.55rem;
