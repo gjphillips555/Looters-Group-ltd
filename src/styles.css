@@ -868,23 +868,27 @@ html.light .kb-deck {
 .logo-hang:hover .boot-done .cmd-rest,
 .cmd-screen.is-oled .cmd-rest,
 .cmd-screen.is-help .cmd-rest,
-.cmd-screen.is-flash .cmd-rest {
+.cmd-screen.is-flash .cmd-rest,
+.cmd-screen.is-game .cmd-rest {
   display: none;
 }
 
-.logo-hang:hover .boot-done:not(.is-help):not(.is-flash) .oled-hud,
-.cmd-screen.is-oled:not(.is-help):not(.is-flash) .oled-hud {
+.logo-hang:hover .boot-done:not(.is-help):not(.is-flash):not(.is-game) .oled-hud,
+.cmd-screen.is-oled:not(.is-help):not(.is-flash):not(.is-game) .oled-hud {
   display: flex;
   animation: cmd-glitch-in 360ms steps(5, end);
 }
 
 .cmd-screen.is-help .oled-hud,
-.cmd-screen.is-flash .oled-hud {
+.cmd-screen.is-flash .oled-hud,
+.cmd-screen.is-game .oled-hud {
   display: none;
 }
 
 .cmd-screen.is-flash .cmd-rest,
-.cmd-screen.is-flash .oled-help {
+.cmd-screen.is-flash .oled-help,
+.cmd-screen.is-game .oled-help,
+.cmd-screen.is-game .oled-flash {
   display: none;
 }
 
@@ -902,6 +906,21 @@ html.light .kb-deck {
 
 .cmd-screen.is-flash .oled-flash {
   display: grid;
+}
+
+.oled-game {
+  display: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  touch-action: none;
+}
+
+.cmd-screen.is-game .oled-game {
+  display: block;
 }
 
 .oled-flash-cat {

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { ARTWORK } from "@/lib/artwork";
+import { OledBarrelGame } from "@/components/oled-barrel-game";
 import { OLED_HELP, useOledMode } from "@/lib/oled-mode";
+import { useOledGame } from "@/lib/oled-game";
 import { cn } from "@/lib/utils";
 
 export function BrandLogo({
@@ -54,6 +56,9 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
   const page = useOledMode((s) => s.page);
   const flash = useOledMode((s) => s.flash);
   const closeFlash = useOledMode((s) => s.closeFlash);
+  const playing = useOledGame((s) => s.active);
+  const over = useOledGame((s) => s.over);
+  const startGame = useOledGame((s) => s.start);
 
   useEffect(() => {
     if (!booting) return;
@@ -75,19 +80,26 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
         oled && "is-oled",
         help && "is-help",
         flash && "is-flash",
+        playing && "is-game",
       )}
       onClick={() => {
         if (booting) return;
+        if (playing) {
+          if (over) startGame();
+          return;
+        }
         if (flash) {
           closeFlash();
           setOled(false);
           return;
         }
         if (help) return;
-        setOled((v) => !v);
+        startGame();
       }}
       role="button"
-      aria-label={flash ? "Continue" : "Toggle OLED clock"}
+      aria-label={
+        playing ? (over ? "Restart barrel jumper" : "Barrel jumper") : "Play barrel jumper"
+      }
     >
       <span className="cmd-rest">
         <img
@@ -106,6 +118,7 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
           />
         ) : null}
       </span>
+      {playing ? <OledBarrelGame /> : null}
       <OledHud date={clock.date} time={clock.time} />
       <OledHelp page={page} />
       <span className="oled-flash">

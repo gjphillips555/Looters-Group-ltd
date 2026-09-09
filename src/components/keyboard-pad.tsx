@@ -2,6 +2,7 @@ import { CmdLogo } from "@/components/brand-logo";
 import { CategoryDial } from "@/components/category-dial";
 import { KeyButton, KeyLink } from "@/components/key-button";
 import { useDenCombo } from "@/lib/den-combo";
+import { useOledGame } from "@/lib/oled-game";
 import { useOledMode } from "@/lib/oled-mode";
 import { SHOP_CATEGORIES } from "@/lib/product-search";
 import { CYCLE_LABEL, useShopCategory } from "@/lib/shop-nav";
@@ -13,6 +14,13 @@ export function KeyboardPad() {
   const toggleHelp = useOledMode((s) => s.toggleHelp);
   const closeHelp = useOledMode((s) => s.closeHelp);
   const showFlash = useOledMode((s) => s.showFlash);
+  const playing = useOledGame((s) => s.active);
+  const over = useOledGame((s) => s.over);
+  const startGame = useOledGame((s) => s.start);
+  const stopGame = useOledGame((s) => s.stop);
+  const pressJump = useOledGame((s) => s.pressJump);
+  const releaseJump = useOledGame((s) => s.releaseJump);
+  const setRun = useOledGame((s) => s.setRun);
   const navigate = useNavigate();
   const armed = useDenCombo((s) => s.armed);
   const disarm = useDenCombo((s) => s.disarm);
@@ -41,7 +49,10 @@ export function KeyboardPad() {
           tone="orange"
           className="kb-enter-v"
           aria-label="Enter, home"
-          onClick={() => closeHelp()}
+          onClick={() => {
+            stopGame();
+            closeHelp();
+          }}
         >
           {" "}
         </KeyLink>
@@ -52,6 +63,7 @@ export function KeyboardPad() {
           className="kb-enter-h"
           aria-label={armed ? "Open den" : "Enter, home"}
           onClick={(e) => {
+            stopGame();
             closeHelp();
             if (armed) {
               e.preventDefault();
@@ -68,8 +80,18 @@ export function KeyboardPad() {
         size="sm"
         tone="teal"
         className="kb-pad-prev"
-        aria-label="Previous category"
-        onClick={() => step(-1)}
+        aria-label={playing ? "Jump" : "Previous category"}
+        onPointerDown={(e) => {
+          if (!playing) return;
+          e.preventDefault();
+          if (over) startGame();
+          else pressJump();
+        }}
+        onPointerUp={() => playing && releaseJump()}
+        onPointerLeave={() => playing && releaseJump()}
+        onClick={() => {
+          if (!playing) step(-1);
+        }}
       >
         <span className="kb-dual">
           <b>{"<"}</b>
@@ -80,8 +102,18 @@ export function KeyboardPad() {
         size="sm"
         tone="teal"
         className="kb-pad-next"
-        aria-label="Next category"
-        onClick={() => step(1)}
+        aria-label={playing ? "Run right" : "Next category"}
+        onPointerDown={(e) => {
+          if (!playing) return;
+          e.preventDefault();
+          if (over) startGame();
+          else setRun(true);
+        }}
+        onPointerUp={() => playing && setRun(false)}
+        onPointerLeave={() => playing && setRun(false)}
+        onClick={() => {
+          if (!playing) step(1);
+        }}
       >
         <span className="kb-dual">
           <b>{">"}</b>
@@ -93,8 +125,14 @@ export function KeyboardPad() {
         tone="teal"
         className="kb-pad-help"
         data-lit={help ? "true" : "false"}
-        aria-label="Help"
-        onClick={() => toggleHelp()}
+        aria-label={playing ? "Quit game" : "Help"}
+        onClick={() => {
+          if (playing) {
+            stopGame();
+            return;
+          }
+          toggleHelp();
+        }}
       >
         <span className="kb-dual">
           <b>?</b>
