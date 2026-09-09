@@ -14,6 +14,7 @@ import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as HiddenRouteImport } from './routes/hidden'
 import { Route as KeysRouteImport } from './routes/keys'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as OverlayRouteImport } from './routes/overlay'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as HiddenForumRouteImport } from './routes/hidden.forum'
 import { Route as ListingListingIdRouteImport } from './routes/listing.$listingId'
@@ -45,6 +46,11 @@ const KeysRoute = KeysRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OverlayRoute = OverlayRouteImport.update({
+  id: '/overlay',
+  path: '/overlay',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ShopRoute = ShopRouteImport.update({
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/hidden': typeof HiddenRouteWithChildren
   '/keys': typeof KeysRoute
   '/login': typeof LoginRoute
+  '/overlay': typeof OverlayRoute
   '/shop': typeof ShopRouteWithChildren
   '/hidden/forum': typeof HiddenForumRoute
   '/listing/$listingId': typeof ListingListingIdRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/hidden': typeof HiddenRouteWithChildren
   '/keys': typeof KeysRoute
   '/login': typeof LoginRoute
+  '/overlay': typeof OverlayRoute
   '/shop': typeof ShopRouteWithChildren
   '/hidden/forum': typeof HiddenForumRoute
   '/listing/$listingId': typeof ListingListingIdRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/hidden': typeof HiddenRouteWithChildren
   '/keys': typeof KeysRoute
   '/login': typeof LoginRoute
+  '/overlay': typeof OverlayRoute
   '/shop': typeof ShopRouteWithChildren
   '/hidden/forum': typeof HiddenForumRoute
   '/listing/$listingId': typeof ListingListingIdRoute
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/hidden'
     | '/keys'
     | '/login'
+    | '/overlay'
     | '/shop'
     | '/hidden/forum'
     | '/listing/$listingId'
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/hidden'
     | '/keys'
     | '/login'
+    | '/overlay'
     | '/shop'
     | '/hidden/forum'
     | '/listing/$listingId'
@@ -162,6 +173,7 @@ export interface FileRouteTypes {
     | '/hidden'
     | '/keys'
     | '/login'
+    | '/overlay'
     | '/shop'
     | '/hidden/forum'
     | '/listing/$listingId'
@@ -177,6 +189,7 @@ export interface RootRouteChildren {
   HiddenRoute: typeof HiddenRouteWithChildren
   KeysRoute: typeof KeysRoute
   LoginRoute: typeof LoginRoute
+  OverlayRoute: typeof OverlayRoute
   ShopRoute: typeof ShopRouteWithChildren
   ListingListingIdRoute: typeof ListingListingIdRoute
   OrderOrderIdRoute: typeof OrderOrderIdRoute
@@ -218,6 +231,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/overlay': {
+      id: '/overlay'
+      path: '/overlay'
+      fullPath: '/overlay'
+      preLoaderRoute: typeof OverlayRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/shop': {
@@ -301,6 +321,7 @@ const rootRouteChildren: RootRouteChildren = {
   HiddenRoute: HiddenRouteWithChildren,
   KeysRoute: KeysRoute,
   LoginRoute: LoginRoute,
+  OverlayRoute: OverlayRoute,
   ShopRoute: ShopRouteWithChildren,
   ListingListingIdRoute: ListingListingIdRoute,
   OrderOrderIdRoute: OrderOrderIdRoute,
