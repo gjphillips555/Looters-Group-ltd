@@ -50,7 +50,12 @@ export function KeyboardPad() {
         >
           <span className="kb-enter-legends">
             <span className="kb-enter-pipe">PrtSc</span>
-            <span className="kb-enter-home">Home</span>
+            <span className="kb-enter-home">
+              <span className="kb-enter-shift-arrow" aria-hidden="true">
+                ⇧
+              </span>
+              Shift
+            </span>
           </span>
         </KeyLink>
         <KeyButton

@@ -634,9 +634,18 @@ html.light .kb-board {
 }
 
 .kb-enter-home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.08rem;
   font-size: 0.58rem;
   font-weight: 400;
   letter-spacing: 0.04em;
+}
+
+.kb-enter-shift-arrow {
+  font-size: 0.85rem;
+  line-height: 0.85;
 }
 
 .kb-enter-h .kb-cap {
