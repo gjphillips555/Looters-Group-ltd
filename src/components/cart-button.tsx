@@ -8,7 +8,7 @@ export function CartButton({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="kb-key kb-key-sm relative"
+      className="kb-key kb-key-sm kb-white relative"
     >
       <span className="kb-cap">
         <ShoppingCart className="size-4" />

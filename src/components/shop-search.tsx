@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { useProductSearch } from "@/lib/product-search";
 import { cn } from "@/lib/utils";
 
@@ -25,24 +24,26 @@ export function ShopSearch({
 
   return (
     <form
-      className={cn("relative min-w-0", className)}
+      className={cn("kb-key kb-key-sm kb-white kb-search-key min-w-0", className)}
       onSubmit={(e) => {
         e.preventDefault();
         goShop();
       }}
     >
-      <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-      <Input
-        value={query}
-        autoFocus={autoFocus}
-        onChange={(e) => {
-          setQuery(e.target.value);
-          goShop();
-        }}
-        placeholder="Search products"
-        aria-label="Search products"
-        className={cn("h-10 bg-secondary/40 pl-9", inputClassName)}
-      />
+      <span className="kb-cap">
+        <Search className="size-3.5 shrink-0" />
+        <input
+          value={query}
+          autoFocus={autoFocus}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            goShop();
+          }}
+          placeholder="Search"
+          aria-label="Search products"
+          className={cn("kb-search-input", inputClassName)}
+        />
+      </span>
     </form>
   );
 }
@@ -64,7 +65,7 @@ export function MobileSearchToggle() {
     <div ref={wrap} className="relative md:hidden">
       <button
         type="button"
-        className="kb-key kb-key-sm"
+        className="kb-key kb-key-sm kb-white"
         aria-label="Search products"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}

@@ -11,9 +11,8 @@ export function ThemeToggle() {
         type="button"
         onClick={() => setTheme("light")}
         aria-label="Light mode"
-        title="F5 Light"
-        data-active={!isDark ? "true" : "false"}
-        className="kb-key kb-key-sm hidden md:inline-grid"
+        title="Brightness"
+        className="kb-key kb-key-sm kb-orange hidden md:inline-grid"
       >
         <span className="kb-cap">
           <span className="kb-dual">
@@ -28,9 +27,8 @@ export function ThemeToggle() {
         type="button"
         onClick={() => setTheme("dark")}
         aria-label="Dark mode"
-        title="F6 Dark"
-        data-active={isDark ? "true" : "false"}
-        className="kb-key kb-key-sm hidden md:inline-grid"
+        title="Dark"
+        className="kb-key kb-key-sm kb-orange hidden md:inline-grid"
       >
         <span className="kb-cap">
           <span className="kb-dual">
@@ -46,7 +44,7 @@ export function ThemeToggle() {
         onClick={toggle}
         aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
         title={isDark ? "Light mode" : "Dark mode"}
-        className="kb-key kb-key-sm md:hidden"
+        className="kb-key kb-key-sm kb-orange md:hidden"
       >
         <span className="kb-cap">
           {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}

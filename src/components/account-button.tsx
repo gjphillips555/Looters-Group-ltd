@@ -32,7 +32,7 @@ export function AccountButton() {
         type="button"
         onClick={() => signIn("grok-google", { callbackURL: "/" })}
         aria-label="Sign in with Google (optional)"
-        className="kb-key kb-key-sm"
+        className="kb-key kb-key-sm kb-white"
       >
         <span className="kb-cap">
           <GoogleMark className="size-5" />
@@ -49,7 +49,7 @@ export function AccountButton() {
         type="button"
         onClick={() => setMenuOpen((v) => !v)}
         aria-label={`${label} account`}
-        className="kb-key kb-key-sm"
+        className="kb-key kb-key-sm kb-white"
       >
         <span className="kb-cap overflow-hidden p-0">
           {user.profileImageUrl ? (
