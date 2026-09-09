@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/app-shell";
 import { BrandLogo } from "@/components/brand-logo";
-import { CategoryNav } from "@/components/category-nav";
+import { BrandTicker } from "@/components/brand-ticker";
 import { KeyLink } from "@/components/key-button";
 import { ProductGrid } from "@/components/product-grid";
 import { ARTWORK } from "@/lib/artwork";
@@ -28,7 +28,7 @@ function Home() {
 
   return (
     <AppShell>
-      <CategoryNav />
+      <BrandTicker />
 
       <div className="space-y-6">
         <NewsCard date="Wed 9 Sep 2026" dateTime="2026-09-09">

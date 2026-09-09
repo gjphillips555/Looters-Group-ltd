@@ -1,5 +1,5 @@
 import { AppShell } from "@/components/app-shell";
-import { CategoryNav } from "@/components/category-nav";
+import { BrandTicker } from "@/components/brand-ticker";
 import { ProductGrid } from "@/components/product-grid";
 import {
   productInCategory,
@@ -23,7 +23,7 @@ export function ShopCatalog({
 
   return (
     <AppShell>
-      <CategoryNav />
+      <BrandTicker />
       <div className="mb-4 flex items-center justify-between gap-4">
         <h1 className="font-display text-xl font-semibold">{label}</h1>
         <p className="text-sm text-muted-foreground">Afterpay Available Now!</p>
