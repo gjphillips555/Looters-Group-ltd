@@ -57,7 +57,12 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
               aria-label="Switch to basic header"
               title="Basic header"
             >
-              <span className="kb-cap">Basic</span>
+              <span className="kb-cap">
+                <span className="kb-dual">
+                  <b>F10</b>
+                  <i>Basic</i>
+                </span>
+              </span>
             </button>
           </div>
         </div>

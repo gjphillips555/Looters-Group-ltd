@@ -35,7 +35,12 @@ export function AccountButton() {
         className="kb-key kb-key-sm kb-white"
       >
         <span className="kb-cap">
-          <GoogleMark className="size-5" />
+          <span className="kb-dual">
+            <b>F8</b>
+            <i>
+              <GoogleMark className="size-3.5" />
+            </i>
+          </span>
         </span>
       </button>
     );

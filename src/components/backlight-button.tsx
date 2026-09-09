@@ -22,14 +22,19 @@ export function BacklightButton({
       onClick={onCycle}
     >
       <span className="kb-cap">
-        <span
-          className="kb-lumi"
-          data-on={mode !== "off" || wait ? "true" : "false"}
-          data-wait={wait ? "true" : "false"}
-        >
-          <span />
-          <span />
-          <span />
+        <span className="kb-dual">
+          <b>F7</b>
+          <i>
+            <span
+              className="kb-lumi"
+              data-on={mode !== "off" || wait ? "true" : "false"}
+              data-wait={wait ? "true" : "false"}
+            >
+              <span />
+              <span />
+              <span />
+            </span>
+          </i>
         </span>
       </span>
     </button>
