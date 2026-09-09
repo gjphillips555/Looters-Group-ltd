@@ -111,6 +111,7 @@ const PRODUCTION_HOSTS: string[] = [
   "looters-group-ltd.vercel.app",
   "looterscomputas.online",
   "www.looterscomputas.online",
+  "*.vercel.app",
 ];
 const PRODUCTION_ORIGINS: string[] = PRODUCTION_HOSTS.map(
   (h) => `https://${h}`,
