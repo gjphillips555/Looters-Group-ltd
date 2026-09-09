@@ -49,6 +49,7 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
   const [clock, setClock] = useState(aucklandParts);
   const help = useOledMode((s) => s.help);
   const page = useOledMode((s) => s.page);
+  const flash = useOledMode((s) => s.flash);
 
   useEffect(() => {
     if (!booting) return;
@@ -69,14 +70,14 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
         !booting && "boot-done",
         oled && "is-oled",
         help && "is-help",
+        flash && "is-flash",
       )}
-      onClick={
-        compact && !booting && !help
-          ? () => setOled((v) => !v)
-          : undefined
-      }
-      role={compact ? "button" : undefined}
-      aria-label={compact ? "Show time" : undefined}
+      onClick={() => {
+        if (booting || help || flash) return;
+        setOled((v) => !v);
+      }}
+      role="button"
+      aria-label="Toggle OLED clock"
     >
       <span className="cmd-rest">
         <img
@@ -97,6 +98,7 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
       </span>
       <OledHud date={clock.date} time={clock.time} />
       <OledHelp page={page} />
+      <span className="oled-flash">{flash}</span>
     </span>
   );
 }

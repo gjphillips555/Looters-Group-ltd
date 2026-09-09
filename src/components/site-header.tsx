@@ -6,7 +6,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 
 export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
   return (
-    <header className="sticky top-0 z-30 overflow-visible">
+    <header className="sticky top-0 z-30 overflow-hidden">
       <div className="header-key">
         <div className="header-key-cap">
           <div className="relative mx-auto flex max-w-6xl items-center gap-2 px-3 py-2 sm:gap-3 sm:px-6">

@@ -337,12 +337,12 @@ a.kb-key {
 
 .header-key {
   position: relative;
-  overflow: visible;
+  overflow: hidden;
   background: #2a2a2a;
-  padding-bottom: 0.45rem;
+  padding-bottom: 0.5rem;
   box-shadow:
     0 0.45rem 0 #1a1a1a,
-    0 0.7rem 1rem color-mix(in oklab, black 28%, transparent);
+    0 0.55rem 0.7rem color-mix(in oklab, black 22%, transparent);
 }
 
 .header-key-cap {
@@ -373,15 +373,26 @@ html.light .header-key-cap {
 
 .kb-pad {
   display: grid;
-  z-index: 40;
-  grid-template-columns: 9.2rem 6.2rem 2.85rem minmax(3.6rem, 4.4rem) 2.85rem;
-  grid-template-rows: 2.7rem 2.7rem;
+  z-index: 1;
+  grid-template-columns: 9.2rem 5.6rem 2.55rem minmax(3.8rem, 4.6rem) 2.55rem;
+  grid-template-rows: 2.55rem 2.55rem;
   grid-template-areas:
     "oled enter prev now next"
     "oled enter info pgup pgdn";
-  gap: 0.28rem 0.3rem;
+  gap: 0.22rem 0.24rem;
   align-items: stretch;
   flex-shrink: 0;
+}
+
+.kb-pad .kb-key {
+  height: 100%;
+  width: 100%;
+  min-width: 0;
+  box-shadow: 0 0.28rem 0 #3c3c3c;
+}
+
+html.light .kb-pad .kb-key {
+  box-shadow: 0 0.28rem 0 #4a4a4a;
 }
 
 .kb-pad-oled { grid-area: oled; }
@@ -407,7 +418,7 @@ html.light .header-key-cap {
 
 .logo-hang {
   position: relative;
-  z-index: 40;
+  z-index: 1;
   width: 100%;
   height: 100%;
 }
@@ -440,39 +451,73 @@ html.light .header-key-cap {
 
 .kb-enter-well {
   position: relative;
+  display: grid;
+  grid-template-columns: 2.4rem 1fr;
+  grid-template-rows: 2.4rem 1fr;
+  gap: 0.18rem;
   min-width: 0;
 }
 
 .kb-enter-well .as-dial {
-  position: absolute;
-  z-index: 4;
-  left: 0.08rem;
-  top: 0.04rem;
-  width: 2.35rem;
-  height: 2.35rem;
+  position: relative;
+  z-index: 2;
+  left: auto;
+  top: auto;
+  width: 2.4rem;
+  height: 2.4rem;
+  grid-column: 1;
+  grid-row: 1;
 }
 
-.kb-enter-l {
-  position: absolute;
-  inset: 0;
+.kb-enter-v,
+.kb-enter-h {
+  background: #6a5c50;
+  box-shadow: 0 0.28rem 0 #4a4038 !important;
+}
+
+.kb-enter-v .kb-cap,
+.kb-enter-h .kb-cap {
+  background: linear-gradient(180deg, #8a7b6d, #5c5046);
+  color: #f3ece4;
+  border-color: color-mix(in oklab, white 14%, transparent);
+}
+
+html.light .kb-enter-v,
+html.light .kb-enter-h {
+  background: #7a6b5d;
+  box-shadow: 0 0.28rem 0 #584c42 !important;
+}
+
+html.light .kb-enter-v .kb-cap,
+html.light .kb-enter-h .kb-cap {
+  background: linear-gradient(180deg, #948574, #6a5c50);
+  color: #f7f1ea;
+}
+
+.kb-enter-v {
+  grid-column: 2;
+  grid-row: 1 / span 2;
   width: 100% !important;
   height: 100% !important;
   min-width: 0 !important;
-  clip-path: polygon(0 46%, 46% 46%, 46% 0, 100% 0, 100% 100%, 0 100%);
-  filter: drop-shadow(0 0.32rem 0 #3c3c3c);
-  padding: 0 0.18rem 0.3rem;
 }
 
-html.light .kb-enter-l {
-  filter: drop-shadow(0 0.32rem 0 #b9b3a8);
+.kb-enter-h {
+  grid-column: 1;
+  grid-row: 2;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
 }
 
-.kb-enter-l .kb-cap {
-  align-items: flex-end;
-  justify-content: flex-end;
-  padding: 0 0.4rem 0.15rem 0;
-  font-size: 1.15rem;
-  border-radius: 0.35rem;
+.kb-enter-h .kb-cap {
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+}
+
+.kb-key[data-lit="true"] .kb-cap {
+  filter: brightness(1.16);
 }
 
 .kb-dual {
@@ -660,18 +705,43 @@ html.light .kb-deck {
 
 .logo-hang:hover .boot-done .cmd-rest,
 .cmd-screen.is-oled .cmd-rest,
-.cmd-screen.is-help .cmd-rest {
+.cmd-screen.is-help .cmd-rest,
+.cmd-screen.is-flash .cmd-rest {
   display: none;
 }
 
-.logo-hang:hover .boot-done .oled-hud,
-.cmd-screen.is-oled .oled-hud {
+.logo-hang:hover .boot-done:not(.is-help):not(.is-flash) .oled-hud,
+.cmd-screen.is-oled:not(.is-help):not(.is-flash) .oled-hud {
   display: flex;
   animation: cmd-glitch-in 360ms steps(5, end);
 }
 
-.cmd-screen.is-help .oled-hud {
+.cmd-screen.is-help .oled-hud,
+.cmd-screen.is-flash .oled-hud {
   display: none;
+}
+
+.cmd-screen.is-flash .cmd-rest,
+.cmd-screen.is-flash .oled-help {
+  display: none;
+}
+
+.oled-flash {
+  display: none;
+  height: 100%;
+  place-items: center;
+  color: #d6de3a;
+  font-family: var(--font-oled);
+  font-weight: 700;
+  font-size: 1.12rem;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-shadow: 0 0 10px #d6de3a;
+}
+
+.cmd-screen.is-flash .oled-flash {
+  display: grid;
+  animation: cmd-glitch-in 280ms steps(4, end);
 }
 
 .oled-help {
