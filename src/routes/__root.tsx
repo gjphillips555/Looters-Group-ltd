@@ -4,6 +4,7 @@ import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { Toaster } from "sonner";
 import { ARTWORK } from "@/lib/artwork";
 import { THEME_BOOT_SCRIPT, ThemeProvider, useTheme } from "@/lib/theme";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import appCss from "../styles.css?url";
 
 const APP_NAME = "Looters Computers";
@@ -58,6 +59,7 @@ function RootDocument() {
           </AuthProvider>
           <ThemedToaster />
         </ThemeProvider>
+        <SpeedInsights />
         <Scripts />
       </body>
     </html>
