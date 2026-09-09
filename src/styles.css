@@ -346,21 +346,26 @@ html.light .kb-orange .kb-cap {
 }
 
 .kb-white {
-  background: #cfcfcf;
+  background: #d8d8d8;
   box-shadow:
-    0 0.45rem 0 #9a9a9a,
+    0 0.45rem 0 #a8a8a8,
     0 0.7rem 1rem color-mix(in oklab, black 14%, transparent);
 }
 
 .kb-white .kb-cap {
-  background: linear-gradient(180deg, #fff, #e6e6e6);
-  color: #141414;
+  background: #fff;
+  color: #111;
   border-color: color-mix(in oklab, black 10%, transparent);
 }
 
 html.light .kb-white {
-  background: #d8d8d8;
+  background: #d4d4d4;
   box-shadow: 0 0.45rem 0 #a8a8a8;
+}
+
+html.light .kb-white .kb-cap {
+  background: #fff;
+  color: #111;
 }
 
 .kb-brown {
@@ -407,15 +412,15 @@ html.light .header-key-cap {
   max-width: min(100%, 46rem);
   padding: 0.5rem 0.55rem 0.9rem;
   border-radius: 1.2rem 1.2rem 1.35rem 1.15rem;
-  background: linear-gradient(180deg, #3e3e42 0%, #2c2c30 100%);
+  background: linear-gradient(180deg, #f4f4f2 0%, #e6e6e2 100%);
   box-shadow:
-    0 0.45rem 0 #1c1c1e,
-    0 0.85rem 1.2rem color-mix(in oklab, black 28%, transparent),
-    inset 0 1px 0 color-mix(in oklab, white 14%, transparent);
+    0 0.45rem 0 #c8c8c4,
+    0 0.85rem 1.2rem color-mix(in oklab, black 18%, transparent),
+    inset 0 1px 0 #fff;
 }
 
 html.light .kb-board {
-  background: linear-gradient(180deg, #eceae6 0%, #d8d5cf 100%);
+  background: linear-gradient(180deg, #f7f7f5 0%, #e8e8e4 100%);
   box-shadow:
     0 0.45rem 0 #c4c0b8,
     0 0.85rem 1.1rem color-mix(in oklab, black 12%, transparent),
@@ -522,7 +527,11 @@ html.light .kb-board {
 }
 
 .kb-pad .kb-orange {
-  box-shadow: 0 0.28rem 0 #8d4a18;
+  box-shadow: 0 0.28rem 0 #c47a38;
+}
+
+.kb-pad .kb-white {
+  box-shadow: 0 0.28rem 0 #a8a8a8;
 }
 
 .kb-pad-oled { grid-area: oled; }
@@ -581,48 +590,64 @@ html.light .kb-board {
 
 .kb-enter-well {
   position: relative;
+  display: grid;
+  grid-template-columns: 2.48rem 1fr;
+  grid-template-rows: 2.48rem 1fr;
   min-width: 0;
   height: 100%;
 }
 
 .kb-enter-well .as-dial {
-  position: absolute;
+  position: relative;
   z-index: 1;
-  left: 0.06rem;
-  top: 0.06rem;
+  left: auto;
+  top: auto;
   width: 2.42rem;
   height: 2.42rem;
+  grid-column: 1;
+  grid-row: 1;
+  margin: 0.04rem 0 0 0.04rem;
 }
 
-.kb-enter-l {
-  position: absolute;
-  inset: 0;
+.kb-enter-v,
+.kb-enter-h {
+  border-radius: 0.55rem;
+  background: #e08a3c !important;
+  box-shadow: 0 0.28rem 0 #c47a38 !important;
+}
+
+.kb-enter-v .kb-cap,
+.kb-enter-h .kb-cap {
+  border-radius: 0.4rem;
+  background: linear-gradient(180deg, #f6c07a, #e8893a);
+  color: #2a1608;
+}
+
+.kb-enter-v {
+  grid-column: 2;
+  grid-row: 1 / span 2;
   z-index: 2;
   width: 100% !important;
   height: 100% !important;
   min-width: 0 !important;
-  background: #e8893a !important;
-  box-shadow: 0 0.28rem 0 #c47a38 !important;
-  clip-path: polygon(
-    2.5rem 0,
-    100% 0,
-    100% 100%,
-    0 100%,
-    0 2.55rem,
-    2.5rem 2.55rem,
-    2.5rem 0
-  );
 }
 
-.kb-enter-l .kb-cap {
-  align-items: flex-end;
+.kb-enter-h {
+  grid-column: 1 / span 2;
+  grid-row: 2;
+  z-index: 3;
+  width: 100% !important;
+  height: calc(100% + 0.38rem) !important;
+  min-width: 0 !important;
+  margin-top: -0.38rem;
+}
+
+.kb-enter-h .kb-cap {
+  align-items: center;
   justify-content: flex-end;
-  padding: 0 0.42rem 0.14rem 0;
+  padding: 0 0.45rem 0 0;
   font-size: 1.05rem;
   font-weight: 400;
-  background: linear-gradient(180deg, #f6c07a, #e8893a);
-  border-color: color-mix(in oklab, #f6c07a 55%, transparent);
-  color: #2a1608;
 }
 
 .dial-hint {
@@ -1178,6 +1203,129 @@ html.light .kb-deck {
   max-height: 3.2rem;
 }
 
+.header-fish {
+  pointer-events: none;
+}
+
+.header-fish .kb-board {
+  pointer-events: auto;
+}
+
+.header-key-solid {
+  background: #2a2a2a;
+  padding-bottom: 0.45rem;
+  box-shadow:
+    0 0.45rem 0 #1a1a1a,
+    0 0.7rem 1rem color-mix(in oklab, black 28%, transparent);
+}
+
+.header-key-cap-solid {
+  background: color-mix(in oklab, #2f2f2f 88%, transparent);
+  backdrop-filter: blur(12px);
+}
+
+html.light .header-key-solid {
+  background: #f2f2f0;
+  box-shadow:
+    0 0.45rem 0 #d4d4d0,
+    0 0.7rem 1rem color-mix(in oklab, black 10%, transparent);
+}
+
+html.light .header-key-cap-solid {
+  background: color-mix(in oklab, #f7f7f5 92%, transparent);
+}
+
+.header-guide {
+  position: fixed;
+  z-index: 45;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: min(16.5rem, calc(100vw - 1.5rem));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+  pointer-events: auto;
+}
+
+.header-guide-copy,
+.header-guide-note {
+  margin: 0;
+  text-align: right;
+  font-size: 0.68rem;
+  line-height: 1.35;
+  font-weight: 400;
+  color: var(--color-foreground);
+  text-shadow: 0 1px 0 color-mix(in oklab, var(--color-background) 80%, transparent);
+}
+
+.header-guide-note {
+  opacity: 0.85;
+}
+
+.header-guide-pop {
+  width: 100%;
+  padding: 0.65rem 0.7rem;
+  border-radius: 0.7rem;
+  background: #fff;
+  color: #141414;
+  box-shadow: 0 0.45rem 1.1rem color-mix(in oklab, black 22%, transparent);
+  font-size: 0.68rem;
+  line-height: 1.4;
+}
+
+.header-guide-pop p {
+  margin: 0 0 0.35rem;
+}
+
+.header-guide-pop p:last-child {
+  margin: 0;
+}
+
+.header-guide-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.68rem;
+  font-weight: 400;
+  cursor: pointer;
+  color: var(--color-foreground);
+}
+
+.header-guide-switch input {
+  position: absolute;
+  opacity: 0;
+}
+
+.header-guide-knob {
+  width: 2.1rem;
+  height: 1.15rem;
+  border-radius: 999px;
+  background: #b0b0b0;
+  box-shadow: inset 0 1px 2px color-mix(in oklab, black 25%, transparent);
+  position: relative;
+}
+
+.header-guide-knob::after {
+  content: "";
+  position: absolute;
+  top: 0.12rem;
+  left: 0.12rem;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 999px;
+  background: #fff;
+  transition: transform 140ms ease;
+}
+
+.header-guide-knob[data-on="true"] {
+  background: #7ecfc6;
+}
+
+.header-guide-knob[data-on="true"]::after {
+  transform: translateX(0.92rem);
+}
+
 .kb-search-key {
   width: auto;
   min-width: 9.5rem;
@@ -1204,7 +1352,7 @@ html.light .kb-deck {
 .kb-white .kb-cap,
 .kb-white .kb-dual b,
 .kb-white .kb-dual i {
-  color: #141414;
+  color: #111;
   font-weight: 400;
 }
 
