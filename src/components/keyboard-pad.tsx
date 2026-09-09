@@ -34,7 +34,17 @@ export function KeyboardPad() {
           to="/"
           size="sm"
           tone="orange"
-          className="kb-enter-l"
+          className="kb-enter-v"
+          aria-label="Enter, home"
+          onClick={() => closeHelp()}
+        >
+          {" "}
+        </KeyLink>
+        <KeyLink
+          to="/"
+          size="sm"
+          tone="orange"
+          className="kb-enter-h"
           aria-label="Enter, home"
           onClick={() => closeHelp()}
         >
