@@ -208,7 +208,7 @@ function ProductPage() {
             </dl>
           )}
 
-          <div className="flex flex-col gap-3">
+          <div className="flex w-full flex-col gap-3">
             {canBuy ? (
               <>
                 {product.maxQty > 1 && (
@@ -221,31 +221,37 @@ function ProductPage() {
                     }}
                   />
                 )}
-                <div className="flex flex-col gap-3 sm:flex-row">
-                  <KeyButton
-                    className="flex-1"
-                    onClick={handleAdd}
-                    disabled={inCart && product.maxQty <= 1}
-                  >
-                    {added || (inCart && product.maxQty <= 1) ? (
-                      <Check className="size-4" />
-                    ) : (
-                      <ShoppingCart className="size-4" />
-                    )}
-                    {inCart && product.maxQty <= 1
-                      ? "In cart"
-                      : added
-                        ? "Added"
-                        : inCart
-                          ? "Add another"
-                          : "Add to cart"}
-                  </KeyButton>
-                  {inCart && (
-                    <KeyLink to="/checkout" search={cartCheckoutSearch} className="flex-1" size="default">
-                      Checkout cart
-                    </KeyLink>
+                {/* Teal spacebar key — same width as PayPal / Trade Me */}
+                <KeyButton
+                  tone="teal"
+                  className="kb-spacebar w-full"
+                  onClick={handleAdd}
+                  disabled={inCart && product.maxQty <= 1}
+                >
+                  {added || (inCart && product.maxQty <= 1) ? (
+                    <Check className="size-4" />
+                  ) : (
+                    <ShoppingCart className="size-4" />
                   )}
-                </div>
+                  {inCart && product.maxQty <= 1
+                    ? "In cart"
+                    : added
+                      ? "Added"
+                      : inCart
+                        ? "Add another"
+                        : "Add to cart"}
+                </KeyButton>
+                {inCart && (
+                  <KeyLink
+                    to="/checkout"
+                    search={cartCheckoutSearch}
+                    className="kb-spacebar w-full"
+                    size="default"
+                    tone="orange"
+                  >
+                    Checkout cart
+                  </KeyLink>
+                )}
                 <button
                   type="button"
                   onClick={handlePayPal}
