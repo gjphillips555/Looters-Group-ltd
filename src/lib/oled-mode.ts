@@ -1,13 +1,13 @@
 import { create } from "zustand";
 
 export const OLED_HELP = [
-  { title: "DIAL", lines: ["SPIN TO CYCLE", "OR TAP < >"] },
+  { title: "DIAL", lines: ["SPIN TO CYCLE", "↵ ACTIVATES"] },
   { title: "OLED", lines: ["CLICK = CLOCK", "CAT NAME STAYS"] },
   { title: "CATS", lines: ["< ,   PREV", "> .   NEXT"] },
-  { title: "ENTER", lines: ["ENTER = HOME", "BKSP = BACK"] },
+  { title: "ENTER", lines: ["↵ = SELECT", "STEM = HOME"] },
   { title: "LIGHT", lines: ["F5 LIGHT  F6 DARK", "LUMI = RGB GLOW"] },
   { title: "BASIC", lines: ["BASIC = SIMPLE", "FISH = THIS KB"] },
-  { title: "GAME", lines: ["DIAL TO GAME", "LUMI CONFIRMS"] },
+  { title: "GAME", lines: ["DIAL + ↵", "THEN LUMINATE"] },
   { title: "HELP", lines: ["DIAL TURNS PAGES", "? EXITS HELP"] },
 ] as const;
 

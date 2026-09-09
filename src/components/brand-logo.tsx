@@ -3,6 +3,7 @@ import { ARTWORK } from "@/lib/artwork";
 import { OledBarrelGame } from "@/components/oled-barrel-game";
 import { OLED_HELP, useOledMode } from "@/lib/oled-mode";
 import { useOledGame } from "@/lib/oled-game";
+import { CYCLE_LABEL, usePadSelect } from "@/lib/shop-nav";
 import { cn } from "@/lib/utils";
 
 export function BrandLogo({
@@ -58,7 +59,9 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
   const closeFlash = useOledMode((s) => s.closeFlash);
   const playing = useOledGame((s) => s.active);
   const picked = useOledGame((s) => s.picked);
+  const pending = usePadSelect((s) => s.pending);
   const waiting = picked && !playing;
+  const choosing = Boolean(pending) && !picked && !playing;
 
   useEffect(() => {
     if (!booting) return;
@@ -82,10 +85,11 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
         flash && "is-flash",
         playing && "is-game",
         waiting && "is-game-wait",
+        choosing && "is-cat-wait",
       )}
       onClick={() => {
         if (booting) return;
-        if (playing || waiting) return;
+        if (playing || waiting || choosing) return;
         if (flash) {
           closeFlash();
           setOled(false);
@@ -98,9 +102,11 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
       aria-label={
         waiting
           ? "Game selected. Press Luminate to play."
-          : playing
-            ? "Barrel jumper"
-            : "Toggle OLED clock"
+          : choosing
+            ? `${CYCLE_LABEL[pending!]} selected. Press return.`
+            : playing
+              ? "Barrel jumper"
+              : "Toggle OLED clock"
       }
     >
       <span className="cmd-rest">
@@ -126,6 +132,13 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
         <span className="oled-game-wait-title">PRESS LUMINATE</span>
         <span className="oled-game-wait-line">TO CONFIRM</span>
         <span className="oled-game-wait-line oled-game-wait-blink">GAME PLAY</span>
+      </span>
+      <span className="oled-cat-wait">
+        <span className="oled-game-wait-k">SELECT</span>
+        <span className="oled-game-wait-title">
+          {pending ? CYCLE_LABEL[pending] : ""}
+        </span>
+        <span className="oled-game-wait-line oled-game-wait-blink">PRESS ↵</span>
       </span>
       <OledHud date={clock.date} time={clock.time} />
       <OledHelp page={page} />

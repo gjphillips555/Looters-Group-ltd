@@ -1,3 +1,4 @@
+import { create } from "zustand";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { useOledGame } from "@/lib/oled-game";
 import { useOledMode } from "@/lib/oled-mode";
@@ -18,6 +19,14 @@ export const CYCLE_LABEL: Record<PadCategoryId, string> = {
   game: "Game",
 };
 
+export const usePadSelect = create<{
+  pending: PadCategoryId | null;
+  setPending: (id: PadCategoryId | null) => void;
+}>((set) => ({
+  pending: null,
+  setPending: (pending) => set({ pending }),
+}));
+
 export function categoryFromPath(pathname: string): ShopCategoryId | undefined {
   if (pathname === "/shop/desktops") return "desktops";
   if (pathname === "/shop/laptops") return "laptops";
@@ -30,34 +39,52 @@ export function useShopCategory() {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const shopActive = categoryFromPath(pathname) ?? "all";
+  const pending = usePadSelect((s) => s.pending);
+  const setPending = usePadSelect((s) => s.setPending);
   const picked = useOledGame((s) => s.picked);
   const pick = useOledGame((s) => s.pick);
   const unpick = useOledGame((s) => s.unpick);
+  const stopGame = useOledGame((s) => s.stop);
   const closeFlash = useOledMode((s) => s.closeFlash);
-  const showFlash = useOledMode((s) => s.showFlash);
-  const active: PadCategoryId = picked ? "game" : shopActive;
-
-  function select(id: PadCategoryId) {
-    if (id === "game") {
-      closeFlash();
-      pick();
-      return;
-    }
-    unpick();
-    showFlash(CYCLE_LABEL[id]);
-    if (id === "all") void navigate({ to: "/shop" });
-    else void navigate({ to: "/shop/$category", params: { category: id } });
-  }
+  const closeHelp = useOledMode((s) => s.closeHelp);
+  const cursor: PadCategoryId = pending ?? (picked ? "game" : shopActive);
 
   function cycle(delta: number) {
+    stopGame();
+    closeHelp();
+    closeFlash();
     const n = PAD_CATEGORIES.length;
-    const i = Math.max(0, PAD_CATEGORIES.findIndex((c) => c.id === active));
+    const i = Math.max(0, PAD_CATEGORIES.findIndex((c) => c.id === cursor));
     const next = PAD_CATEGORIES[(i + delta + n) % n];
-    select(next.id);
+    if (next.id !== "game") unpick();
+    setPending(next.id);
     return next;
   }
 
-  return { active, select, cycle };
+  function commit() {
+    if (!pending) return false;
+    const id = pending;
+    closeHelp();
+    closeFlash();
+    if (id === "game") {
+      pick();
+      setPending("game");
+      return true;
+    }
+    unpick();
+    setPending(null);
+    if (id === "all") void navigate({ to: "/shop" });
+    else void navigate({ to: "/shop/$category", params: { category: id } });
+    return true;
+  }
+
+  function cancel() {
+    setPending(null);
+    unpick();
+    stopGame();
+  }
+
+  return { active: cursor, pending, cycle, commit, cancel };
 }
 
 export function scrollPage(dir: "up" | "down") {

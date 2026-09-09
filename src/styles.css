@@ -870,12 +870,13 @@ html.light .kb-deck {
 .cmd-screen.is-help .cmd-rest,
 .cmd-screen.is-flash .cmd-rest,
 .cmd-screen.is-game .cmd-rest,
-.cmd-screen.is-game-wait .cmd-rest {
+.cmd-screen.is-game-wait .cmd-rest,
+.cmd-screen.is-cat-wait .cmd-rest {
   display: none;
 }
 
-.logo-hang:hover .boot-done:not(.is-help):not(.is-flash):not(.is-game):not(.is-game-wait) .oled-hud,
-.cmd-screen.is-oled:not(.is-help):not(.is-flash):not(.is-game):not(.is-game-wait) .oled-hud {
+.logo-hang:hover .boot-done:not(.is-help):not(.is-flash):not(.is-game):not(.is-game-wait):not(.is-cat-wait) .oled-hud,
+.cmd-screen.is-oled:not(.is-help):not(.is-flash):not(.is-game):not(.is-game-wait):not(.is-cat-wait) .oled-hud {
   display: flex;
   animation: cmd-glitch-in 360ms steps(5, end);
 }
@@ -883,7 +884,8 @@ html.light .kb-deck {
 .cmd-screen.is-help .oled-hud,
 .cmd-screen.is-flash .oled-hud,
 .cmd-screen.is-game .oled-hud,
-.cmd-screen.is-game-wait .oled-hud {
+.cmd-screen.is-game-wait .oled-hud,
+.cmd-screen.is-cat-wait .oled-hud {
   display: none;
 }
 
@@ -892,7 +894,9 @@ html.light .kb-deck {
 .cmd-screen.is-game .oled-help,
 .cmd-screen.is-game .oled-flash,
 .cmd-screen.is-game-wait .oled-help,
-.cmd-screen.is-game-wait .oled-flash {
+.cmd-screen.is-game-wait .oled-flash,
+.cmd-screen.is-cat-wait .oled-help,
+.cmd-screen.is-cat-wait .oled-flash {
   display: none;
 }
 
@@ -942,6 +946,24 @@ html.light .kb-deck {
 }
 
 .cmd-screen.is-game-wait:not(.is-game) .oled-game-wait {
+  display: flex;
+}
+
+.oled-cat-wait {
+  display: none;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.12rem;
+  color: #d6de3a;
+  font-family: var(--font-oled);
+  font-weight: 600;
+  text-align: center;
+  text-shadow: 0 0 8px #d6de3a;
+}
+
+.cmd-screen.is-cat-wait:not(.is-game):not(.is-game-wait) .oled-cat-wait {
   display: flex;
 }
 

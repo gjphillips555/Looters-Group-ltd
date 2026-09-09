@@ -8,7 +8,7 @@ import { useShopCategory } from "@/lib/shop-nav";
 import { useNavigate } from "@tanstack/react-router";
 
 export function KeyboardPad() {
-  const { cycle } = useShopCategory();
+  const { cycle, commit, cancel } = useShopCategory();
   const help = useOledMode((s) => s.help);
   const toggleHelp = useOledMode((s) => s.toggleHelp);
   const closeHelp = useOledMode((s) => s.closeHelp);
@@ -16,7 +16,6 @@ export function KeyboardPad() {
   const over = useOledGame((s) => s.over);
   const startGame = useOledGame((s) => s.start);
   const stopGame = useOledGame((s) => s.stop);
-  const unpick = useOledGame((s) => s.unpick);
   const pressJump = useOledGame((s) => s.pressJump);
   const releaseJump = useOledGame((s) => s.releaseJump);
   const setRun = useOledGame((s) => s.setRun);
@@ -43,34 +42,32 @@ export function KeyboardPad() {
           size="sm"
           tone="orange"
           className="kb-enter-v"
-          aria-label="Enter, home"
+          aria-label="Home"
           onClick={() => {
-            stopGame();
-            unpick();
+            cancel();
             closeHelp();
           }}
         >
           {" "}
         </KeyLink>
-        <KeyLink
-          to={armed ? "/hidden" : "/"}
+        <KeyButton
           size="sm"
           tone="orange"
           className="kb-enter-h"
-          aria-label={armed ? "Open den" : "Enter, home"}
-          onClick={(e) => {
-            stopGame();
-            unpick();
+          aria-label={armed ? "Open den" : "Activate selection"}
+          onClick={() => {
             closeHelp();
             if (armed) {
-              e.preventDefault();
               disarm();
+              cancel();
               void navigate({ to: "/hidden" });
+              return;
             }
+            commit();
           }}
         >
           ↵
-        </KeyLink>
+        </KeyButton>
       </div>
 
       <KeyButton
