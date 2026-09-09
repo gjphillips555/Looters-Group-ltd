@@ -12,7 +12,7 @@ export type Theme = "light" | "dark";
 
 const STORAGE_KEY = "looters-theme";
 
-export const THEME_BOOT_SCRIPT = `(function(){try{var t=localStorage.getItem("${STORAGE_KEY}");if(t!=="light"&&t!=="dark")t="light";var r=document.documentElement;r.classList.remove("light","dark");r.classList.add(t);r.style.colorScheme=t;}catch(e){document.documentElement.classList.add("light");document.documentElement.style.colorScheme="light";}})();`;
+export const THEME_BOOT_SCRIPT = `(function(){try{var r=document.documentElement;r.classList.remove("light","dark");r.classList.add("light");r.style.colorScheme="light";r.dataset.theme="light";localStorage.setItem("${STORAGE_KEY}","light");}catch(e){document.documentElement.classList.add("light");document.documentElement.style.colorScheme="light";}})();`;
 
 type ThemeContextValue = {
   theme: Theme;
@@ -39,14 +39,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("light");
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      const next: Theme = stored === "dark" ? "dark" : "light";
-      setThemeState(next);
-      applyTheme(next);
-    } catch {
-      applyTheme("light");
-    }
+    setThemeState("light");
+    applyTheme("light");
   }, []);
 
   const setTheme = useCallback((next: Theme) => {

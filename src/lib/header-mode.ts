@@ -4,12 +4,12 @@ export type HeaderMode = "fish" | "simple";
 const KEY = "looters-header";
 
 export function useHeaderMode() {
-  const [mode, setModeState] = useState<HeaderMode>("fish");
+  const [mode, setModeState] = useState<HeaderMode>("simple");
 
   useEffect(() => {
+    setModeState("simple");
     try {
-      const stored = localStorage.getItem(KEY);
-      if (stored === "simple" || stored === "fish") setModeState(stored);
+      localStorage.setItem(KEY, "simple");
     } catch {
       /* ignore */
     }
