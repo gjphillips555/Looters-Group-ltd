@@ -3,7 +3,7 @@ import { CategoryDial } from "@/components/category-dial";
 import { KeyButton, KeyLink } from "@/components/key-button";
 import { useOledMode } from "@/lib/oled-mode";
 import { SHOP_CATEGORIES } from "@/lib/product-search";
-import { CYCLE_LABEL, scrollPage, useShopCategory } from "@/lib/shop-nav";
+import { CYCLE_LABEL, useShopCategory } from "@/lib/shop-nav";
 
 export function KeyboardPad() {
   const { active, cycle } = useShopCategory();
@@ -33,16 +33,8 @@ export function KeyboardPad() {
         <KeyLink
           to="/"
           size="sm"
-          className="kb-enter-v"
-          aria-label="Enter, home"
-          onClick={() => closeHelp()}
-        >
-          {" "}
-        </KeyLink>
-        <KeyLink
-          to="/"
-          size="sm"
-          className="kb-enter-h"
+          tone="orange"
+          className="kb-enter-l"
           aria-label="Enter, home"
           onClick={() => closeHelp()}
         >
@@ -52,52 +44,52 @@ export function KeyboardPad() {
 
       <KeyButton
         size="sm"
+        tone="teal"
         className="kb-pad-prev"
         aria-label="Previous category"
         onClick={() => step(-1)}
       >
-        {"<"}
+        <span className="kb-dual">
+          <b>{"<"}</b>
+          <i>,</i>
+        </span>
       </KeyButton>
       <KeyButton
         size="sm"
-        className="kb-pad-now"
-        aria-label={`Next category from ${CYCLE_LABEL[active]}`}
-        onClick={() => step(1)}
-      >
-        {CYCLE_LABEL[active]}
-      </KeyButton>
-      <KeyButton
-        size="sm"
+        tone="teal"
         className="kb-pad-next"
         aria-label="Next category"
         onClick={() => step(1)}
       >
-        {">"}
+        <span className="kb-dual">
+          <b>{">"}</b>
+          <i>.</i>
+        </span>
       </KeyButton>
-
       <KeyButton
         size="sm"
-        className="kb-pad-info"
+        tone="teal"
+        className="kb-pad-help"
         data-lit={help ? "true" : "false"}
+        aria-label="Help"
         onClick={() => toggleHelp()}
       >
-        Info
+        <span className="kb-dual">
+          <b>?</b>
+          <i>/</i>
+        </span>
       </KeyButton>
       <KeyButton
         size="sm"
-        className="kb-pad-pgup"
-        aria-label="Page up"
-        onClick={() => scrollPage("up")}
+        tone="brown"
+        className="kb-pad-bksp"
+        aria-label="Backspace, browser back"
+        onClick={() => window.history.back()}
       >
-        PgUp
-      </KeyButton>
-      <KeyButton
-        size="sm"
-        className="kb-pad-pgdn"
-        aria-label="Page down"
-        onClick={() => scrollPage("down")}
-      >
-        PgDn
+        <span className="kb-bksp">
+          <span>⌫</span>
+          <span>Bksp</span>
+        </span>
       </KeyButton>
     </div>
   );

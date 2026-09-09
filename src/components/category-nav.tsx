@@ -13,6 +13,16 @@ export function CategoryNav() {
 
   return (
     <div className="kb-deck relative z-10 mb-8">
+      <div className="kb-ghost" aria-hidden="true">
+        {["Tab", "Q", "W", "E", "R", "T", "Y", "U"].map((k, i) => (
+          <span
+            key={k}
+            className={`kb-key kb-key-sm kb-ghost-key${i === 2 || i === 5 ? " kb-teal" : i === 6 ? " kb-orange" : " kb-brown"}`}
+          >
+            <span className="kb-cap">{k}</span>
+          </span>
+        ))}
+      </div>
       <div className="hidden md:block">
         <div className="grid grid-cols-4 gap-3">
           {SHOP_CATEGORIES.map((c) => (

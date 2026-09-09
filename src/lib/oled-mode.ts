@@ -1,13 +1,11 @@
 import { create } from "zustand";
 
 export const OLED_HELP = [
-  { title: "DIAL", lines: ["SPIN TO CYCLE", "OR TAP CAT KEY"] },
-  { title: "OLED", lines: ["CLICK = CLOCK", "CAT KEY = LABEL"] },
-  { title: "KEYS", lines: ["< CAT > CYCLES", "ENTER = HOME"] },
-  { title: "INFO", lines: ["INFO AGAIN EXITS", "ENTER EXITS TOO"] },
+  { title: "DIAL", lines: ["SPIN TO CYCLE", "OR TAP < >"] },
+  { title: "OLED", lines: ["CLICK = CLOCK", "CONTINUE? EXITS"] },
+  { title: "KEYS", lines: ["< ,   > .", "? /  HELP"] },
+  { title: "BKSP", lines: ["BACKSPACE = BACK", "ENTER = HOME"] },
 ] as const;
-
-let flashTimer: number | undefined;
 
 export const useOledMode = create<{
   help: boolean;
@@ -18,6 +16,7 @@ export const useOledMode = create<{
   toggleHelp: () => void;
   cycleHelp: (delta: number) => void;
   showFlash: (label: string) => void;
+  closeFlash: () => void;
 }>((set, get) => ({
   help: false,
   page: 0,
@@ -29,13 +28,6 @@ export const useOledMode = create<{
     const n = OLED_HELP.length;
     set({ page: (get().page + delta + n) % n });
   },
-  showFlash: (label) => {
-    if (typeof window !== "undefined") window.clearTimeout(flashTimer);
-    set({ flash: label, help: false });
-    if (typeof window !== "undefined") {
-      flashTimer = window.setTimeout(() => {
-        set({ flash: null });
-      }, 1400);
-    }
-  },
+  showFlash: (label) => set({ flash: label, help: false }),
+  closeFlash: () => set({ flash: null }),
 }));

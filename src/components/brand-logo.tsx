@@ -50,6 +50,7 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
   const help = useOledMode((s) => s.help);
   const page = useOledMode((s) => s.page);
   const flash = useOledMode((s) => s.flash);
+  const closeFlash = useOledMode((s) => s.closeFlash);
 
   useEffect(() => {
     if (!booting) return;
@@ -73,11 +74,17 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
         flash && "is-flash",
       )}
       onClick={() => {
-        if (booting || help || flash) return;
+        if (booting) return;
+        if (flash) {
+          closeFlash();
+          setOled(false);
+          return;
+        }
+        if (help) return;
         setOled((v) => !v);
       }}
       role="button"
-      aria-label="Toggle OLED clock"
+      aria-label={flash ? "Continue" : "Toggle OLED clock"}
     >
       <span className="cmd-rest">
         <img
@@ -98,7 +105,10 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
       </span>
       <OledHud date={clock.date} time={clock.time} />
       <OledHelp page={page} />
-      <span className="oled-flash">{flash}</span>
+      <span className="oled-flash">
+        <span className="oled-flash-cat">{flash}</span>
+        <span className="oled-flash-go">Continue?</span>
+      </span>
     </span>
   );
 }

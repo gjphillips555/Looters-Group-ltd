@@ -2,10 +2,10 @@ import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { SHOP_CATEGORIES, type ShopCategoryId } from "@/lib/product-search";
 
 export const CYCLE_LABEL: Record<ShopCategoryId, string> = {
-  desktops: "Dsk Tp",
-  laptops: "Lp Tp",
-  components: "Cmp Nt",
-  all: "All Prdct",
+  desktops: "Desktops",
+  laptops: "Laptops",
+  components: "Components",
+  all: "All products",
 };
 
 export function categoryFromPath(pathname: string): ShopCategoryId | undefined {
