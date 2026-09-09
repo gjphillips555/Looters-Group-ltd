@@ -6,20 +6,23 @@ import { ThemeToggle } from "@/components/theme-toggle";
 
 export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
   return (
-    <header className="sticky top-0 z-30 overflow-hidden">
-      <div className="header-key">
-        <div className="header-key-cap">
-          <div className="relative mx-auto flex max-w-6xl items-center gap-2 px-3 py-2 sm:gap-3 sm:px-6">
+    <header className="sticky top-0 z-30 overflow-visible bg-transparent">
+      <div className="px-3 pt-2 sm:px-6">
+        <div className="kb-board">
+          <div className="kb-board-keys">
             <KeyboardPad />
-
-            <ShopSearch className="hidden min-w-0 flex-1 md:block md:max-w-[180px] lg:max-w-[240px]" />
-
-            <div className="ml-auto flex shrink-0 items-center gap-1.5">
-              <MobileSearchToggle />
-              <ThemeToggle />
-              <AccountButton />
-              <CartButton onClick={onOpenCart} />
+            <div className="kb-leds" aria-hidden="true">
+              <span className="kb-led is-on" />
+              <span className="kb-led is-on" />
+              <span className="kb-led" />
             </div>
+          </div>
+          <div className="kb-utils">
+            <ShopSearch className="hidden min-w-0 md:block md:max-w-[170px] lg:max-w-[210px]" />
+            <MobileSearchToggle />
+            <ThemeToggle />
+            <AccountButton />
+            <CartButton onClick={onOpenCart} />
           </div>
         </div>
       </div>

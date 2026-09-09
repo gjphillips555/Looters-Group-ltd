@@ -100,6 +100,19 @@ export function CategoryDial({ className }: { className?: string }) {
     >
       <span className="as-dial-ring" aria-hidden="true" />
       <span className="as-dial-face" aria-hidden="true" />
+      <span className="dial-hint" aria-hidden="true">
+        <svg viewBox="0 0 64 64" className="dial-hint-svg">
+          <circle cx="32" cy="32" r="30" fill="#041018" />
+          <path
+            d="M44.5 22.5c6 4.2 9 12.2 6.2 19.4-3.2 8.2-12.4 12.8-21 10.6"
+            fill="none"
+            stroke="#7ad7e8"
+            strokeWidth="5.5"
+            strokeLinecap="round"
+          />
+          <path d="M46 16.5 48 28 36.5 26z" fill="#7ad7e8" />
+        </svg>
+      </span>
       <span className="sr-only">{label}</span>
     </button>
   );

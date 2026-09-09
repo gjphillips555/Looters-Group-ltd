@@ -106,8 +106,14 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
       <OledHud date={clock.date} time={clock.time} />
       <OledHelp page={page} />
       <span className="oled-flash">
+        <img
+          src={ARTWORK.favicon}
+          alt=""
+          className="pixel-penguin oled-flash-pen"
+          width={40}
+          height={40}
+        />
         <span className="oled-flash-cat">{flash}</span>
-        <span className="oled-flash-go">Continue?</span>
       </span>
     </span>
   );

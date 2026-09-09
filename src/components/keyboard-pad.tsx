@@ -86,9 +86,9 @@ export function KeyboardPad() {
         aria-label="Backspace, browser back"
         onClick={() => window.history.back()}
       >
-        <span className="kb-bksp">
-          <span>⌫</span>
-          <span>Bksp</span>
+        <span className="kb-dual">
+          <b>⌫</b>
+          <i>Bksp</i>
         </span>
       </KeyButton>
     </div>

@@ -373,34 +373,73 @@ a.kb-key {
   overflow: visible;
 }
 
-.header-key {
-  position: relative;
-  overflow: hidden;
+.header-key,
+.header-key-cap,
+html.light .header-key,
+html.light .header-key-cap {
   background: transparent;
-  padding-bottom: 0.4rem;
   box-shadow: none;
-}
-
-.header-key-cap {
-  position: relative;
-  z-index: 36;
-  background: transparent;
   backdrop-filter: none;
 }
 
-html.light .header-key {
-  background: transparent;
-  box-shadow: none;
+.kb-board {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.38rem;
+  max-width: min(100%, 46rem);
+  padding: 0.5rem 0.55rem 0.58rem;
+  border-radius: 1.2rem 1.2rem 1.35rem 1.15rem;
+  background: linear-gradient(180deg, #3e3e42 0%, #2c2c30 100%);
+  box-shadow:
+    0 0.45rem 0 #1c1c1e,
+    0 0.85rem 1.2rem color-mix(in oklab, black 28%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 14%, transparent);
 }
 
-html.light .header-key-cap {
-  background: transparent;
+html.light .kb-board {
+  background: linear-gradient(180deg, #eceae6 0%, #d8d5cf 100%);
+  box-shadow:
+    0 0.45rem 0 #c4c0b8,
+    0 0.85rem 1.1rem color-mix(in oklab, black 12%, transparent),
+    inset 0 1px 0 #fff;
 }
 
-.oled-cradle {
-  display: none;
+.kb-board-keys {
+  display: flex;
+  align-items: stretch;
+  gap: 0.28rem;
 }
 
+.kb-leds {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.2rem 0.12rem;
+}
+
+.kb-led {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 999px;
+  background: #1a1a1c;
+  box-shadow: inset 0 1px 1px #000;
+}
+
+.kb-led.is-on {
+  background: #7dffb0;
+  box-shadow:
+    0 0 6px #5dff9a,
+    0 0 12px #2aff7a;
+}
+
+.kb-utils {
+  display: flex;
+  align-items: center;
+  gap: 0.28rem;
+}
+
+.oled-cradle,
 .oled-cluster {
   display: none;
 }
@@ -408,7 +447,7 @@ html.light .header-key-cap {
 .kb-pad {
   display: grid;
   z-index: 1;
-  grid-template-columns: 9.2rem 5.5rem 2.7rem 2.7rem 2.7rem;
+  grid-template-columns: 9.2rem 5.6rem 2.7rem 2.7rem 2.7rem;
   grid-template-rows: 2.55rem 2.55rem;
   grid-template-areas:
     "oled enter prev next help"
@@ -442,12 +481,15 @@ html.light .header-key-cap {
 
 @media (max-width: 767px) {
   .kb-pad {
-    position: relative;
-    grid-template-columns: 8.2rem 5rem 2.4rem 2.4rem;
+    grid-template-columns: 8.2rem 5.1rem 2.45rem 2.45rem;
     grid-template-rows: 2.5rem 2.5rem;
     grid-template-areas:
       "oled enter prev next"
       "oled enter help  bksp";
+  }
+
+  .kb-board {
+    max-width: 100%;
   }
 }
 
@@ -486,40 +528,70 @@ html.light .header-key-cap {
 
 .kb-enter-well {
   position: relative;
-  display: grid;
-  grid-template-columns: 2.4rem 1fr;
-  grid-template-rows: 2.4rem 1fr;
   min-width: 0;
+  height: 100%;
 }
 
 .kb-enter-well .as-dial {
-  position: relative;
-  z-index: 3;
-  left: auto;
-  top: auto;
-  width: 2.35rem;
-  height: 2.35rem;
-  grid-column: 1;
-  grid-row: 1;
-  margin: 0.04rem 0 0 0.04rem;
+  position: absolute;
+  z-index: 1;
+  left: 0.06rem;
+  top: 0.06rem;
+  width: 2.42rem;
+  height: 2.42rem;
 }
 
 .kb-enter-l {
-  grid-column: 1 / -1;
-  grid-row: 1 / -1;
-  z-index: 1;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   width: 100% !important;
   height: 100% !important;
   min-width: 0 !important;
-  clip-path: polygon(0 46%, 43% 46%, 43% 0, 100% 0, 100% 100%, 0 100%);
+  clip-path: polygon(
+    2.5rem 0,
+    100% 0,
+    100% 100%,
+    0 100%,
+    0 2.55rem,
+    0.35rem 2.55rem,
+    2.5rem 2.2rem,
+    2.5rem 0
+  );
 }
 
 .kb-enter-l .kb-cap {
   align-items: flex-end;
   justify-content: flex-end;
-  padding: 0 0.4rem 0.12rem 0;
+  padding: 0 0.42rem 0.14rem 0;
   font-size: 1.05rem;
   font-weight: 400;
+}
+
+.dial-hint {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+
+.as-dial:hover .dial-hint,
+.as-dial:focus-visible .dial-hint {
+  opacity: 1;
+}
+
+.dial-hint-svg {
+  width: 92%;
+  height: 92%;
+  filter: drop-shadow(0 0 6px #7ad7e8);
+}
+
+.kb-bksp {
+  display: none;
 }
 
 .kb-bksp {
@@ -768,7 +840,7 @@ html.light .kb-deck {
   height: 100%;
   place-items: center;
   align-content: center;
-  gap: 0.28rem;
+  gap: 0.2rem;
   color: #d6de3a;
   font-family: var(--font-oled);
   font-weight: 600;
@@ -777,19 +849,45 @@ html.light .kb-deck {
 
 .cmd-screen.is-flash .oled-flash {
   display: grid;
-  animation: cmd-glitch-in 280ms steps(4, end);
 }
 
 .oled-flash-cat {
   font-size: 1.05rem;
   letter-spacing: 0.08em;
   text-shadow: 0 0 10px #d6de3a;
+  animation: oled-load-flash 1.5s steps(1, end) 1 forwards;
 }
 
-.oled-flash-go {
-  font-size: 0.72rem;
-  letter-spacing: 0.16em;
-  animation: start-blink 1.1s steps(1, end) infinite;
+.oled-flash-pen {
+  position: relative !important;
+  inset: auto !important;
+  width: 1.6rem !important;
+  height: 1.6rem !important;
+  animation: penguin-waddle 1.5s linear 1;
+}
+
+@keyframes oled-load-flash {
+  0%,
+  9% { opacity: 1; }
+  10%,
+  19% { opacity: 0; }
+  20%,
+  29% { opacity: 1; }
+  30%,
+  39% { opacity: 0; }
+  40%,
+  49% { opacity: 1; }
+  50%,
+  59% { opacity: 0; }
+  60%,
+  69% { opacity: 1; }
+  70%,
+  79% { opacity: 0; }
+  80%,
+  89% { opacity: 1; }
+  90%,
+  99% { opacity: 0; }
+  100% { opacity: 1; }
 }
 
 .oled-help {
@@ -954,7 +1052,7 @@ html.light .kb-deck {
 .as-dial {
   --as-rot: 0deg;
   position: relative;
-  z-index: 41;
+  z-index: 1;
   width: 2.55rem;
   height: 2.55rem;
   flex-shrink: 0;
