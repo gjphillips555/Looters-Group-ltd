@@ -6,7 +6,6 @@ export function PageScrollKeys() {
     <div className="pg-float" aria-label="Page scroll">
       <KeyButton
         size="sm"
-        tone="cream"
         aria-label="Jump to top"
         onClick={() => scrollPage("up")}
       >
