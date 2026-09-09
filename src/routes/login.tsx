@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { authEnabled, signIn } from "@/lib/auth/client";
 import { BrandLogo } from "@/components/brand-logo";
 import { GoogleMark } from "@/components/google-mark";
@@ -7,6 +9,8 @@ import { KeyButton, KeyLink } from "@/components/key-button";
 export const Route = createFileRoute("/login")({ component: Login });
 
 function Login() {
+  const [busy, setBusy] = useState(false);
+
   return (
     <main className="grid min-h-dvh place-items-center bg-background p-6">
       <div className="w-full max-w-sm space-y-5 rounded-2xl border border-border bg-card p-6">
@@ -22,17 +26,31 @@ function Login() {
         </p>
         {authEnabled ? (
           <KeyButton
-            onClick={() => signIn("grok-google", { callbackURL: "/" })}
+            disabled={busy}
+            onClick={() => {
+              setBusy(true);
+              void signIn("grok-google", { callbackURL: "/" })
+                .catch((err: unknown) => {
+                  const msg =
+                    err instanceof Error
+                      ? err.message
+                      : "Google sign-in failed";
+                  toast.error(msg);
+                })
+                .finally(() => setBusy(false));
+            }}
           >
             <GoogleMark className="size-5" />
-            Continue with Google
+            {busy ? "Connecting…" : "Continue with Google"}
           </KeyButton>
         ) : (
           <p className="text-center text-sm text-muted-foreground">
             Sign-in is disabled.
           </p>
         )}
-        <KeyLink to="/" size="default">Continue as guest</KeyLink>
+        <KeyLink to="/" size="default">
+          Continue as guest
+        </KeyLink>
       </div>
     </main>
   );
