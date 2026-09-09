@@ -1,6 +1,13 @@
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { SHOP_CATEGORIES, type ShopCategoryId } from "@/lib/product-search";
 
+export const CYCLE_LABEL: Record<ShopCategoryId, string> = {
+  desktops: "Dsk Tp",
+  laptops: "Lp Tp",
+  components: "Cmp Nt",
+  all: "All Prdct",
+};
+
 export function categoryFromPath(pathname: string): ShopCategoryId | undefined {
   if (pathname === "/shop/desktops") return "desktops";
   if (pathname === "/shop/laptops") return "laptops";
@@ -27,4 +34,10 @@ export function useShopCategory() {
   }
 
   return { active, select, cycle };
+}
+
+export function scrollPage(dir: "up" | "down") {
+  if (typeof window === "undefined") return;
+  const top = dir === "up" ? 0 : document.documentElement.scrollHeight;
+  window.scrollTo({ top, behavior: "smooth" });
 }

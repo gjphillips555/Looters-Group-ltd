@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { BrandTicker } from "@/components/brand-ticker";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   SHOP_CATEGORIES,
@@ -31,6 +32,7 @@ export function CategoryNav() {
           onSelect={select}
         />
       </div>
+      <BrandTicker />
     </div>
   );
 }
