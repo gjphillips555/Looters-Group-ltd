@@ -35,7 +35,7 @@ function Home() {
           <h1 className="text-balance font-display text-3xl font-bold tracking-tight sm:text-4xl">
             Shop's shut. The loot lives on.
           </h1>
-          <p className="text-sm font-medium text-accent">
+          <p className="text-sm font-medium text-[#e8893a]">
             Loot the best deals on refurbished gear — now from the spare room,
             not the shop floor.
           </p>
@@ -152,7 +152,7 @@ function NewsCard({
   return (
     <article className="overflow-hidden rounded-2xl border border-border bg-card">
       <header className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-border bg-secondary/40 px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground sm:px-6">
-        <span className="rounded bg-accent px-1.5 py-0.5 text-[10px] font-bold text-accent-foreground">
+        <span className="rounded bg-[#e8893a] px-1.5 py-0.5 text-[10px] font-bold text-[#2a1608]">
           Site news
         </span>
         <span aria-hidden="true">·</span>
