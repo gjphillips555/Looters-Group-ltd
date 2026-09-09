@@ -1,7 +1,6 @@
 import { useRef, type PointerEvent as ReactPointerEvent } from "react";
 import { useOledMode } from "@/lib/oled-mode";
-import { SHOP_CATEGORIES } from "@/lib/product-search";
-import { CYCLE_LABEL, useShopCategory } from "@/lib/shop-nav";
+import { PAD_CATEGORIES, useShopCategory } from "@/lib/shop-nav";
 import { cn } from "@/lib/utils";
 
 const DETENT = Math.PI / 3;
@@ -10,7 +9,6 @@ export function CategoryDial({ className }: { className?: string }) {
   const { active, cycle } = useShopCategory();
   const help = useOledMode((s) => s.help);
   const cycleHelp = useOledMode((s) => s.cycleHelp);
-  const showFlash = useOledMode((s) => s.showFlash);
   const rot = useRef(0);
   const last = useRef(0);
   const acc = useRef(0);
@@ -36,10 +34,6 @@ export function CategoryDial({ className }: { className?: string }) {
       cycleHelp(delta);
       return;
     }
-    const n = SHOP_CATEGORIES.length;
-    const i = SHOP_CATEGORIES.findIndex((c) => c.id === active);
-    const next = SHOP_CATEGORIES[(i + delta + n) % n];
-    showFlash(CYCLE_LABEL[next.id]);
     cycle(delta);
   }
 
@@ -84,7 +78,7 @@ export function CategoryDial({ className }: { className?: string }) {
 
   const label = help
     ? "Help pages"
-    : (SHOP_CATEGORIES.find((c) => c.id === active)?.label ?? "All");
+    : (PAD_CATEGORIES.find((c) => c.id === active)?.label ?? "All");
 
   return (
     <button

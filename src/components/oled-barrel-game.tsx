@@ -198,7 +198,7 @@ export function OledBarrelGame() {
         g.textAlign = "center";
         g.fillText("GAME OVER", W / 2, 28);
         g.font = "7px 'Chakra Petch', monospace";
-        g.fillText("PRESS START", W / 2, 42);
+        g.fillText("PRESS LUMINATE", W / 2, 42);
         g.textAlign = "left";
       }
     }
@@ -298,8 +298,8 @@ export function OledBarrelGame() {
       height={H}
       onPointerDown={(e) => {
         e.stopPropagation();
-        if (over) start();
-        else pressJump();
+        if (over) return;
+        pressJump();
       }}
       onPointerUp={() => releaseJump()}
       aria-label="Barrel jumper. Left key jumps, right key runs."

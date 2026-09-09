@@ -869,26 +869,30 @@ html.light .kb-deck {
 .cmd-screen.is-oled .cmd-rest,
 .cmd-screen.is-help .cmd-rest,
 .cmd-screen.is-flash .cmd-rest,
-.cmd-screen.is-game .cmd-rest {
+.cmd-screen.is-game .cmd-rest,
+.cmd-screen.is-game-wait .cmd-rest {
   display: none;
 }
 
-.logo-hang:hover .boot-done:not(.is-help):not(.is-flash):not(.is-game) .oled-hud,
-.cmd-screen.is-oled:not(.is-help):not(.is-flash):not(.is-game) .oled-hud {
+.logo-hang:hover .boot-done:not(.is-help):not(.is-flash):not(.is-game):not(.is-game-wait) .oled-hud,
+.cmd-screen.is-oled:not(.is-help):not(.is-flash):not(.is-game):not(.is-game-wait) .oled-hud {
   display: flex;
   animation: cmd-glitch-in 360ms steps(5, end);
 }
 
 .cmd-screen.is-help .oled-hud,
 .cmd-screen.is-flash .oled-hud,
-.cmd-screen.is-game .oled-hud {
+.cmd-screen.is-game .oled-hud,
+.cmd-screen.is-game-wait .oled-hud {
   display: none;
 }
 
 .cmd-screen.is-flash .cmd-rest,
 .cmd-screen.is-flash .oled-help,
 .cmd-screen.is-game .oled-help,
-.cmd-screen.is-game .oled-flash {
+.cmd-screen.is-game .oled-flash,
+.cmd-screen.is-game-wait .oled-help,
+.cmd-screen.is-game-wait .oled-flash {
   display: none;
 }
 
@@ -921,6 +925,48 @@ html.light .kb-deck {
 
 .cmd-screen.is-game .oled-game {
   display: block;
+}
+
+.oled-game-wait {
+  display: none;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.12rem;
+  color: #d6de3a;
+  font-family: var(--font-oled);
+  font-weight: 600;
+  text-align: center;
+  text-shadow: 0 0 8px #d6de3a;
+}
+
+.cmd-screen.is-game-wait:not(.is-game) .oled-game-wait {
+  display: flex;
+}
+
+.oled-game-wait-k {
+  font-size: 0.55rem;
+  letter-spacing: 0.16em;
+  opacity: 0.75;
+}
+
+.oled-game-wait-title {
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+}
+
+.oled-game-wait-line {
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+}
+
+.oled-game-wait-blink {
+  animation: start-blink 1.1s steps(1, end) infinite;
+}
+
+.kb-lumi[data-wait="true"] {
+  animation: start-blink 1.1s steps(1, end) infinite;
 }
 
 .oled-flash-cat {

@@ -7,7 +7,7 @@ export const OLED_HELP = [
   { title: "ENTER", lines: ["ENTER = HOME", "BKSP = BACK"] },
   { title: "LIGHT", lines: ["F5 LIGHT  F6 DARK", "LUMI = RGB GLOW"] },
   { title: "BASIC", lines: ["BASIC = SIMPLE", "FISH = THIS KB"] },
-  { title: "GAME", lines: ["START = PLAY", "< JUMP  > RUN"] },
+  { title: "GAME", lines: ["DIAL TO GAME", "LUMI CONFIRMS"] },
   { title: "HELP", lines: ["DIAL TURNS PAGES", "? EXITS HELP"] },
 ] as const;
 

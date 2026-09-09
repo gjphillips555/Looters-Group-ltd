@@ -6,11 +6,17 @@ import { SimpleHeader } from "@/components/simple-header";
 import { MobileSearchToggle, ShopSearch } from "@/components/shop-search";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useHeaderMode } from "@/lib/header-mode";
+import { useOledGame } from "@/lib/oled-game";
 
 export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
   const { mode, cycle } = useBacklight();
   const { mode: header, setMode } = useHeaderMode();
   const fish = header === "fish";
+  const picked = useOledGame((s) => s.picked);
+  const playing = useOledGame((s) => s.active);
+  const over = useOledGame((s) => s.over);
+  const startGame = useOledGame((s) => s.start);
+  const waiting = picked && (!playing || over);
 
   if (!fish) {
     return <SimpleHeader onOpenCart={onOpenCart} onFish={() => setMode("fish")} />;
@@ -34,7 +40,14 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
             <span className="kb-desk contents">
               <ThemeToggle />
             </span>
-            <BacklightButton mode={mode} onCycle={cycle} />
+            <BacklightButton
+              mode={mode}
+              wait={waiting}
+              onCycle={() => {
+                if (waiting) startGame();
+                else cycle();
+              }}
+            />
             <AccountButton />
             <CartButton onClick={onOpenCart} />
             <button

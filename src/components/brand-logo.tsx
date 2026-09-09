@@ -57,8 +57,8 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
   const flash = useOledMode((s) => s.flash);
   const closeFlash = useOledMode((s) => s.closeFlash);
   const playing = useOledGame((s) => s.active);
-  const over = useOledGame((s) => s.over);
-  const startGame = useOledGame((s) => s.start);
+  const picked = useOledGame((s) => s.picked);
+  const waiting = picked && !playing;
 
   useEffect(() => {
     if (!booting) return;
@@ -81,24 +81,26 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
         help && "is-help",
         flash && "is-flash",
         playing && "is-game",
+        waiting && "is-game-wait",
       )}
       onClick={() => {
         if (booting) return;
-        if (playing) {
-          if (over) startGame();
-          return;
-        }
+        if (playing || waiting) return;
         if (flash) {
           closeFlash();
           setOled(false);
           return;
         }
         if (help) return;
-        startGame();
+        setOled((v) => !v);
       }}
       role="button"
       aria-label={
-        playing ? (over ? "Restart barrel jumper" : "Barrel jumper") : "Play barrel jumper"
+        waiting
+          ? "Game selected. Press Luminate to play."
+          : playing
+            ? "Barrel jumper"
+            : "Toggle OLED clock"
       }
     >
       <span className="cmd-rest">
@@ -119,6 +121,12 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
         ) : null}
       </span>
       {playing ? <OledBarrelGame /> : null}
+      <span className="oled-game-wait">
+        <span className="oled-game-wait-k">GAME</span>
+        <span className="oled-game-wait-title">PRESS LUMINATE</span>
+        <span className="oled-game-wait-line">TO CONFIRM</span>
+        <span className="oled-game-wait-line oled-game-wait-blink">GAME PLAY</span>
+      </span>
       <OledHud date={clock.date} time={clock.time} />
       <OledHelp page={page} />
       <span className="oled-flash">

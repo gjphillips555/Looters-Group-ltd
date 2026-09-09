@@ -4,20 +4,19 @@ import { KeyButton, KeyLink } from "@/components/key-button";
 import { useDenCombo } from "@/lib/den-combo";
 import { useOledGame } from "@/lib/oled-game";
 import { useOledMode } from "@/lib/oled-mode";
-import { SHOP_CATEGORIES } from "@/lib/product-search";
-import { CYCLE_LABEL, useShopCategory } from "@/lib/shop-nav";
+import { useShopCategory } from "@/lib/shop-nav";
 import { useNavigate } from "@tanstack/react-router";
 
 export function KeyboardPad() {
-  const { active, cycle } = useShopCategory();
+  const { cycle } = useShopCategory();
   const help = useOledMode((s) => s.help);
   const toggleHelp = useOledMode((s) => s.toggleHelp);
   const closeHelp = useOledMode((s) => s.closeHelp);
-  const showFlash = useOledMode((s) => s.showFlash);
   const playing = useOledGame((s) => s.active);
   const over = useOledGame((s) => s.over);
   const startGame = useOledGame((s) => s.start);
   const stopGame = useOledGame((s) => s.stop);
+  const unpick = useOledGame((s) => s.unpick);
   const pressJump = useOledGame((s) => s.pressJump);
   const releaseJump = useOledGame((s) => s.releaseJump);
   const setRun = useOledGame((s) => s.setRun);
@@ -26,10 +25,6 @@ export function KeyboardPad() {
   const disarm = useDenCombo((s) => s.disarm);
 
   function step(delta: number) {
-    const n = SHOP_CATEGORIES.length;
-    const i = SHOP_CATEGORIES.findIndex((c) => c.id === active);
-    const next = SHOP_CATEGORIES[(i + delta + n) % n];
-    showFlash(CYCLE_LABEL[next.id]);
     cycle(delta);
   }
 
@@ -51,6 +46,7 @@ export function KeyboardPad() {
           aria-label="Enter, home"
           onClick={() => {
             stopGame();
+            unpick();
             closeHelp();
           }}
         >
@@ -64,6 +60,7 @@ export function KeyboardPad() {
           aria-label={armed ? "Open den" : "Enter, home"}
           onClick={(e) => {
             stopGame();
+            unpick();
             closeHelp();
             if (armed) {
               e.preventDefault();
