@@ -103,27 +103,47 @@ const LOCAL_DEV_ORIGINS: string[] = [
   "http://127.0.0.1:8080",
   "http://[::1]:8080",
 ];
-const baseURL = explicitBaseURL ?? {
-  // Include loopback hosts so dynamic baseURL resolves for local email/password
-  // (not only the preview wildcard).
-  allowedHosts: [...previewAllowedHosts, "localhost", "127.0.0.1", "[::1]"],
-  // `auto` → trust both http:// and https:// expansions of allowedHosts
-  // (preview is https; local dev is http).
+
+// Production hosts for this shop (Vercel + custom domain). Required so Google
+// OAuth callbackURL / redirect_uri is accepted when BETTER_AUTH_URL is missing
+// or only covers one of the live hostnames.
+const PRODUCTION_HOSTS: string[] = [
+  "looters-group-ltd.vercel.app",
+  "looterscomputas.online",
+  "www.looterscomputas.online",
+];
+const PRODUCTION_ORIGINS: string[] = PRODUCTION_HOSTS.map(
+  (h) => `https://${h}`,
+);
+
+// Prefer dynamic baseURL so OAuth redirect_uri matches the host the user is on
+// (vercel.app vs .online). Fallback to explicit BETTER_AUTH_URL when present.
+const baseURL = {
+  allowedHosts: [
+    ...previewAllowedHosts,
+    ...PRODUCTION_HOSTS,
+    "localhost",
+    "127.0.0.1",
+    "[::1]",
+  ],
   protocol: "auto" as const,
-  fallback: "http://localhost:8080",
+  fallback: explicitBaseURL ?? "http://localhost:8080",
 };
 
 // Origins Better Auth accepts on credentialed POSTs (sign-up/sign-in, etc.).
-// Missing entries here surface as FORBIDDEN "Invalid origin".
-const trustedOrigins: string[] = explicitBaseURL
-  ? [explicitBaseURL, ...LOCAL_DEV_ORIGINS]
-  : [
-      // Host wildcards (matched against Origin's host)
-      ...previewAllowedHosts,
-      // Full-origin wildcards (matched against Origin)
-      ...previewAllowedHosts.flatMap((host) => [`https://${host}`, `http://${host}`]),
-      ...LOCAL_DEV_ORIGINS,
-    ];
+// Missing entries here surface as FORBIDDEN "Invalid origin" / "Invalid callbackURL".
+const trustedOrigins: string[] = Array.from(
+  new Set([
+    ...(explicitBaseURL ? [explicitBaseURL] : []),
+    ...PRODUCTION_ORIGINS,
+    ...previewAllowedHosts,
+    ...previewAllowedHosts.flatMap((host) => [
+      `https://${host}`,
+      `http://${host}`,
+    ]),
+    ...LOCAL_DEV_ORIGINS,
+  ]),
+);
 
 const databaseUrl = env("DATABASE_URL");
 
