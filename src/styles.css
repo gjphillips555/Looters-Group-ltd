@@ -849,21 +849,23 @@ html.light .kb-deck {
 }
 
 .cmd-rest {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   position: relative;
   z-index: 1;
   height: 100%;
-  place-items: center;
-  align-content: center;
-  gap: 0.12rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.18rem;
   overflow: hidden;
 }
 
 .cmd-pixel-logo {
   display: block;
-  width: 100%;
+  width: auto;
+  max-width: 92%;
   height: auto;
-  max-height: 5.1rem;
+  max-height: 3.05rem;
   object-fit: contain;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
@@ -871,8 +873,13 @@ html.light .kb-deck {
 }
 
 .cmd-start {
-  font-size: 0.78rem;
-  letter-spacing: 0.28em;
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: 0.58rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  padding-left: 0.2em;
   color: #ff4ce6;
   text-shadow: 0 0 8px #ff4ce6;
   animation: start-blink 1.1s steps(1, end) infinite;
