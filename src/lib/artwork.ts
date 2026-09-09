@@ -1,12 +1,13 @@
 /** All shop graphics live in /public/artwork and are served from /artwork/. */
 export const ARTWORK = {
-  logoDark: "/artwork/logo.webp",
-  logoLight: "/artwork/logo.webp",
+  logoDark: "/artwork/logo-mark.png",
+  logoLight: "/artwork/logo-mark.png",
   logoOled: "/artwork/logo-oled.png",
   logoPixel: "/artwork/logo-pixel.png",
   payments: "/artwork/payment-methods.png",
   afterpay: "/artwork/afterpay.webp",
   afterpayNews: "/artwork/afterpay-news.webp",
+  afterpayTile: "/artwork/afterpay-tile.webp",
   trademe: "/artwork/trademe.png",
   favicon: "/artwork/favicon.svg",
   faviconPng: "/artwork/favicon-32.png",

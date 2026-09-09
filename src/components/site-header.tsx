@@ -64,6 +64,10 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
                 </span>
               </span>
             </button>
+            <span
+              className="kb-led kb-led-blue kb-led-tail md:hidden"
+              aria-hidden="true"
+            />
           </div>
         </div>
       </div>

@@ -425,6 +425,13 @@ html.light .kb-board {
   animation: led-boot 3.8s ease forwards;
 }
 
+.kb-led-tail {
+  flex-shrink: 0;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-left: 0.12rem;
+}
+
 .kb-board[data-glow]:not([data-glow="off"]) .kb-led-rgb {
   background: #7dffb0;
   box-shadow:

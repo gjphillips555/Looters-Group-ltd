@@ -17,8 +17,8 @@ export function BrandLogo({
     <img
       src={variant === "oled" ? ARTWORK.logoOled : ARTWORK.logoDark}
       alt="Looters Computas"
-      width={720}
-      height={239}
+      width={866}
+      height={288}
       decoding="async"
       className={className}
     />

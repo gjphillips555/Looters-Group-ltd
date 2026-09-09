@@ -30,7 +30,41 @@ function Home() {
     <AppShell>
       <BrandTicker />
 
-      <div className="space-y-6">
+      <section className="my-8 overflow-hidden rounded-2xl border border-border">
+        <img
+          src={ARTWORK.afterpayTile}
+          alt="Afterpay: prepaid card on your phone. Shop now, pay later."
+          width={1600}
+          height={900}
+          decoding="async"
+          className="w-full object-cover"
+        />
+      </section>
+
+      <div className="mt-8 space-y-6">
+        <NewsCard date="Thu 10 Sep 2026" dateTime="2026-09-10">
+          <h2 className="text-balance font-display text-2xl font-bold tracking-tight sm:text-3xl">
+            We bought the .online
+          </h2>
+          <p className="text-sm font-medium text-[#e8893a]">
+            looterscomputas.online — grabbed from Porkbun. That's the name on
+            the door now.
+          </p>
+          <div className="max-w-3xl space-y-4 text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
+            <p>
+              Domain's ours. Bought looterscomputas.online through Porkbun so
+              the shop has a proper address, not just a Vercel URL hanging off
+              the side.
+            </p>
+            <p>
+              Bookmark that. Share that. If it still says
+              looterscomputas-online.vercel.app in a tab somewhere, that's the
+              old scaffolding — this is the one.
+            </p>
+            <p className="font-medium text-foreground">— Looters</p>
+          </div>
+        </NewsCard>
+
         <NewsCard date="Wed 9 Sep 2026" dateTime="2026-09-09">
           <h1 className="text-balance font-display text-3xl font-bold tracking-tight sm:text-4xl">
             Shop's shut. The loot lives on.
