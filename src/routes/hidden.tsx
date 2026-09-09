@@ -4,7 +4,7 @@ import { BrandLogo } from "@/components/brand-logo";
 import { GoogleMark } from "@/components/google-mark";
 import { KeyButton } from "@/components/key-button";
 import { authEnabled, signIn } from "@/lib/auth/client";
-import { denLogin, denSignup } from "@/lib/den.server";
+import { denLogin, denSignup } from "@/lib/den";
 
 export const Route = createFileRoute("/hidden")({
   component: HiddenGate,

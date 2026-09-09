@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { denSubmitPuzzle } from "@/lib/den.server";
+import { denSubmitPuzzle } from "@/lib/den";
 
 export const Route = createFileRoute("/hidden/letter/$token")({
   component: DenLetter,

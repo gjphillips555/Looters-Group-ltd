@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { denApprove, denForum, denMe } from "@/lib/den.server";
+import { denApprove, denForum, denMe } from "@/lib/den";
 
 export const Route = createFileRoute("/hidden/forum")({
   component: DenForum,
