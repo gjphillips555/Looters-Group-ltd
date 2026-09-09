@@ -9,7 +9,7 @@ import {
 
 export const MEMBER_ID = "9233545";
 const API_BASE = "https://api.trademe.co.nz/v1";
-const CACHE_MS = 5 * 60_000;
+const CACHE_MS = 10 * 60_000;
 /** TradeMe top-level Computers category and every nested subcategory. */
 const COMPUTERS_CATEGORY = "0002";
 
@@ -113,7 +113,7 @@ async function tmGet<T>(path: string): Promise<T> {
   return (await res.json()) as T;
 }
 
-function upgradePhoto(url: string, size: "full" | "plus"): string {
+function upgradePhoto(url: string, size: "full" | "plus" | "large"): string {
   return url.replace(/\/photoserver\/[a-z]+\//i, `/photoserver/${size}/`);
 }
 
@@ -122,39 +122,45 @@ function photoId(url: string): string {
   return match?.[1] ?? url;
 }
 
-function bestPhotos(detail: TradeMeListingDetail, fallback: TradeMeListing): string[] {
+function bestPhotos(
+  detail: TradeMeListingDetail,
+  fallback: TradeMeListing,
+  size: "large" | "full",
+): string[] {
   const out: string[] = [];
   const seen = new Set<string>();
 
-  function add(url: string | null | undefined, size: "full" | "plus") {
+  function add(url: string | null | undefined, bump: "full" | "plus" | "large") {
     if (!url) return;
-    const upgraded = upgradePhoto(url, size);
+    const upgraded = upgradePhoto(url, bump);
     const id = photoId(upgraded);
     if (seen.has(id)) return;
     seen.add(id);
     out.push(upgraded);
   }
 
-  add(detail.PictureHref ?? fallback.PictureHref, "full");
+  add(detail.PictureHref ?? fallback.PictureHref, size);
 
-  for (const photo of detail.Photos ?? []) {
-    const v = photo.Value;
-    add(
-      v?.PlusSize ||
-        v?.FullSize ||
-        v?.Large ||
-        v?.Gallery ||
-        v?.Medium ||
-        v?.List,
-      "plus",
-    );
+  if (size === "full") {
+    for (const photo of detail.Photos ?? []) {
+      const v = photo.Value;
+      add(
+        v?.PlusSize ||
+          v?.FullSize ||
+          v?.Large ||
+          v?.Gallery ||
+          v?.Medium ||
+          v?.List,
+        "plus",
+      );
+    }
   }
 
   for (const url of [...(detail.PhotoUrls ?? []), ...(fallback.PhotoUrls ?? [])]) {
-    add(url, "full");
+    add(url, size);
   }
 
-  return out;
+  return size === "large" ? out.slice(0, 1) : out;
 }
 
 function mapShipping(options: TradeMeShippingOption[] | undefined): ShippingOption[] {
@@ -227,7 +233,11 @@ async function fetchDetail(id: number): Promise<TradeMeListingDetail | null> {
   }
 }
 
-function normalize(listing: TradeMeListing, detail: TradeMeListingDetail | null): Product {
+function normalize(
+  listing: TradeMeListing,
+  detail: TradeMeListingDetail | null,
+  size: "large" | "full",
+): Product {
   const merged: TradeMeListingDetail = { ...listing, ...(detail ?? {}) };
   const buyNow =
     (typeof merged.BuyNowPrice === "number" && merged.BuyNowPrice > 0) ||
@@ -251,7 +261,7 @@ function normalize(listing: TradeMeListing, detail: TradeMeListingDetail | null)
     (typeof merged.Quantity === "number" && merged.Quantity) ||
     1;
   const maxQty = buyNow ? Math.max(1, Math.min(99, listedQty)) : 1;
-  const photos = bestPhotos(merged, listing);
+  const photos = bestPhotos(merged, listing, size);
   const catName = shopCategory(
     merged.CategoryPath ?? merged.Category,
     merged.CategoryName ?? categoryLabel(merged.CategoryPath ?? merged.Category ?? null),
@@ -291,7 +301,7 @@ async function loadCatalogFresh(): Promise<Catalog> {
   const list = data.List ?? [];
   const products = list
     .filter((listing) => isComputersListing(listing))
-    .map((listing) => normalize(listing, null));
+    .map((listing) => normalize(listing, null, "large"));
   return { products, seller: null };
 }
 
@@ -331,7 +341,7 @@ export const getProduct = createServerFn({ method: "GET" })
       const memberId = detail.Member?.MemberId ?? detail.MemberId;
       if (memberId && String(memberId) !== MEMBER_ID) return hit ?? null;
       if (!isComputersListing(detail)) return hit ?? null;
-      const product = normalize(detail, detail);
+      const product = normalize(detail, detail, "full");
       if (cache) {
         cache.catalog = {
           ...cache.catalog,

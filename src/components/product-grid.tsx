@@ -206,7 +206,11 @@ function ProductCarousel({ products }: { products: Product[] }) {
                       inView ? "scale-100 opacity-100" : "scale-95 opacity-40",
                     )}
                   >
-                    <ProductCard product={product} className="h-full" />
+                    <ProductCard
+                      product={product}
+                      className="h-full"
+                      priority={inView}
+                    />
                   </div>
                   {!inView && (
                     <button

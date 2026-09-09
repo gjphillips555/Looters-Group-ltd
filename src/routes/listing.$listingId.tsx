@@ -105,6 +105,10 @@ function ProductPage() {
                 <img
                   src={activePhoto}
                   alt={product.title}
+                  width={900}
+                  height={900}
+                  fetchPriority="high"
+                  decoding="async"
                   className="h-full w-full object-cover"
                 />
               ) : (
@@ -125,7 +129,15 @@ function ProductPage() {
                     i === photoIndex ? "border-primary" : "border-border"
                   }`}
                 >
-                  <img src={src} alt="" className="h-full w-full object-cover" />
+                  <img
+                    src={src}
+                    alt=""
+                    width={64}
+                    height={64}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover"
+                  />
                 </button>
               ))}
             </div>

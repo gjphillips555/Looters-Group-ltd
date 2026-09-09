@@ -1,7 +1,7 @@
 /** All shop graphics live in /public/artwork and are served from /artwork/. */
 export const ARTWORK = {
-  logoDark: "/artwork/logo.png",
-  logoLight: "/artwork/logo.png",
+  logoDark: "/artwork/logo.webp",
+  logoLight: "/artwork/logo.webp",
   logoOled: "/artwork/logo-oled.png",
   logoPixel: "/artwork/logo-pixel.png",
   payments: "/artwork/payment-methods.png",
@@ -14,6 +14,4 @@ export const ARTWORK = {
   appleIcon: "/artwork/apple-icon.png",
   og: "/artwork/og.jpg",
   storefront: "/artwork/storefront.jpg",
-  buildSpec: "/artwork/build-spec.webp",
-  buildSpecFallback: "/artwork/build-spec.jpg",
 } as const;

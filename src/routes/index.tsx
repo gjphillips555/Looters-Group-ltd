@@ -95,6 +95,8 @@ function Home() {
             width={2201}
             height={1101}
             className="w-full rounded-xl"
+            loading="lazy"
+            decoding="async"
           />
           <div className="max-w-3xl space-y-4 text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
             <p>

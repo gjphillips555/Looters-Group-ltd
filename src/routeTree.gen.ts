@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as HiddenRouteImport } from './routes/hidden'
-import { Route as KeysRouteImport } from './routes/keys'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as OverlayRouteImport } from './routes/overlay'
 import { Route as ShopRouteImport } from './routes/shop'
@@ -36,11 +35,6 @@ const CheckoutRoute = CheckoutRouteImport.update({
 const HiddenRoute = HiddenRouteImport.update({
   id: '/hidden',
   path: '/hidden',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const KeysRoute = KeysRouteImport.update({
-  id: '/keys',
-  path: '/keys',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -93,7 +87,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
   '/hidden': typeof HiddenRouteWithChildren
-  '/keys': typeof KeysRoute
   '/login': typeof LoginRoute
   '/overlay': typeof OverlayRoute
   '/shop': typeof ShopRouteWithChildren
@@ -108,7 +101,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
   '/hidden': typeof HiddenRouteWithChildren
-  '/keys': typeof KeysRoute
   '/login': typeof LoginRoute
   '/overlay': typeof OverlayRoute
   '/shop': typeof ShopRouteWithChildren
@@ -124,7 +116,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
   '/hidden': typeof HiddenRouteWithChildren
-  '/keys': typeof KeysRoute
   '/login': typeof LoginRoute
   '/overlay': typeof OverlayRoute
   '/shop': typeof ShopRouteWithChildren
@@ -141,7 +132,6 @@ export interface FileRouteTypes {
     | '/'
     | '/checkout'
     | '/hidden'
-    | '/keys'
     | '/login'
     | '/overlay'
     | '/shop'
@@ -156,7 +146,6 @@ export interface FileRouteTypes {
     | '/'
     | '/checkout'
     | '/hidden'
-    | '/keys'
     | '/login'
     | '/overlay'
     | '/shop'
@@ -171,7 +160,6 @@ export interface FileRouteTypes {
     | '/'
     | '/checkout'
     | '/hidden'
-    | '/keys'
     | '/login'
     | '/overlay'
     | '/shop'
@@ -187,7 +175,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CheckoutRoute: typeof CheckoutRoute
   HiddenRoute: typeof HiddenRouteWithChildren
-  KeysRoute: typeof KeysRoute
   LoginRoute: typeof LoginRoute
   OverlayRoute: typeof OverlayRoute
   ShopRoute: typeof ShopRouteWithChildren
@@ -217,13 +204,6 @@ declare module '@tanstack/react-router' {
       path: '/hidden'
       fullPath: '/hidden'
       preLoaderRoute: typeof HiddenRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/keys': {
-      id: '/keys'
-      path: '/keys'
-      fullPath: '/keys'
-      preLoaderRoute: typeof KeysRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -319,7 +299,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CheckoutRoute: CheckoutRoute,
   HiddenRoute: HiddenRouteWithChildren,
-  KeysRoute: KeysRoute,
   LoginRoute: LoginRoute,
   OverlayRoute: OverlayRoute,
   ShopRoute: ShopRouteWithChildren,

@@ -25,11 +25,15 @@ export function SiteFooter({ onOpenCart }: { onOpenCart: () => void }) {
           width={600}
           height={600}
           className="mx-auto h-auto w-full max-w-3xl"
+          loading="lazy"
+          decoding="async"
         />
         <img
           src={ARTWORK.payments}
           alt="Accepted payment methods: Amex, Apple Pay, Diners Club, Discover, Google Pay, JCB, Mastercard, PayPal and Visa"
           className="mx-auto h-auto w-full max-w-3xl"
+          loading="lazy"
+          decoding="async"
         />
         <p className="text-center text-xs text-neutral-600">
           &copy; 2026 LootersRetail. Prices in NZD, GST inclusive. Contact:{" "}

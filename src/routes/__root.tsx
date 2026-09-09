@@ -29,7 +29,6 @@ export const Route = createRootRoute({
       { rel: "apple-touch-icon", href: ARTWORK.appleIcon },
       { rel: "stylesheet", href: appCss },
       { rel: "manifest", href: "/__grok/manifest.webmanifest" },
-      { rel: "apple-touch-icon", href: "/__grok/icon-180.png" },
       {
         rel: "preconnect",
         href: "https://fonts.googleapis.com",
@@ -37,7 +36,7 @@ export const Route = createRootRoute({
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;600&family=Oswald:wght@700&family=Sora:wght@600;700&family=VT323&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Inter:wght@400;600&family=Sora:wght@600;700&display=swap",
       },
     ],
   }),

@@ -17,7 +17,7 @@ export function BrandTicker() {
             alt={i < BRANDS.length ? brand.name : ""}
             width={86}
             height={16}
-            loading="lazy"
+            loading={i < 8 ? "eager" : "lazy"}
             decoding="async"
             draggable={false}
           />
