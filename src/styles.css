@@ -231,20 +231,12 @@ html.light .logo-mark {
   filter: brightness(1.08);
 }
 
-.kb-key:active,
-.kb-key[data-active="true"] {
+.kb-key:active {
   z-index: 0;
   transform: translateY(0.18rem);
   box-shadow:
     0 0.08rem 0 #4a4038,
     0 0.18rem 0.35rem color-mix(in oklab, black 24%, transparent);
-}
-
-.kb-key[data-active="true"] .kb-cap {
-  background: linear-gradient(180deg, #9a9a9a, #737373);
-  color: #fff;
-  border-color: color-mix(in oklab, white 22%, transparent);
-  text-shadow: none;
 }
 
 html.light .kb-key {
@@ -258,11 +250,6 @@ html.light .kb-key .kb-cap {
   background: linear-gradient(180deg, #a89888, #7a6d62);
   color: #f7f1ea;
   border-color: color-mix(in oklab, white 16%, transparent);
-}
-
-html.light .kb-key[data-active="true"] .kb-cap {
-  background: linear-gradient(180deg, #a3a3a3, #7a7a7a);
-  color: #fff;
 }
 
 .kb-cream {
@@ -288,12 +275,6 @@ html.light .kb-cream {
 html.light .kb-cream .kb-cap {
   background: linear-gradient(180deg, #f6f2e9, #e6e1d6);
   color: #2a2a2a;
-}
-
-.kb-cream[data-active="true"] .kb-cap,
-html.light .kb-cream[data-active="true"] .kb-cap {
-  background: linear-gradient(180deg, #fff8ec, #e9e2d4);
-  color: #111;
 }
 
 .kb-key-sm {
