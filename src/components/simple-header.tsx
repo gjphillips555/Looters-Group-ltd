@@ -28,13 +28,6 @@ export function SimpleHeader({
             <ShopSearch className="hidden min-w-0 flex-1 md:block md:max-w-[200px] lg:max-w-[260px]" />
 
             <div className="ml-auto flex shrink-0 items-center gap-1.5">
-              <Link
-                to="/overlay"
-                className="kb-key kb-key-sm hidden sm:inline-flex"
-                title="Overlay Studio — separate from shop"
-              >
-                <span className="kb-cap">Overlay</span>
-              </Link>
               <MobileSearchToggle />
               <ThemeToggle />
               <AccountButton />
