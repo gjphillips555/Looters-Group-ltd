@@ -3,7 +3,7 @@ import type { ButtonHTMLAttributes, MouseEventHandler, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 type KeySize = "default" | "fit" | "sm";
-type KeyTone = "gray" | "cream" | "teal" | "orange" | "brown" | "white";
+type KeyTone = "gray" | "cream" | "teal" | "orange" | "brown" | "white" | "paypal" | "trademe";
 
 function sizeClass(size: KeySize) {
   if (size === "sm") return "kb-key-sm";
@@ -17,6 +17,8 @@ function toneClass(tone?: KeyTone) {
   if (tone === "orange") return "kb-orange";
   if (tone === "brown") return "kb-brown";
   if (tone === "white") return "kb-white";
+  if (tone === "paypal") return "kb-paypal";
+  if (tone === "trademe") return "kb-trademe";
   return undefined;
 }
 

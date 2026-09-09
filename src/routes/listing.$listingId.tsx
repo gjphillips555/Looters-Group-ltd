@@ -252,17 +252,18 @@ function ProductPage() {
                     Checkout cart
                   </KeyLink>
                 )}
-                <button
+                <KeyButton
                   type="button"
+                  tone="paypal"
+                  className="kb-spacebar w-full"
                   onClick={handlePayPal}
-                  className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-paypal px-4 text-sm font-semibold text-paypal-foreground transition-opacity hover:opacity-90"
                 >
                   <PayPalMark className="size-6" />
                   Pay with PayPal
                   {shippingId
                     ? ` · ${nzd(product.amount * buyQty + (product.shipping.find((s) => s.id === shippingId)?.price ?? 0))}`
                     : ""}
-                </button>
+                </KeyButton>
                 <p className="text-xs text-muted-foreground">
                   Pays for this item only. Guest checkout — no Google account
                   required. Select shipping first so the total is correct.

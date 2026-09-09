@@ -1,3 +1,4 @@
+import { KeyButton } from "@/components/key-button";
 import { nzd } from "@/lib/products";
 import { submitPayPalCheckout } from "@/lib/paypal";
 import type { Customer } from "@/lib/orders";
@@ -40,8 +41,10 @@ export function PayWithPaypal({
   onBeforePay?: () => boolean | void | Promise<boolean | void>;
 }) {
   return (
-    <button
+    <KeyButton
       type="button"
+      tone="paypal"
+      className="kb-spacebar w-full"
       disabled={disabled}
       onClick={() => {
         void (async () => {
@@ -60,10 +63,9 @@ export function PayWithPaypal({
           });
         })();
       }}
-      className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-paypal px-4 text-sm font-semibold text-paypal-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
     >
       <PayPalMark className="size-6" />
       Pay with PayPal · {nzd(amount)}
-    </button>
+    </KeyButton>
   );
 }

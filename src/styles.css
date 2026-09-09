@@ -286,6 +286,52 @@ html.light .kb-teal .kb-cap {
   color: #143430;
 }
 
+.kb-paypal {
+  background: #d4a82a;
+  box-shadow:
+    0 0.45rem 0 #b38d18,
+    0 0.7rem 1rem color-mix(in oklab, black 16%, transparent);
+}
+
+.kb-paypal .kb-cap {
+  background: linear-gradient(180deg, #ffe58a, #ffc439);
+  color: #003087;
+  border-color: color-mix(in oklab, white 35%, transparent);
+}
+
+html.light .kb-paypal {
+  background: #dcb030;
+  box-shadow: 0 0.45rem 0 #b38d18;
+}
+
+html.light .kb-paypal .kb-cap {
+  background: linear-gradient(180deg, #ffe9a0, #ffc439);
+  color: #003087;
+}
+
+.kb-trademe {
+  background: #d4a15a;
+  box-shadow:
+    0 0.45rem 0 #b8863e,
+    0 0.7rem 1rem color-mix(in oklab, black 16%, transparent);
+}
+
+.kb-trademe .kb-cap {
+  background: linear-gradient(180deg, #fff1d4, #fde3b5);
+  color: #1a1a1a;
+  border-color: color-mix(in oklab, white 30%, transparent);
+}
+
+html.light .kb-trademe {
+  background: #d8a75e;
+  box-shadow: 0 0.45rem 0 #b8863e;
+}
+
+html.light .kb-trademe .kb-cap {
+  background: linear-gradient(180deg, #fff6e0, #fde3b5);
+  color: #1a1a1a;
+}
+
 .kb-orange {
   background: #e08a3c;
   box-shadow:
