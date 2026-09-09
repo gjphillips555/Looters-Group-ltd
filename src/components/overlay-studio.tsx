@@ -5,6 +5,8 @@ const OUT_W = 2048;
 const OUT_H = 1536;
 const PAD = 0.08; // ~8% margin around product after fit
 const STORAGE_KEY = "looters-overlay-studio-v1";
+/** JPEG quality — sharp enough for listings, small files for load speed */
+const JPEG_QUALITY = 0.88;
 
 type Corner = "br" | "bl" | "tr" | "tl";
 
@@ -221,7 +223,7 @@ export function OverlayStudio() {
     setStatus("Cleared placed overlays (library kept).");
   }
 
-  function downloadPng() {
+  function downloadJpeg() {
     const canvas = canvasRef.current;
     if (!canvas) return;
     canvas.toBlob(
@@ -229,13 +231,16 @@ export function OverlayStudio() {
         if (!blob) return;
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = `${productName}_looters_${OUT_W}x${OUT_H}.png`;
+        a.download = `${productName}_looters_${OUT_W}x${OUT_H}.jpg`;
         a.click();
         URL.revokeObjectURL(a.href);
-        setStatus("Downloaded PNG at exact listing size.");
+        const kb = Math.round(blob.size / 1024);
+        setStatus(
+          `Downloaded JPEG ${OUT_W}×${OUT_H} @ ${Math.round(JPEG_QUALITY * 100)}% (~${kb} KB). Ready for shop + Trade Me.`,
+        );
       },
-      "image/png",
-      1,
+      "image/jpeg",
+      JPEG_QUALITY,
     );
   }
 
@@ -274,9 +279,9 @@ export function OverlayStudio() {
               type="button"
               className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold disabled:opacity-50"
               disabled={!productUrl}
-              onClick={downloadPng}
+              onClick={downloadJpeg}
             >
-              Download {OUT_W}×{OUT_H} PNG
+              Download {OUT_W}×{OUT_H} JPG
             </button>
             <button
               type="button"
