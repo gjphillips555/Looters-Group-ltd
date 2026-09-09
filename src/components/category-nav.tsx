@@ -11,7 +11,7 @@ export function CategoryNav() {
   const { active, select } = useShopCategory();
 
   return (
-    <div className="relative z-10 mb-10 mt-0 pb-4">
+    <div className="kb-deck relative z-10 mb-8">
       <div className="hidden md:block">
         <div className="grid grid-cols-4 gap-3">
           {SHOP_CATEGORIES.map((c) => (
@@ -53,7 +53,17 @@ function CategoryButton({
       data-active={active ? "true" : "false"}
       className={cn("kb-key", className)}
     >
-      <span className="kb-cap">{label === "All products" ? "All" : label}</span>
+      <span className="kb-cap">
+        {label === "All products"
+          ? "All"
+          : label === "Desktops"
+            ? "Dsktp"
+            : label === "Laptops"
+              ? "Lptp"
+              : label === "Components"
+                ? "Cmpnt"
+                : label}
+      </span>
     </button>
   );
 }

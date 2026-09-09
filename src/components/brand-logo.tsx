@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ARTWORK } from "@/lib/artwork";
+import { OLED_HELP, useOledMode } from "@/lib/oled-mode";
 import { cn } from "@/lib/utils";
 
 export function BrandLogo({
@@ -46,6 +47,8 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
   );
   const [oled, setOled] = useState(false);
   const [clock, setClock] = useState(aucklandParts);
+  const help = useOledMode((s) => s.help);
+  const page = useOledMode((s) => s.page);
 
   useEffect(() => {
     if (!booting) return;
@@ -65,9 +68,10 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
         compact && "cmd-screen-sm",
         !booting && "boot-done",
         oled && "is-oled",
+        help && "is-help",
       )}
       onClick={
-        compact && !booting
+        compact && !booting && !help
           ? () => setOled((v) => !v)
           : undefined
       }
@@ -91,17 +95,31 @@ export function CmdLogo({ compact = false }: { compact?: boolean }) {
           />
         ) : null}
       </span>
-      <OledHud compact={compact} date={clock.date} time={clock.time} />
+      <OledHud date={clock.date} time={clock.time} />
+      <OledHelp page={page} />
+    </span>
+  );
+}
+
+function OledHelp({ page }: { page: number }) {
+  const item = OLED_HELP[page] ?? OLED_HELP[0];
+  return (
+    <span className="oled-help">
+      <span className="oled-help-k">INFO {page + 1}/{OLED_HELP.length}</span>
+      <span className="oled-help-title">{item.title}</span>
+      {item.lines.map((line) => (
+        <span key={line} className="oled-help-line">
+          {line}
+        </span>
+      ))}
     </span>
   );
 }
 
 function OledHud({
-  compact,
   date,
   time,
 }: {
-  compact: boolean;
   date: string;
   time: string;
 }) {
@@ -110,18 +128,10 @@ function OledHud({
       <span className="oled-top">
         <span className="oled-date">{date}</span>
         <span className="oled-status-icons">
-          <WifiIcon />
-          <BluetoothIcon />
           <BatteryIcon />
         </span>
       </span>
       <span className="oled-time">{time}</span>
-      {compact ? null : (
-        <span className="oled-brand">
-          <span>LOOTERS</span>
-          <span>COMPUTAS</span>
-        </span>
-      )}
       <span className="oled-pills">
         <span className="oled-pill">
           <WindowsIcon />
@@ -129,14 +139,7 @@ function OledHud({
         </span>
         <span className="oled-pill oled-pill-wifi">
           <WifiIcon />
-          2.4G
         </span>
-        <span className="oled-pill">
-          <BluetoothIcon />
-        </span>
-        <span className="oled-pill">NUM</span>
-        <span className="oled-pill">A</span>
-        <span className="oled-pill">MIN</span>
       </span>
     </span>
   );
@@ -147,9 +150,7 @@ function BatteryIcon() {
     <svg className="oled-battery" viewBox="0 0 28 14" aria-hidden="true">
       <rect x="1" y="2" width="23" height="10" rx="2" fill="none" stroke="currentColor" strokeWidth="1.6" />
       <rect x="24.5" y="5" width="2.5" height="4" rx="0.6" fill="currentColor" />
-      <rect x="3.2" y="4.2" width="5" height="5.6" rx="0.6" fill="currentColor" />
-      <rect x="9.2" y="4.2" width="5" height="5.6" rx="0.6" fill="currentColor" />
-      <rect x="15.2" y="4.2" width="5" height="5.6" rx="0.6" fill="currentColor" />
+      <rect x="3.2" y="4.2" width="18" height="5.6" rx="0.6" fill="currentColor" />
     </svg>
   );
 }
@@ -171,27 +172,6 @@ function WindowsIcon() {
       <rect x="7.5" y="0.5" width="6" height="6" fill="currentColor" />
       <rect x="0.5" y="7.5" width="6" height="6" fill="currentColor" />
       <rect x="7.5" y="7.5" width="6" height="6" fill="currentColor" />
-    </svg>
-  );
-}
-
-function BluetoothIcon() {
-  return (
-    <svg className="oled-bt" viewBox="0 0 12 16" aria-hidden="true">
-      <path
-        d="M6 1.2 10.4 5.2 7.3 8 10.4 10.8 6 14.8V1.2Z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M2.4 4.6 6 8 2.4 11.4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinejoin="round"
-      />
     </svg>
   );
 }

@@ -1,4 +1,5 @@
 import { useRef, type PointerEvent as ReactPointerEvent } from "react";
+import { useOledMode } from "@/lib/oled-mode";
 import { SHOP_CATEGORIES } from "@/lib/product-search";
 import { useShopCategory } from "@/lib/shop-nav";
 import { cn } from "@/lib/utils";
@@ -7,6 +8,8 @@ const DETENT = Math.PI / 3;
 
 export function CategoryDial({ className }: { className?: string }) {
   const { active, cycle } = useShopCategory();
+  const help = useOledMode((s) => s.help);
+  const cycleHelp = useOledMode((s) => s.cycleHelp);
   const rot = useRef(0);
   const last = useRef(0);
   const acc = useRef(0);
@@ -25,6 +28,11 @@ export function CategoryDial({ className }: { className?: string }) {
       e.clientY - (r.top + r.height / 2),
       e.clientX - (r.left + r.width / 2),
     );
+  }
+
+  function step(delta: 1 | -1) {
+    if (help) cycleHelp(delta);
+    else cycle(delta);
   }
 
   function onPointerDown(e: ReactPointerEvent<HTMLButtonElement>) {
@@ -47,10 +55,10 @@ export function CategoryDial({ className }: { className?: string }) {
     setRot(rot.current + (delta * 180) / Math.PI);
     acc.current += delta;
     if (acc.current > DETENT) {
-      cycle(1);
+      step(1);
       acc.current = 0;
     } else if (acc.current < -DETENT) {
-      cycle(-1);
+      step(-1);
       acc.current = 0;
     }
   }
@@ -63,26 +71,27 @@ export function CategoryDial({ className }: { className?: string }) {
     } catch {
       /* already released */
     }
-    if (!moved.current) cycle(1);
+    if (!moved.current) step(1);
   }
 
-  const label = SHOP_CATEGORIES.find((c) => c.id === active)?.label ?? "All";
+  const label = help
+    ? "Help pages"
+    : (SHOP_CATEGORIES.find((c) => c.id === active)?.label ?? "All");
 
   return (
     <button
       ref={el}
       type="button"
       className={cn("as-dial", className)}
-      aria-label={`Category dial, ${label}. Spin or click to change.`}
+      aria-label={`OLED dial, ${label}. Spin or tap to change.`}
       title={label}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
     >
-      <span className="as-dial-knurl" aria-hidden="true" />
-      <span className="as-dial-cap" aria-hidden="true" />
-      <span className="as-dial-tick" aria-hidden="true" />
+      <span className="as-dial-ring" aria-hidden="true" />
+      <span className="as-dial-face" aria-hidden="true" />
       <span className="sr-only">{label}</span>
     </button>
   );

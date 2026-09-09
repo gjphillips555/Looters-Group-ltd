@@ -3,6 +3,7 @@ import type { ButtonHTMLAttributes, MouseEventHandler, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 type KeySize = "default" | "fit" | "sm";
+type KeyTone = "gray" | "cream";
 
 function sizeClass(size: KeySize) {
   if (size === "sm") return "kb-key-sm";
@@ -10,14 +11,20 @@ function sizeClass(size: KeySize) {
   return undefined;
 }
 
+function toneClass(tone?: KeyTone) {
+  return tone === "cream" ? "kb-cream" : undefined;
+}
+
 export function KeyButton({
   className,
   children,
   size = "default",
+  tone = "gray",
   active,
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
   size?: KeySize;
+  tone?: KeyTone;
   active?: boolean;
   children: ReactNode;
 }) {
@@ -25,7 +32,7 @@ export function KeyButton({
     <button
       type="button"
       data-active={active ? "true" : "false"}
-      className={cn("kb-key", sizeClass(size), className)}
+      className={cn("kb-key", sizeClass(size), toneClass(tone), className)}
       {...props}
     >
       <span className="kb-cap">{children}</span>
@@ -37,6 +44,7 @@ export function KeyLink({
   className,
   children,
   size = "fit",
+  tone = "gray",
   onClick,
   active,
   ...props
@@ -44,12 +52,13 @@ export function KeyLink({
   className?: string;
   children: ReactNode;
   size?: KeySize;
+  tone?: KeyTone;
   onClick?: MouseEventHandler<HTMLAnchorElement>;
   active?: boolean;
 }) {
   return (
     <Link
-      className={cn("kb-key", sizeClass(size), className)}
+      className={cn("kb-key", sizeClass(size), toneClass(tone), className)}
       onClick={onClick}
       data-active={active ? "true" : "false"}
       {...props}

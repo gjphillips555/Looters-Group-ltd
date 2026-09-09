@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import { AccountButton } from "@/components/account-button";
 import { CmdLogo } from "@/components/brand-logo";
 import { CartButton } from "@/components/cart-button";
@@ -12,13 +11,19 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
     <header className="sticky top-0 z-30 overflow-visible">
       <div className="header-key">
         <div className="header-key-cap">
-          <div className="relative mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:gap-4 sm:px-6">
-            <div className="pointer-events-none absolute inset-y-0 left-0 right-0 hidden items-center justify-center md:flex">
-              <ShopSearch className="pointer-events-auto w-[200px] lg:w-[240px] xl:w-[280px]" />
+          <div className="relative mx-auto flex max-w-6xl items-center gap-2 px-3 py-2 sm:gap-3 sm:px-6">
+            <div className="oled-cluster">
+              <div className="logo-hang">
+                <CmdLogo />
+              </div>
+              <CategoryDial />
             </div>
 
-            <div className="ml-auto flex shrink-0 items-center gap-2">
-              <HeaderCategories />
+            <HeaderCategories />
+
+            <ShopSearch className="hidden min-w-0 flex-1 md:block md:max-w-[200px] lg:max-w-[260px]" />
+
+            <div className="ml-auto flex shrink-0 items-center gap-1.5">
               <MobileSearchToggle />
               <ThemeToggle />
               <AccountButton />
@@ -27,21 +32,7 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
           </div>
         </div>
 
-        <span className="oled-cradle" aria-hidden="true" />
-
-        <div className="oled-cluster">
-          <div className="logo-hang md:hidden">
-            <CmdLogo compact />
-          </div>
-          <Link
-            to="/"
-            className="logo-hang hidden md:block"
-            aria-label="Looters Computas home"
-          >
-            <CmdLogo />
-          </Link>
-          <CategoryDial />
-        </div>
+        <span className="oled-cradle md:hidden" aria-hidden="true" />
       </div>
     </header>
   );
