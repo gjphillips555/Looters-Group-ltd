@@ -22,16 +22,25 @@ export function HeaderGuide({
   const show = coarse ? mobileOpen : held;
 
   return (
-    <div className="header-guide">
+    <>
       {fish ? (
-        <>
+        <div className="header-guide-bg">
           <p className="header-guide-copy">
             Try out our Attack Fish Replica Keyboard for browsing our site
             click here for instructions:
           </p>
+          <p className="header-guide-note">
+            Note: If not really your thing switch the switch for the original
+            simple header.
+          </p>
+        </div>
+      ) : null}
+
+      <div className="header-guide-sticky">
+        {fish ? (
           <button
             type="button"
-            className="kb-key kb-key-sm kb-teal header-guide-hold"
+            className="kb-key kb-key-sm kb-teal"
             aria-label="Instructions"
             onPointerDown={() => {
               if (coarse) setMobileOpen((v) => !v);
@@ -47,48 +56,39 @@ export function HeaderGuide({
               if (!coarse) setHeld(false);
             }}
           >
-            <span className="kb-cap">{coarse ? (mobileOpen ? "Close" : "How?") : "Hold"}</span>
+            <span className="kb-cap">
+              {coarse ? (mobileOpen ? "Close" : "How?") : "Hold"}
+            </span>
           </button>
-          {show ? (
-            <div className="header-guide-pop">
-              <p>
-                <b>OLED</b> — click for the clock. Categories flash then stay.
-              </p>
-              <p>
-                <b>Dial</b> — spin or tap to cycle. Hover shows rotate.
-              </p>
-              <p>
-                <b>{"< ,"} / {"> ."}</b> — previous / next category.
-              </p>
-              <p>
-                <b>↵ Enter</b> — home. <b>Bksp</b> — browser back. <b>? /</b> — help.
-              </p>
-              <p>
-                <b>F5 / F6</b> — light / dark. Backlight key cycles RGB glow.
-              </p>
-              <p>
-                <b>PgUp / PgDn</b> — jump top or bottom of the page.
-              </p>
-            </div>
-          ) : null}
-          <p className="header-guide-note">
-            Note: If not really your thing switch the switch for the original
-            simple header.
-          </p>
-        </>
-      ) : (
-        <p className="header-guide-note">Attack Fish keyboard is off.</p>
-      )}
-      <label className="header-guide-switch">
-        <span className="sr-only">Simple header</span>
-        <input
-          type="checkbox"
-          checked={!fish}
-          onChange={onToggle}
-        />
-        <span className="header-guide-knob" data-on={!fish ? "true" : "false"} />
-        <span>{fish ? "Simple" : "Fish"}</span>
-      </label>
-    </div>
+        ) : null}
+        {show ? (
+          <div className="header-guide-pop">
+            <p>
+              <b>OLED</b> — click for the clock. Categories flash then stay.
+            </p>
+            <p>
+              <b>Dial</b> — spin or tap to cycle.
+            </p>
+            <p>
+              <b>{"< ,"} / {"> ."}</b> — previous / next category.
+            </p>
+            <p>
+              <b>↵ Enter</b> — home. <b>Bksp</b> — back. <b>? /</b> — help.
+            </p>
+            <p>
+              <b>F5 / F6</b> — light / dark. Backlight cycles RGB.
+            </p>
+          </div>
+        ) : null}
+        <label className="header-guide-switch">
+          <span className="sr-only">
+            {fish ? "Use original simple header" : "Use Attack Fish keyboard"}
+          </span>
+          <input type="checkbox" checked={!fish} onChange={onToggle} />
+          <span className="header-guide-knob" data-on={!fish ? "true" : "false"} />
+          <span>{fish ? "Simple header" : "Attack Fish"}</span>
+        </label>
+      </div>
+    </>
   );
 }

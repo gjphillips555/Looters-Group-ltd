@@ -34,17 +34,7 @@ export function KeyboardPad() {
           to="/"
           size="sm"
           tone="orange"
-          className="kb-enter-v"
-          aria-label="Enter, home"
-          onClick={() => closeHelp()}
-        >
-          {" "}
-        </KeyLink>
-        <KeyLink
-          to="/"
-          size="sm"
-          tone="orange"
-          className="kb-enter-h"
+          className="kb-enter-l"
           aria-label="Enter, home"
           onClick={() => closeHelp()}
         >
@@ -92,7 +82,7 @@ export function KeyboardPad() {
       <KeyButton
         size="sm"
         tone="white"
-        className="kb-pad-bksp"
+        className="kb-pad-bksp kb-desk"
         aria-label="Backspace, browser back"
         onClick={() => window.history.back()}
       >

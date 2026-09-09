@@ -505,8 +505,8 @@ html.light .kb-board {
 .kb-pad {
   display: grid;
   z-index: 1;
-  grid-template-columns: 9.2rem 5.6rem 2.7rem 2.7rem 2.7rem;
-  grid-template-rows: 2.55rem 2.55rem;
+  grid-template-columns: 9.4rem 6.2rem 2.7rem 2.7rem 2.7rem;
+  grid-template-rows: 2.75rem 2.75rem;
   grid-template-areas:
     "oled enter prev next help"
     "oled enter bksp bksp bksp";
@@ -543,15 +543,23 @@ html.light .kb-board {
 
 @media (max-width: 767px) {
   .kb-pad {
-    grid-template-columns: 8.2rem 5.1rem 2.45rem 2.45rem;
-    grid-template-rows: 2.5rem 2.5rem;
+    grid-template-columns: 7.6rem 5.6rem 2.4rem 2.4rem;
+    grid-template-rows: 2.7rem 2.7rem;
     grid-template-areas:
       "oled enter prev next"
-      "oled enter help  bksp";
+      "oled enter help  help";
+  }
+
+  .kb-desk {
+    display: none !important;
   }
 
   .kb-board {
     max-width: 100%;
+  }
+
+  .kb-leds {
+    display: none;
   }
 }
 
@@ -591,8 +599,9 @@ html.light .kb-board {
 .kb-enter-well {
   position: relative;
   display: grid;
-  grid-template-columns: 2.48rem 1fr;
-  grid-template-rows: 2.48rem 1fr;
+  grid-template-columns: 2.75rem 1fr;
+  grid-template-rows: 2.75rem 1fr;
+  gap: 0;
   min-width: 0;
   height: 100%;
 }
@@ -602,50 +611,64 @@ html.light .kb-board {
   z-index: 1;
   left: auto;
   top: auto;
-  width: 2.42rem;
-  height: 2.42rem;
+  width: 2.7rem;
+  height: 2.7rem;
   grid-column: 1;
   grid-row: 1;
-  margin: 0.04rem 0 0 0.04rem;
+  margin: 0.02rem 0 0 0.02rem;
 }
 
-.kb-enter-v,
-.kb-enter-h {
-  border-radius: 0.55rem;
-  background: #e08a3c !important;
-  box-shadow: 0 0.28rem 0 #c47a38 !important;
-}
-
-.kb-enter-v .kb-cap,
-.kb-enter-h .kb-cap {
-  border-radius: 0.4rem;
-  background: linear-gradient(180deg, #f6c07a, #e8893a);
-  color: #2a1608;
-}
-
-.kb-enter-v {
-  grid-column: 2;
-  grid-row: 1 / span 2;
+.kb-enter-l {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
   z-index: 2;
+  display: grid;
+  grid-template-columns: 2.75rem 1fr;
+  grid-template-rows: 2.75rem 1fr;
+  gap: 0;
   width: 100% !important;
   height: 100% !important;
   min-width: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  pointer-events: none;
 }
 
-.kb-enter-h {
+.kb-enter-l::before,
+.kb-enter-l::after {
+  content: "";
+  background: #e08a3c;
+  box-shadow: 0 0.28rem 0 #c47a38;
+  pointer-events: auto;
+}
+
+.kb-enter-l::before {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  border-radius: 0.55rem 0.55rem 0.55rem 0;
+  margin-left: -1px;
+}
+
+.kb-enter-l::after {
   grid-column: 1 / span 2;
   grid-row: 2;
-  z-index: 3;
-  width: 100% !important;
-  height: calc(100% + 0.38rem) !important;
-  min-width: 0 !important;
-  margin-top: -0.38rem;
+  border-radius: 0.55rem 0 0.55rem 0.55rem;
+  margin-top: -1px;
 }
 
-.kb-enter-h .kb-cap {
+.kb-enter-l .kb-cap {
+  grid-column: 2;
+  grid-row: 2;
+  z-index: 3;
+  pointer-events: auto;
+  background: linear-gradient(180deg, #f6c07a, #e8893a);
+  border-radius: 0 0 0.4rem 0;
+  border-color: color-mix(in oklab, #f6c07a 55%, transparent);
+  color: #2a1608;
   align-items: center;
   justify-content: flex-end;
-  padding: 0 0.45rem 0 0;
+  padding: 0 0.42rem 0 0;
   font-size: 1.05rem;
   font-weight: 400;
 }
@@ -1201,8 +1224,13 @@ html.light .kb-deck {
 
 @media (min-width: 768px) {
   .as-dial {
-    width: 2.85rem;
-    height: 2.85rem;
+    width: 3.05rem;
+    height: 3.05rem;
+  }
+
+  .kb-enter-well .as-dial {
+    width: 2.82rem;
+    height: 2.82rem;
   }
 }
 
@@ -1216,6 +1244,43 @@ html.light .kb-deck {
 
 .header-fish .kb-board {
   pointer-events: auto;
+}
+
+.header-guide-bg {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+  margin-top: -7.4rem;
+  margin-bottom: 7.4rem;
+  padding: 0.85rem 5.6rem 0 1rem;
+  pointer-events: none;
+}
+
+@media (max-width: 767px) {
+  .header-guide-bg {
+    display: none;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.header-guide-sticky {
+  position: fixed;
+  z-index: 50;
+  top: 0.35rem;
+  right: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+  pointer-events: auto;
+}
+
+.header-guide-pop {
+  width: min(16rem, calc(100vw - 1.2rem));
 }
 
 .header-key-solid {
