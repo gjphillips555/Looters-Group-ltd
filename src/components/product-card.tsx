@@ -14,11 +14,13 @@ export function ProductCard({
   className,
   cycleImages = false,
   priority = false,
+  imageFit = "cover",
 }: {
   product: Product;
   className?: string;
   cycleImages?: boolean;
   priority?: boolean;
+  imageFit?: "cover" | "contain";
 }) {
   const add = useCart((s) => s.add);
   const lines = useCart((s) => s.lines);
@@ -80,7 +82,12 @@ export function ProductCard({
               width={640}
               height={640}
               sizes="(max-width: 768px) 80vw, 28vw"
-              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              className={cn(
+                "h-full w-full",
+                imageFit === "contain"
+                  ? "object-contain p-3"
+                  : "object-cover transition-transform duration-300 group-hover:scale-105",
+              )}
               loading={priority ? "eager" : "lazy"}
               fetchPriority={priority ? "high" : "low"}
               decoding="async"

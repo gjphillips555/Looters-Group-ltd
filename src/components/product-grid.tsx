@@ -220,6 +220,7 @@ function ProductCarousel({ products }: { products: Product[] }) {
                       product={product}
                       className="h-full"
                       priority={inView}
+                      imageFit="contain"
                     />
                   </div>
                   {!inView && (
