@@ -9,11 +9,13 @@ export function ShopSearch({
   inputClassName,
   autoFocus = false,
   placeholder = "Search Products",
+  showButton = true,
 }: {
   className?: string;
   inputClassName?: string;
   autoFocus?: boolean;
   placeholder?: string;
+  showButton?: boolean;
 }) {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -45,9 +47,11 @@ export function ShopSearch({
           />
         </span>
       </span>
-      <KeyButton type="submit" size="sm" tone="teal" className="shrink-0">
-        Search
-      </KeyButton>
+      {showButton ? (
+        <KeyButton type="submit" size="sm" tone="teal" className="shrink-0">
+          Search
+        </KeyButton>
+      ) : null}
     </form>
   );
 }
