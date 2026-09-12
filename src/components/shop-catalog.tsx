@@ -42,6 +42,7 @@ export function ShopCatalog({
       </div>
       <RefineBar products={products} />
       <ProductGrid
+        key={category}
         products={products}
         error={catalog.error}
         category={category}

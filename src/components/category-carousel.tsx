@@ -1,5 +1,10 @@
 import { KeyButton, KeyLink } from "@/components/key-button";
-import { SHOP_CATEGORIES, type ShopCategoryId } from "@/lib/product-search";
+import {
+  SHOP_CATEGORIES,
+  SHOP_CATEGORY_PAGES,
+  type ShopCategoryId,
+  type ShopCategoryPage,
+} from "@/lib/product-search";
 import { categoryFromPath } from "@/lib/shop-nav";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 
@@ -13,18 +18,20 @@ export function CategoryCarousel() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const onHome = pathname === "/";
   const current = categoryFromPath(pathname);
-  const idx = current
-    ? Math.max(0, SHOP_CATEGORIES.findIndex((c) => c.id === current))
-    : -1;
-  const cat = idx >= 0 ? SHOP_CATEGORIES[idx] : null;
+  const pages = SHOP_CATEGORY_PAGES;
+  const idx = pages.findIndex((id) => id === current);
+  const cat =
+    current && current !== "all"
+      ? SHOP_CATEGORIES.find((c) => c.id === current) ?? null
+      : null;
 
   function go(delta: number) {
-    const n = SHOP_CATEGORIES.length;
-    const next =
+    const n = pages.length;
+    const next: ShopCategoryPage =
       idx < 0
-        ? SHOP_CATEGORIES[delta > 0 ? 0 : n - 1]
-        : SHOP_CATEGORIES[(idx + delta + n) % n];
-    openCategory(navigate, next.id);
+        ? pages[delta > 0 ? 0 : n - 1]
+        : pages[(idx + delta + n) % n];
+    openCategory(navigate, next);
   }
 
   return (
@@ -46,14 +53,10 @@ export function CategoryCarousel() {
           tone="teal"
           className="kb-spacebar cat-carousel-mid"
           aria-label="Select a category"
-          onClick={() => openCategory(navigate, "desktops")}
+          onClick={() => go(1)}
         >
           Select Category
         </KeyButton>
-      ) : cat.id === "all" ? (
-        <KeyLink to="/shop" tone="teal" className="kb-spacebar cat-carousel-mid">
-          {cat.label}
-        </KeyLink>
       ) : (
         <KeyLink
           to="/shop/$category"

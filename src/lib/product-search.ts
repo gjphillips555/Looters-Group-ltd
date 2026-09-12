@@ -1,52 +1,25 @@
 import { create } from "zustand";
 import type { Product } from "@/lib/products";
 
-export type ShopCategoryId =
-  | "desktops"
-  | "laptops"
-  | "components"
-  | "monitors"
-  | "accessories"
-  | "graphics"
-  | "storage"
-  | "peripherals"
-  | "networking"
-  | "all";
+export type ShopCategoryId = "desktops" | "laptops" | "components" | "all";
 
 export const SHOP_CATEGORIES: { id: ShopCategoryId; label: string }[] = [
   { id: "desktops", label: "Desktops" },
   { id: "laptops", label: "Laptops" },
   { id: "components", label: "Components" },
-  { id: "monitors", label: "Monitors" },
-  { id: "accessories", label: "Accessories" },
-  { id: "graphics", label: "Graphics" },
-  { id: "storage", label: "Storage" },
-  { id: "peripherals", label: "Peripherals" },
-  { id: "networking", label: "Networking" },
   { id: "all", label: "All products" },
 ];
 
-export const SHOP_CATEGORY_PAGES = [
-  "desktops",
-  "laptops",
-  "components",
-  "monitors",
-  "accessories",
-  "graphics",
-  "storage",
-  "peripherals",
-  "networking",
-] as const;
+export const SHOP_CATEGORY_PAGES = ["desktops", "laptops", "components"] as const;
 export type ShopCategoryPage = (typeof SHOP_CATEGORY_PAGES)[number];
 
 /**
- * First letter of the category + a digit that looks like the 2nd letter:
- * Laptops LA→L4, Desktops DE→D3, Components CO→C0, Monitors MO→M0,
- * Storage ST→S7, Peripherals PE→P3, Networking NE→N3.
- * Exact stamp only (not L0–L9). Brackets optional: [L4]
+ * First letter of the category + a digit that looks like the 2nd letter.
+ * Laptops LA→L4, Desktops DE→D3, Components CO→C0.
+ * Exact stamp only. Brackets optional: [L4]
  */
 export const TITLE_CATEGORY_CODES: {
-  id: Exclude<ShopCategoryId, "all">;
+  id: ShopCategoryPage;
   label: string;
   sample: string;
   match: RegExp;
@@ -54,17 +27,11 @@ export const TITLE_CATEGORY_CODES: {
   { id: "laptops", label: "Laptops", sample: "L4", match: /(?:^|[\s\[\(\/\-])L4(?:$|[\s\]\)\/\-])/i },
   { id: "desktops", label: "Desktops", sample: "D3", match: /(?:^|[\s\[\(\/\-])D3(?:$|[\s\]\)\/\-])/i },
   { id: "components", label: "Components", sample: "C0", match: /(?:^|[\s\[\(\/\-])C0(?:$|[\s\]\)\/\-])/i },
-  { id: "monitors", label: "Monitors", sample: "M0", match: /(?:^|[\s\[\(\/\-])M0(?:$|[\s\]\)\/\-])/i },
-  { id: "storage", label: "Storage", sample: "S7", match: /(?:^|[\s\[\(\/\-])S7(?:$|[\s\]\)\/\-])/i },
-  { id: "peripherals", label: "Peripherals", sample: "P3", match: /(?:^|[\s\[\(\/\-])P3(?:$|[\s\]\)\/\-])/i },
-  { id: "networking", label: "Networking", sample: "N3", match: /(?:^|[\s\[\(\/\-])N3(?:$|[\s\]\)\/\-])/i },
 ];
 
-export function categoryFromTitleCode(
-  title: string,
-): Exclude<ShopCategoryId, "all"> | null {
+export function categoryFromTitleCode(title: string): ShopCategoryPage | null {
   const padded = ` ${title} `;
-  let best: { index: number; id: Exclude<ShopCategoryId, "all"> } | null = null;
+  let best: { index: number; id: ShopCategoryPage } | null = null;
   for (const code of TITLE_CATEGORY_CODES) {
     const m = padded.match(code.match);
     if (!m || m.index == null) continue;
@@ -83,121 +50,9 @@ export function shopPath(id: ShopCategoryId) {
   return id === "all" ? "/shop" : `/shop/${id}`;
 }
 
-function norm(value: string | null | undefined) {
-  return (value ?? "")
-    .toLowerCase()
-    .replace(/_/g, "-")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function catNumber(product: Product) {
-  const raw = `${product.categoryNumber ?? ""} ${product.categoryPath ?? ""}`;
-  const match = raw.match(/0002(?:-\d+)*/);
-  return match ? match[0].replace(/-+$/g, "") : "";
-}
-
-function catPath(product: Product) {
-  const path = norm(product.categoryPath).replace(/\s*\/\s*/g, "/");
-  if (!path) return "";
-  return path.startsWith("/") ? path : `/${path}`;
-}
-
-function haystack(product: Product) {
-  return norm(
-    [
-      product.title,
-      product.categoryName,
-      product.categoryPath,
-      product.description,
-      ...product.attributes.map((a) => `${a.name} ${a.value}`),
-    ].join(" "),
-  );
-}
-
-/** Portable computer (the machine), not a laptop bag/charger. */
-const LAPTOP_MACHINE =
-  /\b(laptop|notebook|macbook|chromebook|ultrabook|elitebook|probook|zbook|thinkpad|thinkbook|latitude|xps\s?(13|14|15|16)|zenbook|vivobook|expertbook|tuf dash|tuf gaming a\d|rog zephyrus|rog flow|rog strix scar|swift \d|aspire \d|gram\b|surface (laptop|pro|go|book)|pavilion (13|14|15|16|17|x360)|envy (13|14|15|16|17)|inspiron (13|14|15|16|17)|vostro (13|14|15|16)|spectre|elite dragonfly|2[- ]in[- ]1|convertible)\b/;
-
-const DESKTOP_MACHINE =
-  /\b(desktop|optiplex|prodesk|elitedesk|thinkcentre|thinkstation|precision tower|sff\b|usff\b|minitower|microtower|mini-?pc|\bnuc\b|mac mini|mac studio|\bimac\b|mac pro|gaming pc|gaming desktop|gaming tower|\btower\b|workstation|compaq|hp 290|hp 280|hp 400 g|hp 600 g|hp 800 g|lenovo m[0-9]{2}|surface studio)\b/;
-
-const LAPTOP_PART =
-  /\b((laptop|notebook)s?\s+(bag|sleeve|backpack|case|charger|adapter|adaptor|battery|ram|memory|ssd|hdd|stand|cooler|cooling pad|keyboard|screen)|((bag|sleeve|backpack|case|charger|adapter|adaptor|cooling pad)\b.{0,24}\b(laptop|notebook)))\b/;
-
-const PART_ONLY =
-  /\b(monitor|lcd display|led display|graphics card|video card|\bgpu\b|geforce (gtx|rtx)|radeon rx|rtx \d{3,4}|gtx \d{3,4}|\bsodimm\b|\bdimm\b|memory stick|\bssd\b|\bnvme\b|\bhdd\b|hard drive|ddr[345]\b|\d+\s?gb\s+ram|power supply|\bpsu\b|motherboard|mainboard|heatsink|cpu cooler|wifi card|network card|capture card)\b/;
-
-const ACCESSORY =
-  /\b(bag|sleeve|backpack|dongle|dock(ing)? station|hdmi cable|displayport|usb[- ]c hub|cooling pad)\b/;
-
-const CPU = /\b((intel\s+)?core\s?i[3579]|(intel\s+)?i[3579](?:-\d{3,})?|ryzen\s?[3579]|celeron|pentium|xeon|apple (m[1-4]|silicon))\b/;
-const OS = /\b(windows\s?(7|8|10|11)|win\s?(10|11)|chrome ?os)\b/;
-
-/**
- * One exclusive bucket per product.
- * Whole machines beat spec words like SSD/RAM/GPU in the title.
- */
-export function productKind(product: Product): Exclude<ShopCategoryId, "all"> {
-  const coded = categoryFromTitleCode(product.title);
-  if (coded) return coded;
-
-  const n = catNumber(product);
-  const path = catPath(product);
-  const title = norm(product.title);
-  const name = norm(product.categoryName);
-  const text = haystack(product);
-
-  const laptopMachine = LAPTOP_MACHINE.test(title);
-  const desktopMachine = DESKTOP_MACHINE.test(title);
-  const laptopPart = LAPTOP_PART.test(title);
-  const wholePc =
-    (OS.test(title) && CPU.test(title)) ||
-    (/\bgaming\b/.test(title) && CPU.test(title) && !laptopMachine);
-
-  const tmMonitor =
-    /^0002-4715-(6911|4716)/.test(n) ||
-    /\/computers\/desktops\/(crt-monitor|lcd-monitor)/.test(path) ||
-    /\b(crt|lcd)\s*monitor\b/.test(name) ||
-    /\b\d{2}["”]?\s*(monitor|display)\b/.test(title);
-
-  const tmLaptopLeaf =
-    /^0002-0356-0032/.test(n) || /\/computers\/laptops\/laptops(\/|$)/.test(path);
-  const tmLaptopTree = /^0002-0356/.test(n) || /\/computers\/laptops(\/|$)/.test(path);
-  const tmDesktopTree =
-    /^0002-4715/.test(n) || /\/computers\/desktops(\/|$)/.test(path);
-  const tmPartsTree =
-    /^0002-0359/.test(n) ||
-    /\/computers\/(components|parts|internal-storage|memory|graphics)/.test(path);
-
-  if (tmMonitor || laptopPart) return "components";
-  if (laptopMachine && !laptopPart) return "laptops";
-  if (desktopMachine && !laptopMachine) return "desktops";
-  if (wholePc && !laptopMachine && !PART_ONLY.test(title.split("|")[0] ?? title)) {
-    return "desktops";
-  }
-
-  if (PART_ONLY.test(title) && !laptopMachine && !desktopMachine && !wholePc) {
-    return "components";
-  }
-  if (ACCESSORY.test(title) && !laptopMachine && !desktopMachine && !wholePc) {
-    return "components";
-  }
-
-  if (tmLaptopLeaf || (tmLaptopTree && laptopMachine)) return "laptops";
-  if (tmLaptopTree && !laptopMachine) return "components";
-  if (tmDesktopTree && !tmMonitor && !laptopMachine) return "desktops";
-  if (tmPartsTree) return "components";
-
-  if (/\blaptops?\b/.test(name) && !PART_ONLY.test(title) && !laptopPart) {
-    return "laptops";
-  }
-  if (/\bdesktops?\b/.test(name) && !tmMonitor && !laptopMachine) return "desktops";
-  if (PART_ONLY.test(text) && !laptopMachine && !desktopMachine && !wholePc) {
-    return "components";
-  }
-
-  return "components";
+/** Category comes only from L4 / D3 / C0 in the title. No stamp → uncategorised. */
+export function productKind(product: Product): ShopCategoryPage | null {
+  return categoryFromTitleCode(product.title);
 }
 
 export function productInCategory(product: Product, category: ShopCategoryId) {
@@ -207,7 +62,7 @@ export function productInCategory(product: Product, category: ShopCategoryId) {
 
 export function categoryBadge(product: Product) {
   const id = productKind(product);
-  return SHOP_CATEGORIES.find((c) => c.id === id)?.label ?? "Components";
+  return SHOP_CATEGORIES.find((c) => c.id === id)?.label ?? "";
 }
 
 /** Detector list — used to spot brands in titles. Unknown brands still surface via attributes. */

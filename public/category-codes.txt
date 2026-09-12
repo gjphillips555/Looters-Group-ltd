@@ -5,21 +5,11 @@ Put ONE stamp as its own word in the Trade Me title.
 L4   Laptops       (LA)
 D3   Desktops      (DE)
 C0   Components    (CO)
-M0   Monitors      (MO)
-S7   Storage       (ST)
-P3   Peripherals   (PE)  keyboards, mice, headsets
-N3   Networking    (NE)
 
 Examples
   L4 HP EliteBook 840 G5 i5 8GB
   D3 HP ProDesk 400 G4 SFF
   C0 Cooler Master 212 CPU cooler
-  M0 Dell 24" LCD
-  S7 Samsung 1TB NVMe
-  P3 Attack Shark X3
-  N3 TP-Link AX1800
 
-Graphics (GR) and Accessories (AC) have no digit that looks like the
-2nd letter — stamp those as C0 with components until you pick a code.
-
+No stamp → listing only shows on All products, not on a category page.
 Exact stamps only. HP G4/G5 and Apple M1 are NOT category codes.
