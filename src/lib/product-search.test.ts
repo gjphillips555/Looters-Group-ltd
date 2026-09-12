@@ -51,6 +51,10 @@ test("title stamps are the only category guide", () => {
   assert.equal(kind("D3 Dell Latitude 7490 Laptop"), "desktops");
   assert.equal(kind("C0 HP EliteBook 840 G5"), "components");
   assert.equal(kind("HP EliteBook [L4] i5"), "laptops");
+  assert.equal(kind("HP EliteBook 840 G5 - L4"), "laptops");
+  assert.equal(kind("l4, refurbished laptop"), "laptops");
+  assert.equal(kind("SFF PC | D3 | Win 11"), "desktops");
+  assert.equal(kind("(C0) CPU cooler"), "components");
   assert.equal(kind("M0 Dell 24 LCD Monitor"), null);
   assert.equal(kind("L0 spare heatsink"), null);
   assert.equal(kind("HP ProDesk 400 G4 SFF Desktop"), null);

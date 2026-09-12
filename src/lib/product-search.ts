@@ -16,28 +16,31 @@ export type ShopCategoryPage = (typeof SHOP_CATEGORY_PAGES)[number];
 /**
  * First letter of the category + a digit that looks like the 2nd letter.
  * Laptops LA→L4, Desktops DE→D3, Components CO→C0.
- * Exact stamp only. Brackets optional: [L4]
+ * Looked up as its own token in the Trade Me title (punctuation ignored).
  */
 export const TITLE_CATEGORY_CODES: {
   id: ShopCategoryPage;
   label: string;
   sample: string;
-  match: RegExp;
 }[] = [
-  { id: "laptops", label: "Laptops", sample: "L4", match: /(?:^|[\s\[\(\/\-])L4(?:$|[\s\]\)\/\-])/i },
-  { id: "desktops", label: "Desktops", sample: "D3", match: /(?:^|[\s\[\(\/\-])D3(?:$|[\s\]\)\/\-])/i },
-  { id: "components", label: "Components", sample: "C0", match: /(?:^|[\s\[\(\/\-])C0(?:$|[\s\]\)\/\-])/i },
+  { id: "laptops", label: "Laptops", sample: "L4" },
+  { id: "desktops", label: "Desktops", sample: "D3" },
+  { id: "components", label: "Components", sample: "C0" },
 ];
 
+const TITLE_STAMP: Record<string, ShopCategoryPage> = {
+  L4: "laptops",
+  D3: "desktops",
+  C0: "components",
+};
+
 export function categoryFromTitleCode(title: string): ShopCategoryPage | null {
-  const padded = ` ${title} `;
-  let best: { index: number; id: ShopCategoryPage } | null = null;
-  for (const code of TITLE_CATEGORY_CODES) {
-    const m = padded.match(code.match);
-    if (!m || m.index == null) continue;
-    if (!best || m.index < best.index) best = { index: m.index, id: code.id };
+  const tokens = title.toUpperCase().split(/[^A-Z0-9]+/).filter(Boolean);
+  for (const token of tokens) {
+    const id = TITLE_STAMP[token];
+    if (id) return id;
   }
-  return best?.id ?? null;
+  return null;
 }
 
 export type PriceSort = "default" | "price-asc" | "price-desc";
