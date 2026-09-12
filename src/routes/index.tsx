@@ -33,8 +33,19 @@ function Home() {
       <BrandTicker />
       <CategoryCarousel />
 
-      {/* Site news → Afterpay → another site news */}
+      {/* Afterpay tile → site news → Afterpay news → other site news */}
       <div className="mt-10 space-y-8">
+        <section className="overflow-hidden rounded-2xl border border-border">
+          <img
+            src={ARTWORK.afterpayTile}
+            alt="Afterpay: prepaid card on your phone. Shop now, pay later."
+            width={1600}
+            height={900}
+            decoding="async"
+            className="w-full object-cover"
+          />
+        </section>
+
         <NewsCard date="Wed 9 Sep 2026" dateTime="2026-09-09">
           <h1 className="text-balance font-display text-3xl font-bold tracking-tight sm:text-4xl">
             Shop's shut. The loot lives on.
@@ -84,17 +95,6 @@ function Home() {
             <p className="font-medium text-foreground">— Looters</p>
           </div>
         </NewsCard>
-
-        <section className="overflow-hidden rounded-2xl border border-border">
-          <img
-            src={ARTWORK.afterpayTile}
-            alt="Afterpay: prepaid card on your phone. Shop now, pay later."
-            width={1600}
-            height={900}
-            decoding="async"
-            className="w-full object-cover"
-          />
-        </section>
 
         <NewsCard date="Wed 9 Sep 2026" dateTime="2026-09-09">
           <h2 className="text-balance font-display text-2xl font-bold tracking-tight sm:text-3xl">

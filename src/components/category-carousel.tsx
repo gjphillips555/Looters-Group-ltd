@@ -3,21 +3,28 @@ import { SHOP_CATEGORIES, type ShopCategoryId } from "@/lib/product-search";
 import { categoryFromPath } from "@/lib/shop-nav";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 
+function openCategory(navigate: ReturnType<typeof useNavigate>, id: ShopCategoryId) {
+  if (id === "all") void navigate({ to: "/shop" });
+  else void navigate({ to: "/shop/$category", params: { category: id } });
+}
+
 export function CategoryCarousel() {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const current: ShopCategoryId = categoryFromPath(pathname) ?? "desktops";
-  const idx = Math.max(
-    0,
-    SHOP_CATEGORIES.findIndex((c) => c.id === current),
-  );
-  const cat = SHOP_CATEGORIES[idx];
+  const onHome = pathname === "/";
+  const current = categoryFromPath(pathname);
+  const idx = current
+    ? Math.max(0, SHOP_CATEGORIES.findIndex((c) => c.id === current))
+    : -1;
+  const cat = idx >= 0 ? SHOP_CATEGORIES[idx] : null;
 
   function go(delta: number) {
     const n = SHOP_CATEGORIES.length;
-    const next = SHOP_CATEGORIES[(idx + delta + n) % n];
-    if (next.id === "all") void navigate({ to: "/shop" });
-    else void navigate({ to: "/shop/$category", params: { category: next.id } });
+    const next =
+      idx < 0
+        ? SHOP_CATEGORIES[delta > 0 ? 0 : n - 1]
+        : SHOP_CATEGORIES[(idx + delta + n) % n];
+    openCategory(navigate, next.id);
   }
 
   return (
@@ -34,7 +41,16 @@ export function CategoryCarousel() {
           <i>,</i>
         </span>
       </KeyButton>
-      {cat.id === "all" ? (
+      {onHome || !cat ? (
+        <KeyButton
+          tone="teal"
+          className="kb-spacebar cat-carousel-mid"
+          aria-label="Select a category"
+          onClick={() => openCategory(navigate, "desktops")}
+        >
+          Select Category
+        </KeyButton>
+      ) : cat.id === "all" ? (
         <KeyLink to="/shop" tone="teal" className="kb-spacebar cat-carousel-mid">
           {cat.label}
         </KeyLink>
