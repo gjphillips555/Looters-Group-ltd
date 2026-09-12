@@ -1,6 +1,8 @@
 {
-  "title": "LootersRetail",
+  "title": "Looters Computas",
+  "description": "Refurbished computers from Looters Computas. Shop live stock in NZD.",
   "type": "website",
   "card": "custom",
-  "color": "2A1740"
+  "color": "e8893a",
+  "image": "/og.jpg"
 }

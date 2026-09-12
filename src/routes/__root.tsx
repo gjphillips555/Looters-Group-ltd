@@ -17,7 +17,7 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "Shop LootersRetail. Add to cart, pick shipping, and check out in NZD.",
+          "Shop Looters Computas. Add to cart, pick shipping, and check out in NZD.",
       },
       { name: "theme-color", content: "#f2f2f0" },
       { name: "color-scheme", content: "light dark" },
