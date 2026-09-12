@@ -3,6 +3,7 @@ import { AppShell } from "@/components/app-shell";
 import { BrandTicker } from "@/components/brand-ticker";
 import { CategoryCarousel } from "@/components/category-carousel";
 import { ProductGrid } from "@/components/product-grid";
+import { RefineBar } from "@/components/refine-bar";
 import {
   productInCategory,
   SHOP_CATEGORIES,
@@ -39,6 +40,7 @@ export function ShopCatalog({
         <h1 className="font-display text-xl font-semibold">{label}</h1>
         <p className="text-sm text-muted-foreground">Afterpay Available Now!</p>
       </div>
+      <RefineBar products={products} />
       <ProductGrid
         products={products}
         error={catalog.error}

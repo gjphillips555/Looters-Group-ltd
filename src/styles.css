@@ -827,6 +827,41 @@ html.light .kb-board {
   min-width: 8.5rem;
 }
 
+.refine-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.75rem 1rem;
+  margin: 0.35rem 0 1rem;
+}
+
+.refine-field {
+  display: flex;
+  min-width: 10.5rem;
+  flex: 1 1 12rem;
+  flex-direction: column;
+  gap: 0.28rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+
+.refine-field select {
+  height: 2.65rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  background: var(--color-card);
+  padding: 0 0.85rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--color-foreground);
+  box-shadow: 0 0.28rem 0 color-mix(in oklab, var(--color-border) 80%, transparent);
+}
+
 .pg-float {
   position: fixed;
   z-index: 40;

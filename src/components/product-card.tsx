@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { KeyButton, KeyLink } from "@/components/key-button";
 import { getProduct } from "@/lib/catalog";
 import { cartProductFrom, isInCart, useCart } from "@/lib/cart-store";
+import { categoryBadge } from "@/lib/product-search";
 import type { Product } from "@/lib/products";
 import { cn } from "@/lib/utils";
 
@@ -129,11 +130,9 @@ export function ProductCard({
       </div>
 
       <div className="flex flex-1 flex-col gap-3 p-4">
-        {product.categoryName && (
-          <p className="truncate text-xs uppercase tracking-wide text-muted-foreground">
-            {product.categoryName}
-          </p>
-        )}
+        <p className="truncate text-xs uppercase tracking-wide text-muted-foreground">
+          {categoryBadge(product)}
+        </p>
         <Link
           to="/listing/$listingId"
           params={{ listingId: product.id }}

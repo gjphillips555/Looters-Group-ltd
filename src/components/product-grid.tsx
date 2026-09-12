@@ -9,6 +9,7 @@ import { AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
 import {
   productInCategory,
+  productMatchesBrand,
   useProductSearch,
   type ShopCategoryId,
 } from "@/lib/product-search";
@@ -30,21 +31,30 @@ export function ProductGrid({
 }) {
   const query = useProductSearch((s) => s.query);
   const storeCategory = useProductSearch((s) => s.category);
+  const sort = useProductSearch((s) => s.sort);
+  const brand = useProductSearch((s) => s.brand);
   const category = categoryProp ?? storeCategory;
 
   const filtered = useMemo(() => {
-    if (unfiltered) return products;
     const q = query.trim().toLowerCase();
-    return products.filter((p) => {
-      if (!productInCategory(p, category)) return false;
+    const list = products.filter((p) => {
+      if (!unfiltered && !productInCategory(p, category)) return false;
+      if (brand !== "all" && !productMatchesBrand(p, brand)) return false;
       if (!q) return true;
       return (
         p.title.toLowerCase().includes(q) ||
         (p.categoryName ?? "").toLowerCase().includes(q) ||
-        (p.description ?? "").toLowerCase().includes(q)
+        (p.description ?? "").toLowerCase().includes(q) ||
+        p.attributes.some(
+          (a) =>
+            a.value.toLowerCase().includes(q) || a.name.toLowerCase().includes(q),
+        )
       );
     });
-  }, [products, query, category, unfiltered]);
+    if (sort === "price-asc") return [...list].sort((a, b) => a.amount - b.amount);
+    if (sort === "price-desc") return [...list].sort((a, b) => b.amount - a.amount);
+    return list;
+  }, [products, query, category, unfiltered, sort, brand]);
 
   if (error) {
     return (

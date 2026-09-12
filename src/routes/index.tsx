@@ -6,6 +6,7 @@ import { BrandTicker } from "@/components/brand-ticker";
 import { CategoryCarousel } from "@/components/category-carousel";
 import { KeyLink } from "@/components/key-button";
 import { ProductGrid } from "@/components/product-grid";
+import { RefineBar } from "@/components/refine-bar";
 import { ARTWORK } from "@/lib/artwork";
 import { getCatalog } from "@/lib/catalog";
 
@@ -163,6 +164,7 @@ function Home() {
           Afterpay Available Now!
         </p>
       </div>
+      <RefineBar products={catalog.products} />
       <ProductGrid
         products={catalog.products}
         error={catalog.error}
