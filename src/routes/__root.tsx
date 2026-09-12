@@ -19,8 +19,8 @@ export const Route = createRootRoute({
         content:
           "Shop LootersRetail. Add to cart, pick shipping, and check out in NZD.",
       },
-      { name: "theme-color", content: "#2A1740" },
-      { name: "color-scheme", content: "dark light" },
+      { name: "theme-color", content: "#f2f2f0" },
+      { name: "color-scheme", content: "light dark" },
     ],
     links: [
       { rel: "icon", type: "image/svg+xml", href: ARTWORK.favicon },

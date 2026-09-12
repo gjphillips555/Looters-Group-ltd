@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { AppShell } from "@/components/app-shell";
 import { BrandTicker } from "@/components/brand-ticker";
+import { CategoryCarousel } from "@/components/category-carousel";
 import { ProductGrid } from "@/components/product-grid";
 import {
   productInCategory,
@@ -33,6 +34,7 @@ export function ShopCatalog({
   return (
     <AppShell>
       <BrandTicker />
+      <CategoryCarousel />
       <div className="mb-4 flex items-center justify-between gap-4">
         <h1 className="font-display text-xl font-semibold">{label}</h1>
         <p className="text-sm text-muted-foreground">Afterpay Available Now!</p>

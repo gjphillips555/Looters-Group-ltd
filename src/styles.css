@@ -805,6 +805,28 @@ html.light .kb-board {
   opacity: 0.85;
 }
 
+.cat-carousel {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0.45rem;
+  margin: 0.85rem 0 0.35rem;
+  padding-bottom: 0.55rem;
+}
+
+.cat-carousel-arrow {
+  width: 3.15rem !important;
+  min-width: 3.15rem;
+  height: 3.35rem;
+  flex-shrink: 0;
+}
+
+.cat-carousel-mid {
+  flex: 1 1 auto;
+  max-width: 16.5rem;
+  min-width: 8.5rem;
+}
+
 .pg-float {
   position: fixed;
   z-index: 40;

@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/app-shell";
 import { BrandLogo } from "@/components/brand-logo";
 import { BrandTicker } from "@/components/brand-ticker";
+import { CategoryCarousel } from "@/components/category-carousel";
 import { KeyLink } from "@/components/key-button";
 import { ProductGrid } from "@/components/product-grid";
 import { ARTWORK } from "@/lib/artwork";
@@ -29,6 +30,7 @@ function Home() {
   return (
     <AppShell>
       <BrandTicker />
+      <CategoryCarousel />
 
       {/* Site news → Afterpay → another site news */}
       <div className="mt-10 space-y-8">
