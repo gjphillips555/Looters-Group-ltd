@@ -15,6 +15,8 @@ import { Route as HiddenRouteImport } from './routes/hidden'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as OverlayRouteImport } from './routes/overlay'
 import { Route as ShopRouteImport } from './routes/shop'
+import { Route as StorepolicyRouteImport } from './routes/storepolicy'
+import { Route as TermsandconditionsRouteImport } from './routes/termsandconditions'
 import { Route as HiddenForumRouteImport } from './routes/hidden.forum'
 import { Route as ListingListingIdRouteImport } from './routes/listing.$listingId'
 import { Route as OrderOrderIdRouteImport } from './routes/order.$orderId'
@@ -50,6 +52,16 @@ const OverlayRoute = OverlayRouteImport.update({
 const ShopRoute = ShopRouteImport.update({
   id: '/shop',
   path: '/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StorepolicyRoute = StorepolicyRouteImport.update({
+  id: '/storepolicy',
+  path: '/storepolicy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsandconditionsRoute = TermsandconditionsRouteImport.update({
+  id: '/termsandconditions',
+  path: '/termsandconditions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HiddenForumRoute = HiddenForumRouteImport.update({
@@ -90,6 +102,8 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/overlay': typeof OverlayRoute
   '/shop': typeof ShopRouteWithChildren
+  '/storepolicy': typeof StorepolicyRoute
+  '/termsandconditions': typeof TermsandconditionsRoute
   '/hidden/forum': typeof HiddenForumRoute
   '/listing/$listingId': typeof ListingListingIdRoute
   '/order/$orderId': typeof OrderOrderIdRoute
@@ -104,6 +118,8 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/overlay': typeof OverlayRoute
   '/shop': typeof ShopRouteWithChildren
+  '/storepolicy': typeof StorepolicyRoute
+  '/termsandconditions': typeof TermsandconditionsRoute
   '/hidden/forum': typeof HiddenForumRoute
   '/listing/$listingId': typeof ListingListingIdRoute
   '/order/$orderId': typeof OrderOrderIdRoute
@@ -119,6 +135,8 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/overlay': typeof OverlayRoute
   '/shop': typeof ShopRouteWithChildren
+  '/storepolicy': typeof StorepolicyRoute
+  '/termsandconditions': typeof TermsandconditionsRoute
   '/hidden/forum': typeof HiddenForumRoute
   '/listing/$listingId': typeof ListingListingIdRoute
   '/order/$orderId': typeof OrderOrderIdRoute
@@ -135,6 +153,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/overlay'
     | '/shop'
+    | '/storepolicy'
+    | '/termsandconditions'
     | '/hidden/forum'
     | '/listing/$listingId'
     | '/order/$orderId'
@@ -149,6 +169,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/overlay'
     | '/shop'
+    | '/storepolicy'
+    | '/termsandconditions'
     | '/hidden/forum'
     | '/listing/$listingId'
     | '/order/$orderId'
@@ -163,6 +185,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/overlay'
     | '/shop'
+    | '/storepolicy'
+    | '/termsandconditions'
     | '/hidden/forum'
     | '/listing/$listingId'
     | '/order/$orderId'
@@ -178,6 +202,8 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   OverlayRoute: typeof OverlayRoute
   ShopRoute: typeof ShopRouteWithChildren
+  StorepolicyRoute: typeof StorepolicyRoute
+  TermsandconditionsRoute: typeof TermsandconditionsRoute
   ListingListingIdRoute: typeof ListingListingIdRoute
   OrderOrderIdRoute: typeof OrderOrderIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -225,6 +251,20 @@ declare module '@tanstack/react-router' {
       path: '/shop'
       fullPath: '/shop'
       preLoaderRoute: typeof ShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/storepolicy': {
+      id: '/storepolicy'
+      path: '/storepolicy'
+      fullPath: '/storepolicy'
+      preLoaderRoute: typeof StorepolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/termsandconditions': {
+      id: '/termsandconditions'
+      path: '/termsandconditions'
+      fullPath: '/termsandconditions'
+      preLoaderRoute: typeof TermsandconditionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/hidden/forum': {
@@ -302,6 +342,8 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   OverlayRoute: OverlayRoute,
   ShopRoute: ShopRouteWithChildren,
+  StorepolicyRoute: StorepolicyRoute,
+  TermsandconditionsRoute: TermsandconditionsRoute,
   ListingListingIdRoute: ListingListingIdRoute,
   OrderOrderIdRoute: OrderOrderIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
