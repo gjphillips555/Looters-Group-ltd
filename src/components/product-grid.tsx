@@ -259,7 +259,7 @@ function ProductCarousel({ products }: { products: Product[] }) {
               className={cn(
                 "h-2 rounded-full transition-all",
                 i === real
-                  ? "w-6 bg-accent"
+                  ? "w-6 bg-[#ff9a00]"
                   : "w-2 bg-muted-foreground/35 hover:bg-muted-foreground/60",
               )}
             />

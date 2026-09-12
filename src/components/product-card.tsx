@@ -150,7 +150,7 @@ export function ProductCard({
 
         <div className="mt-auto flex items-end justify-between gap-2 pt-2">
           <div>
-            <p className="font-display text-lg font-bold text-accent">
+            <p className="font-display text-lg font-bold text-[#ff9a00]">
               {product.priceLabel}
             </p>
             {canBuy ? null : (
@@ -161,6 +161,7 @@ export function ProductCard({
           {canBuy ? (
             <KeyButton
               size="sm"
+              tone="teal"
               onClick={handleAdd}
               disabled={alreadyMaxed || adding}
             >

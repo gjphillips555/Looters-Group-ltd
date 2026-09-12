@@ -187,7 +187,7 @@ function Home() {
       />
 
       <div className="mt-6 flex flex-col items-center gap-12 pb-4 pt-4">
-        <KeyLink to="/shop">All products</KeyLink>
+        <KeyLink to="/shop" tone="teal">All products</KeyLink>
         <BrandLogo className="mt-2 h-28 w-auto max-w-[420px] object-contain sm:h-36 sm:max-w-[520px]" />
       </div>
     </AppShell>
