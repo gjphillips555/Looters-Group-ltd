@@ -40,8 +40,10 @@ export const SHOP_CATEGORY_PAGES = [
 export type ShopCategoryPage = (typeof SHOP_CATEGORY_PAGES)[number];
 
 /**
- * Put ONE of these as its own word in the Trade Me title.
- * Number can be 0–99 — L4, D3, C0, MN0, etc. Brackets optional: [L4]
+ * First letter of the category + a digit that looks like the 2nd letter:
+ * Laptops LA→L4, Desktops DE→D3, Components CO→C0, Monitors MO→M0,
+ * Storage ST→S7, Peripherals PE→P3, Networking NE→N3.
+ * Exact stamp only (not L0–L9). Brackets optional: [L4]
  */
 export const TITLE_CATEGORY_CODES: {
   id: Exclude<ShopCategoryId, "all">;
@@ -49,15 +51,13 @@ export const TITLE_CATEGORY_CODES: {
   sample: string;
   match: RegExp;
 }[] = [
-  { id: "laptops", label: "Laptops", sample: "L4", match: /(?:^|[\s\[\(\/\-])L\d{1,2}(?:$|[\s\]\)\/\-])/i },
-  { id: "desktops", label: "Desktops", sample: "D3", match: /(?:^|[\s\[\(\/\-])D\d{1,2}(?:$|[\s\]\)\/\-])/i },
-  { id: "components", label: "Components", sample: "C0", match: /(?:^|[\s\[\(\/\-])C\d{1,2}(?:$|[\s\]\)\/\-])/i },
-  { id: "monitors", label: "Monitors", sample: "MN0", match: /(?:^|[\s\[\(\/\-])MN\d{1,2}(?:$|[\s\]\)\/\-])/i },
-  { id: "accessories", label: "Accessories", sample: "AX0", match: /(?:^|[\s\[\(\/\-])AX\d{1,2}(?:$|[\s\]\)\/\-])/i },
-  { id: "graphics", label: "Graphics", sample: "GC0", match: /(?:^|[\s\[\(\/\-])GC\d{1,2}(?:$|[\s\]\)\/\-])/i },
-  { id: "storage", label: "Storage", sample: "ST0", match: /(?:^|[\s\[\(\/\-])ST\d{1,2}(?:$|[\s\]\)\/\-])/i },
-  { id: "peripherals", label: "Peripherals", sample: "KB0", match: /(?:^|[\s\[\(\/\-])KB\d{1,2}(?:$|[\s\]\)\/\-])/i },
-  { id: "networking", label: "Networking", sample: "NT0", match: /(?:^|[\s\[\(\/\-])NT\d{1,2}(?:$|[\s\]\)\/\-])/i },
+  { id: "laptops", label: "Laptops", sample: "L4", match: /(?:^|[\s\[\(\/\-])L4(?:$|[\s\]\)\/\-])/i },
+  { id: "desktops", label: "Desktops", sample: "D3", match: /(?:^|[\s\[\(\/\-])D3(?:$|[\s\]\)\/\-])/i },
+  { id: "components", label: "Components", sample: "C0", match: /(?:^|[\s\[\(\/\-])C0(?:$|[\s\]\)\/\-])/i },
+  { id: "monitors", label: "Monitors", sample: "M0", match: /(?:^|[\s\[\(\/\-])M0(?:$|[\s\]\)\/\-])/i },
+  { id: "storage", label: "Storage", sample: "S7", match: /(?:^|[\s\[\(\/\-])S7(?:$|[\s\]\)\/\-])/i },
+  { id: "peripherals", label: "Peripherals", sample: "P3", match: /(?:^|[\s\[\(\/\-])P3(?:$|[\s\]\)\/\-])/i },
+  { id: "networking", label: "Networking", sample: "N3", match: /(?:^|[\s\[\(\/\-])N3(?:$|[\s\]\)\/\-])/i },
 ];
 
 export function categoryFromTitleCode(

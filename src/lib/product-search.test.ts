@@ -88,19 +88,18 @@ test("title stamps beat heuristics", () => {
   assert.equal(kind("L4 HP ProDesk 400 G4 SFF Desktop"), "laptops");
   assert.equal(kind("D3 Dell Latitude 7490 Laptop"), "desktops");
   assert.equal(kind("C0 HP EliteBook 840 G5"), "components");
-  assert.equal(kind("MN0 Dell 24 LCD Monitor"), "monitors");
-  assert.equal(kind("AX0 Laptop bag 15.6"), "accessories");
-  assert.equal(kind("GC0 GTX 1660 Super"), "graphics");
-  assert.equal(kind("ST0 Samsung 1TB NVMe SSD"), "storage");
-  assert.equal(kind("KB0 Attack Shark keyboard"), "peripherals");
-  assert.equal(kind("NT0 TP-Link router"), "networking");
+  assert.equal(kind("M0 Dell 24 LCD Monitor"), "monitors");
+  assert.equal(kind("S7 Samsung 1TB NVMe SSD"), "storage");
+  assert.equal(kind("P3 Attack Shark keyboard"), "peripherals");
+  assert.equal(kind("N3 TP-Link router"), "networking");
   assert.equal(kind("HP EliteBook [L4] i5"), "laptops");
 });
 
-test("HP G5 / Apple M1 are not category stamps", () => {
+test("only the lookalike stamps count, not HP G5 or Apple M1", () => {
   assert.equal(kind("HP ProDesk 400 G4 SFF Desktop"), "desktops");
   assert.notEqual(kind("MacBook Air M1"), "monitors");
   assert.notEqual(kind("HP EliteDesk 800 G5"), "graphics");
+  assert.notEqual(kind("L0 spare heatsink"), "laptops");
 });
 
 test("brand detection from title and attributes", () => {
