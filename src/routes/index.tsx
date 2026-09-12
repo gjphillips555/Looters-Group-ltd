@@ -7,6 +7,7 @@ import { CategoryCarousel } from "@/components/category-carousel";
 import { KeyLink } from "@/components/key-button";
 import { ProductGrid } from "@/components/product-grid";
 import { RefineBar } from "@/components/refine-bar";
+import { ShopSearch } from "@/components/shop-search";
 import { ARTWORK } from "@/lib/artwork";
 import { getCatalog } from "@/lib/catalog";
 
@@ -31,7 +32,18 @@ function Home() {
   return (
     <AppShell>
       <BrandTicker />
+      <p className="mx-auto mb-3 mt-5 max-w-3xl text-center text-sm font-semibold text-[#e8893a] sm:text-base">
+        Shop Now for great bargains on our range of refurbished Desktop PC's,
+        Laptops, Graphics Cards, Components and other Accessories.
+      </p>
       <CategoryCarousel />
+      <div className="mx-auto mt-3 mb-2 flex w-full max-w-lg justify-center px-1">
+        <ShopSearch
+          className="min-w-0 w-full"
+          placeholder="Search Products"
+          inputClassName="h-11 border-neutral-300 bg-white text-neutral-900 placeholder:text-neutral-500 focus-visible:border-neutral-500 focus-visible:ring-neutral-400/40"
+        />
+      </div>
 
       {/* Afterpay tile → site news → Afterpay news → other site news */}
       <div className="mt-10 space-y-8">
