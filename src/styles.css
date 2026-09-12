@@ -355,25 +355,25 @@ html.light .kb-orange .kb-cap {
   color: #1a1000;
 }
 
-.kb-white {
+.kb-key.kb-white {
   background: #d8d8d8;
   box-shadow:
     0 0.45rem 0 #a8a8a8,
     0 0.7rem 1rem color-mix(in oklab, black 14%, transparent);
 }
 
-.kb-white .kb-cap {
+.kb-key.kb-white .kb-cap {
   background: #fff;
   color: #111;
   border-color: color-mix(in oklab, black 10%, transparent);
 }
 
-html.light .kb-white {
+html.light .kb-key.kb-white {
   background: #d4d4d4;
   box-shadow: 0 0.45rem 0 #a8a8a8;
 }
 
-html.light .kb-white .kb-cap {
+html.light .kb-key.kb-white .kb-cap {
   background: #fff;
   color: #111;
 }
@@ -1475,11 +1475,18 @@ html.light .header-key-cap-solid {
   width: auto;
   min-width: 9.5rem;
   flex: 1;
+  height: 2.75rem;
+  align-self: flex-end;
+}
+
+.kb-search-key .kb-cap {
+  height: 100%;
 }
 
 .kb-search-input {
   width: 100%;
   min-width: 0;
+  height: 100%;
   border: 0;
   background: transparent;
   color: #141414;

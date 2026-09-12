@@ -42,7 +42,6 @@ function Home() {
         <ShopSearch
           className="min-w-0 w-full"
           placeholder="Search Products"
-          inputClassName="h-11 border-neutral-300 bg-white text-neutral-900 placeholder:text-neutral-500 focus-visible:border-neutral-500 focus-visible:ring-neutral-400/40"
         />
       </div>
       <Rule />
