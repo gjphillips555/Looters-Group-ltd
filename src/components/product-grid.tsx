@@ -100,6 +100,7 @@ function ProductTiles({ products }: { products: Product[] }) {
           product={product}
           className="h-full"
           cycleImages
+          imageFit="contain"
         />
       ))}
     </div>
