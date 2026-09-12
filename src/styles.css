@@ -333,26 +333,26 @@ html.light .kb-trademe .kb-cap {
 }
 
 .kb-orange {
-  background: #e08a3c;
+  background: #cc7a00;
   box-shadow:
-    0 0.45rem 0 #c47a38,
+    0 0.45rem 0 #a86200,
     0 0.7rem 1rem color-mix(in oklab, black 16%, transparent);
 }
 
 .kb-orange .kb-cap {
-  background: linear-gradient(180deg, #f6c07a, #e8893a);
-  color: #2a1608;
-  border-color: color-mix(in oklab, #f6c07a 50%, transparent);
+  background: linear-gradient(180deg, #ffc14d, #ff9a00);
+  color: #1a1000;
+  border-color: color-mix(in oklab, #ffc14d 50%, transparent);
 }
 
 html.light .kb-orange {
-  background: #e08a3c;
-  box-shadow: 0 0.45rem 0 #c47a38;
+  background: #cc7a00;
+  box-shadow: 0 0.45rem 0 #a86200;
 }
 
 html.light .kb-orange .kb-cap {
-  background: linear-gradient(180deg, #f7c07a, #ee9144);
-  color: #2a1608;
+  background: linear-gradient(180deg, #ffc14d, #ff9a00);
+  color: #1a1000;
 }
 
 .kb-white {
@@ -560,7 +560,7 @@ html.light .kb-board {
 }
 
 .kb-pad .kb-orange {
-  box-shadow: 0 0.28rem 0 #c47a38;
+  box-shadow: 0 0.28rem 0 #a86200;
 }
 
 .kb-pad .kb-white {
@@ -674,9 +674,9 @@ html.light .kb-board {
 .kb-enter-v .kb-cap,
 .kb-enter-h .kb-cap {
   border-radius: 0.4rem;
-  background: linear-gradient(180deg, #f6c07a, #e8893a);
-  color: #2a1608;
-  border-color: color-mix(in oklab, #f6c07a 55%, transparent);
+  background: linear-gradient(180deg, #ffc14d, #ff9a00);
+  color: #1a1000;
+  border-color: color-mix(in oklab, #ffc14d 55%, transparent);
 }
 
 .kb-enter-v .kb-cap {
