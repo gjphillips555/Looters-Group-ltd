@@ -1,8 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ShoppingBag, Trash2, Truck, X } from "lucide-react";
-import { KeyLink } from "@/components/key-button";
+import { KeyButton, KeyLink } from "@/components/key-button";
 import { QuantityStepper } from "@/components/quantity-stepper";
-import { Button } from "@/components/ui/button";
 import { useCart, useCartTotals } from "@/lib/cart-store";
 import { cartCheckoutSearch } from "@/lib/orders";
 import { nzd } from "@/lib/products";
@@ -183,16 +182,23 @@ export function CartDrawer({
               share the dearest option; every extra 3 items add the next
               dearest.
             </p>
-            <div className="flex gap-2">
-              <Button type="button" variant="outline" onClick={clear}>
+            <div className="flex items-center gap-2">
+              <KeyButton
+                type="button"
+                size="sm"
+                tone="orange"
+                className="flex-1"
+                onClick={clear}
+              >
                 Clear
-              </Button>
+              </KeyButton>
               <KeyLink
                 to="/checkout"
                 search={cartCheckoutSearch}
                 onClick={onClose}
+                size="sm"
+                tone="teal"
                 className="flex-1"
-                size="default"
               >
                 Checkout
               </KeyLink>
