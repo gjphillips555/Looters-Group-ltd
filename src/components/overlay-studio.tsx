@@ -3,7 +3,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 /** Canvas export size for Trade Me / listing images */
 const OUT_W = 2048;
 const OUT_H = 1536;
-const PAD = 0.08; // ~8% margin around product after fit
+/** White frame around the product — 12% each side so the shot never kisses the edge */
+const PAD = 0.12;
 const STORAGE_KEY = "looters-overlay-studio-v1";
 /** JPEG quality — sharp enough for listings, small files for load speed */
 const JPEG_QUALITY = 0.88;
@@ -111,13 +112,15 @@ export function OverlayStudio() {
     if (productUrl) {
       try {
         const img = await loadImage(productUrl);
-        const maxW = OUT_W * (1 - PAD * 2);
-        const maxH = OUT_H * (1 - PAD * 2);
-        const ratio = Math.min(maxW / img.width, maxH / img.height);
-        const dw = img.width * ratio;
-        const dh = img.height * ratio;
-        const dx = (OUT_W - dw) / 2;
-        const dy = (OUT_H - dh) / 2;
+        const padX = Math.round(OUT_W * PAD);
+        const padY = Math.round(OUT_H * PAD);
+        const innerW = OUT_W - padX * 2;
+        const innerH = OUT_H - padY * 2;
+        const ratio = Math.min(innerW / img.naturalWidth, innerH / img.naturalHeight);
+        const dw = img.naturalWidth * ratio;
+        const dh = img.naturalHeight * ratio;
+        const dx = padX + (innerW - dw) / 2;
+        const dy = padY + (innerH - dh) / 2;
 
         // Soft product shadow (around the product only)
         ctx.save();
@@ -144,7 +147,7 @@ export function OverlayStudio() {
         const ratio = targetW / oimg.width;
         const ow = targetW;
         const oh = oimg.height * ratio;
-        const margin = Math.round(OUT_W * 0.02);
+        const margin = Math.round(OUT_W * PAD);
         const { x, y } = cornerXY(p.corner, OUT_W, OUT_H, ow, oh, margin);
         ctx.drawImage(oimg, x, y, ow, oh);
       } catch {
@@ -259,9 +262,11 @@ export function OverlayStudio() {
 
       <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
         <div className="space-y-3">
-          <div className="overflow-hidden rounded-xl border border-border bg-white shadow-sm">
+          <div className="rounded-xl border border-border bg-white p-0 shadow-sm">
             <canvas
               ref={canvasRef}
+              width={OUT_W}
+              height={OUT_H}
               className="mx-auto block h-auto w-full max-w-full"
               style={{ aspectRatio: `${OUT_W} / ${OUT_H}` }}
             />
