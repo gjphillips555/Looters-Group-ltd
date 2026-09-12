@@ -1,7 +1,7 @@
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "@/lib/theme";
 
-export function ThemeToggle() {
+export function ThemeToggle({ desktopOnly = false }: { desktopOnly?: boolean }) {
   const { theme, setTheme, toggle } = useTheme();
   const isDark = theme === "dark";
 
@@ -39,17 +39,19 @@ export function ThemeToggle() {
           </span>
         </span>
       </button>
-      <button
-        type="button"
-        onClick={toggle}
-        aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-        title={isDark ? "Light mode" : "Dark mode"}
-        className="kb-key kb-key-sm kb-orange md:hidden"
-      >
-        <span className="kb-cap">
-          {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
-        </span>
-      </button>
+      {desktopOnly ? null : (
+        <button
+          type="button"
+          onClick={toggle}
+          aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          title={isDark ? "Light mode" : "Dark mode"}
+          className="kb-key kb-key-sm kb-orange md:hidden"
+        >
+          <span className="kb-cap">
+            {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
+          </span>
+        </button>
+      )}
     </>
   );
 }

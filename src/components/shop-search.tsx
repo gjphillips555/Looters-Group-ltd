@@ -28,7 +28,7 @@ export function ShopSearch({
 
   return (
     <form
-      className={cn("flex min-w-0 items-end gap-1.5", className)}
+      className={cn("flex min-w-0 items-center gap-1.5", className)}
       onSubmit={(e) => {
         e.preventDefault();
         goShop();

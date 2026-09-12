@@ -15,7 +15,7 @@ export function SiteFooter({ onOpenCart }: { onOpenCart: () => void }) {
             className="min-w-0 flex-1"
             placeholder="Search Products"
           />
-          <ThemeToggle />
+          <ThemeToggle desktopOnly />
           <AccountButton />
           <CartButton onClick={onOpenCart} />
         </div>

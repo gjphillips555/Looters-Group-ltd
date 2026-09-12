@@ -35,7 +35,7 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
             </div>
           </div>
           <div className="kb-utils">
-            <ShopSearch className="kb-desk hidden min-w-0 md:block md:max-w-[240px] lg:max-w-[300px]" showButton={false} />
+            <ShopSearch className="kb-desk hidden min-w-0 md:flex md:w-[180px] lg:w-[220px]" showButton={false} />
             <span className="kb-desk contents">
               <ThemeToggle />
             </span>
