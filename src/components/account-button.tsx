@@ -7,7 +7,7 @@ import { useCurrentUserState } from "@/lib/auth/use-current-user";
 const subscribeToNothing = () => () => {};
 const noGateSessionOnServer = () => false;
 
-export function AccountButton() {
+export function AccountButton({ showF8 = false }: { showF8?: boolean }) {
   const { user, isPending } = useCurrentUserState();
   const [menuOpen, setMenuOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
@@ -27,7 +27,7 @@ export function AccountButton() {
   }
 
   if (!user) {
-    return <GoogleSignIn compact callbackURL="/" />;
+    return <GoogleSignIn compact showF8={showF8} callbackURL="/" />;
   }
 
   const label = user.displayName ?? user.primaryEmail ?? "Account";

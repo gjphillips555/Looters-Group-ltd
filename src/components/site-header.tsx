@@ -47,7 +47,7 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
                 else cycle();
               }}
             />
-            <AccountButton />
+            <AccountButton showF8 />
             <CartButton onClick={onOpenCart} />
             <button
               type="button"

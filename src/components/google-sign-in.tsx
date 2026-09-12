@@ -10,10 +10,12 @@ import { cn } from "@/lib/utils";
 export function GoogleSignIn({
   callbackURL = "/",
   compact = false,
+  showF8 = false,
   label = "Continue with Google",
 }: {
   callbackURL?: string;
   compact?: boolean;
+  showF8?: boolean;
   label?: string;
 }) {
   const [agreed, setAgreed] = useState(() => hasAgreedTerms());
@@ -89,12 +91,16 @@ export function GoogleSignIn({
           className="kb-key kb-key-sm kb-white disabled:opacity-60"
         >
           <span className="kb-cap">
-            <span className="kb-dual">
-              <b>F8</b>
-              <i>
-                <GoogleMark className="size-3.5" />
-              </i>
-            </span>
+            {showF8 ? (
+              <span className="kb-dual">
+                <b>F8</b>
+                <i>
+                  <GoogleMark className="size-4" />
+                </i>
+              </span>
+            ) : (
+              <GoogleMark className="size-5" />
+            )}
           </span>
         </button>
         {open ? (
