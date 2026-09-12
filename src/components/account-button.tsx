@@ -1,7 +1,6 @@
 import { useState, useSyncExternalStore } from "react";
-import { toast } from "sonner";
-import { GoogleMark } from "@/components/google-mark";
-import { authEnabled, signIn, signOut } from "@/lib/auth/client";
+import { GoogleSignIn } from "@/components/google-sign-in";
+import { authEnabled, signOut } from "@/lib/auth/client";
 import { hasGateSessionMarker } from "@/lib/auth/gate-session-marker";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 
@@ -12,7 +11,6 @@ export function AccountButton() {
   const { user, isPending } = useCurrentUserState();
   const [menuOpen, setMenuOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
-  const [signingIn, setSigningIn] = useState(false);
   const gateSession = useSyncExternalStore(
     subscribeToNothing,
     hasGateSessionMarker,
@@ -29,33 +27,7 @@ export function AccountButton() {
   }
 
   if (!user) {
-    return (
-      <button
-        type="button"
-        disabled={signingIn}
-        onClick={() => {
-          setSigningIn(true);
-          void signIn("grok-google", { callbackURL: "/" })
-            .catch((err: unknown) => {
-              const msg =
-                err instanceof Error ? err.message : "Google sign-in failed";
-              toast.error(msg);
-            })
-            .finally(() => setSigningIn(false));
-        }}
-        aria-label="Sign in with Google (optional)"
-        className="kb-key kb-key-sm kb-white disabled:opacity-60"
-      >
-        <span className="kb-cap">
-          <span className="kb-dual">
-            <b>F8</b>
-            <i>
-              <GoogleMark className="size-3.5" />
-            </i>
-          </span>
-        </span>
-      </button>
-    );
+    return <GoogleSignIn compact callbackURL="/" />;
   }
 
   const label = user.displayName ?? user.primaryEmail ?? "Account";

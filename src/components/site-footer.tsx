@@ -1,6 +1,7 @@
 import { ARTWORK } from "@/lib/artwork";
 import { AccountButton } from "@/components/account-button";
 import { CartButton } from "@/components/cart-button";
+import { LegalLinks } from "@/components/legal-links";
 import { ShopSearch } from "@/components/shop-search";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SITE_DOMAIN, SITE_URL } from "@/lib/site";
@@ -9,7 +10,7 @@ export function SiteFooter({ onOpenCart }: { onOpenCart: () => void }) {
   return (
     <footer className="mt-16 bg-white text-neutral-800">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 py-10 sm:px-6">
-        <div className="flex w-full max-w-lg flex-wrap items-center justify-center gap-2">
+        <div className="flex w-full max-w-2xl flex-wrap items-center justify-center gap-2">
           <ShopSearch
             className="min-w-0 flex-1"
             placeholder="Search Products"
@@ -36,7 +37,7 @@ export function SiteFooter({ onOpenCart }: { onOpenCart: () => void }) {
           decoding="async"
         />
         <p className="text-center text-xs text-neutral-600">
-          &copy; 2026 LootersRetail. Prices in NZD, GST inclusive. Contact:{" "}
+          &copy; 2026 Looters Computas. Prices in NZD, GST inclusive. Contact:{" "}
           <a
             href="mailto:LootersRetail@protonmail.com"
             className="font-medium text-neutral-900 underline-offset-2 hover:underline"
@@ -44,6 +45,7 @@ export function SiteFooter({ onOpenCart }: { onOpenCart: () => void }) {
             LootersRetail@protonmail.com
           </a>
         </p>
+        <LegalLinks className="text-neutral-600 [&_a]:text-neutral-600 [&_a:hover]:text-neutral-900" />
         <a
           href={SITE_URL}
           className="text-[11px] font-medium tracking-wide text-neutral-500 underline-offset-2 hover:text-neutral-900 hover:underline"

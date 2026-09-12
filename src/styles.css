@@ -1494,6 +1494,36 @@ html.light .header-key-cap-solid {
   color: #666;
 }
 
+.legal-copy h2 {
+  margin: 1.75rem 0 0.5rem;
+  color: var(--color-foreground);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.legal-copy ul {
+  margin: 0.4rem 0 0.8rem 1.2rem;
+  list-style: disc;
+}
+
+.legal-copy li {
+  margin: 0.25rem 0;
+}
+
+.legal-copy a {
+  color: #ff9a00;
+  text-underline-offset: 2px;
+}
+
+.legal-copy a:hover {
+  text-decoration: underline;
+}
+
+.legal-copy strong {
+  color: var(--color-foreground);
+}
+
 .kb-white .kb-cap,
 .kb-white .kb-dual b,
 .kb-white .kb-dual i {

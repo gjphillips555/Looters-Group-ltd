@@ -33,7 +33,7 @@ function Home() {
     <AppShell>
       <BrandTicker />
       <Rule />
-      <p className="mx-auto max-w-3xl text-center text-sm font-semibold text-[#e8893a] sm:text-base">
+      <p className="mx-auto max-w-3xl text-center text-sm font-semibold text-[#ff9a00] sm:text-base">
         Shop Now for great bargains on our range of refurbished Desktop PC's,
         Laptops, Graphics Cards, Components and other Accessories.
       </p>
@@ -65,7 +65,7 @@ function Home() {
           <h1 className="text-balance font-display text-3xl font-bold tracking-tight sm:text-4xl">
             Shop's shut. The loot lives on.
           </h1>
-          <p className="text-sm font-medium text-[#e8893a]">
+          <p className="text-sm font-medium text-[#ff9a00]">
             Loot the best deals on refurbished gear — now from the spare room,
             not the shop floor.
           </p>
@@ -153,7 +153,7 @@ function Home() {
           <h2 className="text-balance font-display text-2xl font-bold tracking-tight sm:text-3xl">
             We bought the .online
           </h2>
-          <p className="text-sm font-medium text-[#e8893a]">
+          <p className="text-sm font-medium text-[#ff9a00]">
             looterscomputas.online — grabbed from Porkbun. That's the name on
             the door now.
           </p>
@@ -215,7 +215,7 @@ function NewsCard({
   return (
     <article className="overflow-hidden rounded-2xl border border-border bg-card">
       <header className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-border bg-secondary/40 px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground sm:px-6">
-        <span className="rounded bg-[#e8893a] px-1.5 py-0.5 text-[10px] font-bold text-[#2a1608]">
+        <span className="rounded bg-[#ff9a00] px-1.5 py-0.5 text-[10px] font-bold text-[#1a1000]">
           Site news
         </span>
         <span aria-hidden="true">·</span>

@@ -25,7 +25,7 @@ export function SimpleHeader({
               </span>
             </Link>
 
-            <ShopSearch className="hidden min-w-0 flex-1 md:block md:max-w-[200px] lg:max-w-[260px]" />
+            <ShopSearch className="hidden min-w-0 flex-1 md:block md:max-w-[280px] lg:max-w-[340px]" />
 
             <div className="ml-auto flex shrink-0 items-center gap-1.5">
               <MobileSearchToggle />

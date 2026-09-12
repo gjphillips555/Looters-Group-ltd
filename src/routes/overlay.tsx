@@ -1,5 +1,6 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Moon, Sun } from "lucide-react";
+import { LegalLinks } from "@/components/legal-links";
 import { OverlayStudio } from "@/components/overlay-studio";
 import { useTheme } from "@/lib/theme";
 
@@ -72,6 +73,9 @@ function OverlayPage() {
       <main className="flex-1">
         <OverlayStudio />
       </main>
+      <footer className="border-t border-border py-6">
+        <LegalLinks />
+      </footer>
     </div>
   );
 }

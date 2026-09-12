@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/app-shell";
-import { GoogleMark } from "@/components/google-mark";
+import { GoogleSignIn } from "@/components/google-sign-in";
 import { KeyButton, KeyLink } from "@/components/key-button";
 import { PayWithPaypal } from "@/components/pay-with-paypal";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authEnabled, signIn } from "@/lib/auth/client";
+import { authEnabled } from "@/lib/auth/client";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { cartProductFrom, useCart, useCartTotals, type CartLine } from "@/lib/cart-store";
 import { getProduct } from "@/lib/catalog";
@@ -184,14 +184,12 @@ function CheckoutPage() {
           : "No account needed — continue as guest. Google is optional if you want your name and email filled in."}
       </p>
       {!user && authEnabled && (
-        <KeyButton
-          onClick={() => signIn("grok-google", { callbackURL: "/checkout" })}
-          size="fit"
-          className="mb-6"
-        >
-          <GoogleMark className="size-4" />
-          Optional: sign in with Google
-        </KeyButton>
+        <div className="mb-6 max-w-sm">
+          <GoogleSignIn
+            callbackURL="/checkout"
+            label="Optional: sign in with Google"
+          />
+        </div>
       )}
       <form
         onSubmit={onSubmit}
