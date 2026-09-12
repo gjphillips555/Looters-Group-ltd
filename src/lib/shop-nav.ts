@@ -12,12 +12,9 @@ export const PAD_CATEGORIES: { id: PadCategoryId; label: string }[] = [
 ];
 
 export const CYCLE_LABEL: Record<PadCategoryId, string> = {
-  desktops: "Desktops",
-  laptops: "Laptops",
-  components: "Components",
-  all: "All products",
+  ...Object.fromEntries(SHOP_CATEGORIES.map((c) => [c.id, c.label])),
   game: "Game",
-};
+} as Record<PadCategoryId, string>;
 
 export const usePadSelect = create<{
   pending: PadCategoryId | null;
@@ -28,10 +25,11 @@ export const usePadSelect = create<{
 }));
 
 export function categoryFromPath(pathname: string): ShopCategoryId | undefined {
-  if (pathname === "/shop/desktops") return "desktops";
-  if (pathname === "/shop/laptops") return "laptops";
-  if (pathname === "/shop/components") return "components";
   if (pathname === "/shop") return "all";
+  const hit = pathname.match(/^\/shop\/([a-z]+)$/);
+  if (hit && SHOP_CATEGORIES.some((c) => c.id === hit[1])) {
+    return hit[1] as ShopCategoryId;
+  }
   return undefined;
 }
 

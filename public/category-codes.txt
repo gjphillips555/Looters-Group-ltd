@@ -1,0 +1,27 @@
+Looters Computas — title category stamps
+Put ONE stamp as its own word in the Trade Me title (start or end is fine).
+The number can be 0–99. Brackets optional: L4  or  [L4]
+
+L4   Laptops        /shop/laptops
+D3   Desktops       /shop/desktops
+C0   Components     /shop/components
+MN0  Monitors       /shop/monitors
+AX0  Accessories    /shop/accessories
+GC0  Graphics       /shop/graphics
+ST0  Storage        /shop/storage
+KB0  Peripherals    /shop/peripherals   (keyboards, mice, headsets)
+NT0  Networking     /shop/networking
+
+Examples
+  L4 HP EliteBook 840 G5 i5 8GB
+  D3 HP ProDesk 400 G4 SFF
+  C0 Cooler Master 212 CPU cooler
+  MN0 Dell 24" LCD
+  AX0 USB-C hub 7-in-1
+  GC0 NVIDIA GTX 1660 Super
+  ST0 Samsung 1TB NVMe
+  KB0 Attack Shark X3
+  NT0 TP-Link AX1800
+
+Do not use G4 / G5 / M1 as stamps — those are already in PC model names.
+Use GC0 for graphics and MN0 for monitors instead.

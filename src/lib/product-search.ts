@@ -1,18 +1,79 @@
 import { create } from "zustand";
 import type { Product } from "@/lib/products";
 
-export type ShopCategoryId = "desktops" | "laptops" | "components" | "all";
-export type PriceSort = "default" | "price-asc" | "price-desc";
+export type ShopCategoryId =
+  | "desktops"
+  | "laptops"
+  | "components"
+  | "monitors"
+  | "accessories"
+  | "graphics"
+  | "storage"
+  | "peripherals"
+  | "networking"
+  | "all";
 
 export const SHOP_CATEGORIES: { id: ShopCategoryId; label: string }[] = [
   { id: "desktops", label: "Desktops" },
   { id: "laptops", label: "Laptops" },
   { id: "components", label: "Components" },
+  { id: "monitors", label: "Monitors" },
+  { id: "accessories", label: "Accessories" },
+  { id: "graphics", label: "Graphics" },
+  { id: "storage", label: "Storage" },
+  { id: "peripherals", label: "Peripherals" },
+  { id: "networking", label: "Networking" },
   { id: "all", label: "All products" },
 ];
 
-export const SHOP_CATEGORY_PAGES = ["desktops", "laptops", "components"] as const;
+export const SHOP_CATEGORY_PAGES = [
+  "desktops",
+  "laptops",
+  "components",
+  "monitors",
+  "accessories",
+  "graphics",
+  "storage",
+  "peripherals",
+  "networking",
+] as const;
 export type ShopCategoryPage = (typeof SHOP_CATEGORY_PAGES)[number];
+
+/**
+ * Put ONE of these as its own word in the Trade Me title.
+ * Number can be 0–99 — L4, D3, C0, MN0, etc. Brackets optional: [L4]
+ */
+export const TITLE_CATEGORY_CODES: {
+  id: Exclude<ShopCategoryId, "all">;
+  label: string;
+  sample: string;
+  match: RegExp;
+}[] = [
+  { id: "laptops", label: "Laptops", sample: "L4", match: /(?:^|[\s\[\(\/\-])L\d{1,2}(?:$|[\s\]\)\/\-])/i },
+  { id: "desktops", label: "Desktops", sample: "D3", match: /(?:^|[\s\[\(\/\-])D\d{1,2}(?:$|[\s\]\)\/\-])/i },
+  { id: "components", label: "Components", sample: "C0", match: /(?:^|[\s\[\(\/\-])C\d{1,2}(?:$|[\s\]\)\/\-])/i },
+  { id: "monitors", label: "Monitors", sample: "MN0", match: /(?:^|[\s\[\(\/\-])MN\d{1,2}(?:$|[\s\]\)\/\-])/i },
+  { id: "accessories", label: "Accessories", sample: "AX0", match: /(?:^|[\s\[\(\/\-])AX\d{1,2}(?:$|[\s\]\)\/\-])/i },
+  { id: "graphics", label: "Graphics", sample: "GC0", match: /(?:^|[\s\[\(\/\-])GC\d{1,2}(?:$|[\s\]\)\/\-])/i },
+  { id: "storage", label: "Storage", sample: "ST0", match: /(?:^|[\s\[\(\/\-])ST\d{1,2}(?:$|[\s\]\)\/\-])/i },
+  { id: "peripherals", label: "Peripherals", sample: "KB0", match: /(?:^|[\s\[\(\/\-])KB\d{1,2}(?:$|[\s\]\)\/\-])/i },
+  { id: "networking", label: "Networking", sample: "NT0", match: /(?:^|[\s\[\(\/\-])NT\d{1,2}(?:$|[\s\]\)\/\-])/i },
+];
+
+export function categoryFromTitleCode(
+  title: string,
+): Exclude<ShopCategoryId, "all"> | null {
+  const padded = ` ${title} `;
+  let best: { index: number; id: Exclude<ShopCategoryId, "all"> } | null = null;
+  for (const code of TITLE_CATEGORY_CODES) {
+    const m = padded.match(code.match);
+    if (!m || m.index == null) continue;
+    if (!best || m.index < best.index) best = { index: m.index, id: code.id };
+  }
+  return best?.id ?? null;
+}
+
+export type PriceSort = "default" | "price-asc" | "price-desc";
 
 export function isShopCategoryPage(value: string): value is ShopCategoryPage {
   return (SHOP_CATEGORY_PAGES as readonly string[]).includes(value);
@@ -78,6 +139,9 @@ const OS = /\b(windows\s?(7|8|10|11)|win\s?(10|11)|chrome ?os)\b/;
  * Whole machines beat spec words like SSD/RAM/GPU in the title.
  */
 export function productKind(product: Product): Exclude<ShopCategoryId, "all"> {
+  const coded = categoryFromTitleCode(product.title);
+  if (coded) return coded;
+
   const n = catNumber(product);
   const path = catPath(product);
   const title = norm(product.title);
