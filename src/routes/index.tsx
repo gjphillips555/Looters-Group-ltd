@@ -37,7 +37,6 @@ function Home() {
         Shop Now for great bargains on our range of refurbished Desktop PC's,
         Laptops, Graphics Cards, Components and other Accessories.
       </p>
-      <Rule />
       <CategoryCarousel />
       <div className="mx-auto mt-3 flex w-full max-w-lg justify-center px-1">
         <ShopSearch
@@ -197,10 +196,10 @@ function Home() {
 
 function Rule() {
   return (
-    <div
-      className="my-5 h-px w-full bg-black"
-      aria-hidden="true"
-    />
+    <div className="my-5 space-y-1" aria-hidden="true">
+      <div className="h-px w-full bg-black" />
+      <div className="h-px w-full bg-[#ff9a00]" />
+    </div>
   );
 }
 
