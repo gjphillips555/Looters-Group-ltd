@@ -3,7 +3,7 @@ import { BacklightButton, useBacklight } from "@/components/backlight-button";
 import { CartButton } from "@/components/cart-button";
 import { KeyboardPad } from "@/components/keyboard-pad";
 import { SimpleHeader } from "@/components/simple-header";
-import { MobileSearchToggle, ShopSearch } from "@/components/shop-search";
+import { ShopSearch } from "@/components/shop-search";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useHeaderMode } from "@/lib/header-mode";
 import { useOledGame } from "@/lib/oled-game";
@@ -36,7 +36,6 @@ export function SiteHeader({ onOpenCart }: { onOpenCart: () => void }) {
           </div>
           <div className="kb-utils">
             <ShopSearch className="kb-desk hidden min-w-0 md:block md:max-w-[240px] lg:max-w-[300px]" />
-            <MobileSearchToggle />
             <span className="kb-desk contents">
               <ThemeToggle />
             </span>

@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { AccountButton } from "@/components/account-button";
 import { BrandLogo } from "@/components/brand-logo";
 import { CartButton } from "@/components/cart-button";
-import { MobileSearchToggle, ShopSearch } from "@/components/shop-search";
+import { ShopSearch } from "@/components/shop-search";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SITE_DOMAIN } from "@/lib/site";
 
@@ -28,7 +28,6 @@ export function SimpleHeader({
             <ShopSearch className="hidden min-w-0 flex-1 md:block md:max-w-[280px] lg:max-w-[340px]" />
 
             <div className="ml-auto flex shrink-0 items-center gap-1.5">
-              <MobileSearchToggle />
               <ThemeToggle />
               <AccountButton />
               <CartButton onClick={onOpenCart} />
