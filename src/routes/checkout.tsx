@@ -187,7 +187,9 @@ function CheckoutPage() {
         <div className="mb-6 max-w-sm">
           <GoogleSignIn
             callbackURL="/checkout"
-            label="Optional: sign in with Google"
+            label="Optional: Sign In With Google"
+            size="sm"
+            tone="teal"
           />
         </div>
       )}

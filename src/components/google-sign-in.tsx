@@ -11,12 +11,16 @@ export function GoogleSignIn({
   callbackURL = "/",
   compact = false,
   showF8 = false,
-  label = "Continue with Google",
+  label = "Continue With Google",
+  size = "default",
+  tone,
 }: {
   callbackURL?: string;
   compact?: boolean;
   showF8?: boolean;
   label?: string;
+  size?: "default" | "sm" | "fit";
+  tone?: "gray" | "cream" | "teal" | "orange" | "brown" | "white";
 }) {
   const [agreed, setAgreed] = useState(() => hasAgreedTerms());
   const [busy, setBusy] = useState(false);
@@ -136,10 +140,12 @@ export function GoogleSignIn({
       {box}
       <KeyButton
         disabled={busy || !agreed}
+        size={size}
+        tone={tone}
         className="w-full"
         onClick={() => void start()}
       >
-        <GoogleMark className="size-5" />
+        <GoogleMark className={size === "sm" ? "size-3.5" : "size-5"} />
         {busy ? "Connecting…" : label}
       </KeyButton>
       {!agreed ? (
