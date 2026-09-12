@@ -32,21 +32,24 @@ function Home() {
   return (
     <AppShell>
       <BrandTicker />
-      <p className="mx-auto mb-3 mt-5 max-w-3xl text-center text-sm font-semibold text-[#e8893a] sm:text-base">
+      <Rule />
+      <p className="mx-auto max-w-3xl text-center text-sm font-semibold text-[#e8893a] sm:text-base">
         Shop Now for great bargains on our range of refurbished Desktop PC's,
         Laptops, Graphics Cards, Components and other Accessories.
       </p>
+      <Rule />
       <CategoryCarousel />
-      <div className="mx-auto mt-3 mb-2 flex w-full max-w-lg justify-center px-1">
+      <div className="mx-auto mt-3 flex w-full max-w-lg justify-center px-1">
         <ShopSearch
           className="min-w-0 w-full"
           placeholder="Search Products"
           inputClassName="h-11 border-neutral-300 bg-white text-neutral-900 placeholder:text-neutral-500 focus-visible:border-neutral-500 focus-visible:ring-neutral-400/40"
         />
       </div>
+      <Rule />
 
       {/* Afterpay tile → site news → Afterpay news → other site news */}
-      <div className="mt-10 space-y-8">
+      <div className="mt-4 space-y-8">
         <section className="overflow-hidden rounded-2xl border border-border">
           <img
             src={ARTWORK.afterpayTile}
@@ -57,6 +60,7 @@ function Home() {
             className="w-full object-cover"
           />
         </section>
+        <Rule />
 
         <NewsCard date="Wed 9 Sep 2026" dateTime="2026-09-09">
           <h1 className="text-balance font-display text-3xl font-bold tracking-tight sm:text-4xl">
@@ -188,6 +192,15 @@ function Home() {
         <BrandLogo className="mt-2 h-28 w-auto max-w-[420px] object-contain sm:h-36 sm:max-w-[520px]" />
       </div>
     </AppShell>
+  );
+}
+
+function Rule() {
+  return (
+    <div
+      className="my-5 h-px w-full bg-black"
+      aria-hidden="true"
+    />
   );
 }
 
