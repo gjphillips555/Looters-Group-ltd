@@ -43,6 +43,31 @@ export function categoryFromTitleCode(title: string): ShopCategoryPage | null {
   return null;
 }
 
+const LAPTOP_MACHINE =
+  /\b(laptop|notebook|macbook|chromebook|ultrabook|elitebook|probook|zbook|thinkpad|thinkbook|latitude|xps\s?(13|14|15|16)|zenbook|vivobook|expertbook|surface (laptop|pro|go|book)|pavilion (13|14|15|16|17|x360)|envy (13|14|15|16|17)|inspiron (13|14|15|16|17)|vostro (13|14|15|16)|spectre|2[- ]in[- ]1)\b/i;
+
+const DESKTOP_MACHINE =
+  /\b(desktop|optiplex|prodesk|elitedesk|thinkcentre|thinkstation|sff\b|usff\b|mini-?pc|\bnuc\b|mac mini|mac studio|\bimac\b|mac pro|gaming pc|gaming desktop|\btower\b|workstation|hp 290|hp 280|hp 400 g|hp 600 g|hp 800 g)\b/i;
+
+const LAPTOP_PART =
+  /\b((laptop|notebook)s?\s+(bag|sleeve|backpack|case|charger|adapter|adaptor|battery|stand|cooler)|((bag|sleeve|backpack|case|charger|adapter|adaptor)\b.{0,24}\b(laptop|notebook)))\b/i;
+
+function inferKindFromTitle(title: string): ShopCategoryPage {
+  if (LAPTOP_PART.test(title)) return "components";
+  if (LAPTOP_MACHINE.test(title)) return "laptops";
+  if (DESKTOP_MACHINE.test(title)) return "desktops";
+  const wholePc =
+    /\bwindows\s?(7|8|10|11)\b/i.test(title) &&
+    /\b(i[3579]|ryzen|intel|core)\b/i.test(title);
+  if (wholePc) return "desktops";
+  return "components";
+}
+
+/** Stamp L4 / D3 / C0 wins. Unstamped titles fall back to laptop / desktop / parts. */
+export function productKind(product: Product): ShopCategoryPage {
+  return categoryFromTitleCode(product.title) ?? inferKindFromTitle(product.title);
+}
+
 export type PriceSort = "default" | "price-asc" | "price-desc";
 
 export function isShopCategoryPage(value: string): value is ShopCategoryPage {
@@ -51,11 +76,6 @@ export function isShopCategoryPage(value: string): value is ShopCategoryPage {
 
 export function shopPath(id: ShopCategoryId) {
   return id === "all" ? "/shop" : `/shop/${id}`;
-}
-
-/** Category comes only from L4 / D3 / C0 in the title. No stamp → uncategorised. */
-export function productKind(product: Product): ShopCategoryPage | null {
-  return categoryFromTitleCode(product.title);
 }
 
 export function productInCategory(product: Product, category: ShopCategoryId) {

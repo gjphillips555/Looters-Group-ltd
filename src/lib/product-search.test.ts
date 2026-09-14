@@ -37,16 +37,18 @@ function kind(title: string, extra?: Partial<Product>) {
   return productKind(item(title, extra));
 }
 
-test("without a stamp the product is uncategorised", () => {
+test("unstamped titles still split laptop / desktop / parts", () => {
   assert.equal(
     kind("GigaByte Gaming - Intel i7 | DDR4 | NVMe SSD | Nitro R7 360 | Windows 11 Pro"),
-    null,
+    "desktops",
   );
-  assert.equal(kind("Dell Latitude 7490 i5 8GB"), null);
-  assert.equal(kind("HP Laptop Charger 19V 65W"), null);
+  assert.equal(kind("Dell Latitude 7490 i5 8GB"), "laptops");
+  assert.equal(kind("Refurbished HP 11-k009tu Laptop – Windows 10"), "laptops");
+  assert.equal(kind("HP ProDesk 400 G4 SFF Desktop"), "desktops");
+  assert.equal(kind("HP Laptop Charger 19V 65W"), "components");
 });
 
-test("title stamps are the only category guide", () => {
+test("title stamps L4 D3 C0 beat the fallback", () => {
   assert.equal(kind("L4 HP ProDesk 400 G4 SFF Desktop"), "laptops");
   assert.equal(kind("D3 Dell Latitude 7490 Laptop"), "desktops");
   assert.equal(kind("C0 HP EliteBook 840 G5"), "components");
@@ -55,10 +57,8 @@ test("title stamps are the only category guide", () => {
   assert.equal(kind("l4, refurbished laptop"), "laptops");
   assert.equal(kind("SFF PC | D3 | Win 11"), "desktops");
   assert.equal(kind("(C0) CPU cooler"), "components");
-  assert.equal(kind("M0 Dell 24 LCD Monitor"), null);
-  assert.equal(kind("L0 spare heatsink"), null);
-  assert.equal(kind("HP ProDesk 400 G4 SFF Desktop"), null);
 });
+
 
 test("brand detection from title and attributes", () => {
   assert.equal(productBrand(item("Refurbished HP 11-k009tu Laptop")), "HP");
