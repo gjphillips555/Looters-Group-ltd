@@ -35,10 +35,15 @@ export function SimpleHeader({
                 type="button"
                 className="kb-key kb-key-sm kb-teal"
                 onClick={onFish}
-                aria-label="Switch to Attack Fish keyboard"
-                title="Attack Fish keyboard"
+                aria-label="Switch to Attack Shark keyboard"
+                title="Attack Shark keyboard"
               >
-                <span className="kb-cap">Fish</span>
+                <span className="kb-cap">
+                  <span className="kb-dual">
+                    <b>Atk . .</b>
+                    <i>Shark</i>
+                  </span>
+                </span>
               </button>
             </div>
           </div>
