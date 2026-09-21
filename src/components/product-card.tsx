@@ -1,8 +1,8 @@
 import { useState, type MouseEvent } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Check, ChevronLeft, ChevronRight, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
-import { KeyButton, KeyLink } from "@/components/key-button";
+import { AfterpayLine } from "@/components/afterpay-mark";
 import { getProduct } from "@/lib/catalog";
 import { cartProductFrom, isInCart, useCart } from "@/lib/cart-store";
 import { categoryBadge } from "@/lib/product-search";
@@ -14,7 +14,7 @@ export function ProductCard({
   className,
   cycleImages = false,
   priority = false,
-  imageFit = "cover",
+  imageFit = "contain",
 }: {
   product: Product;
   className?: string;
@@ -22,12 +22,14 @@ export function ProductCard({
   priority?: boolean;
   imageFit?: "cover" | "contain";
 }) {
+  const navigate = useNavigate();
   const add = useCart((s) => s.add);
   const lines = useCart((s) => s.lines);
   const [added, setAdded] = useState(false);
   const [adding, setAdding] = useState(false);
   const [shot, setShot] = useState(0);
-  const canBuy = product.buyNow && product.amount > 0;
+  const soldOut = Boolean(product.soldOut);
+  const canBuy = !soldOut && product.buyNow && product.amount > 0;
   const inCart = isInCart(product.id, lines);
   const singleOnly = product.maxQty <= 1;
   const alreadyMaxed = inCart && singleOnly;
@@ -49,6 +51,13 @@ export function ProductCard({
   async function handleAdd(e: MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
+    if (soldOut) {
+      void navigate({
+        to: "/listing/$listingId",
+        params: { listingId: product.id },
+      });
+      return;
+    }
     if (adding || alreadyMaxed) return;
     setAdding(true);
     try {
@@ -68,8 +77,13 @@ export function ProductCard({
   }
 
   return (
-    <article className={cn("group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-primary/50", className)}>
-      <div className="relative aspect-square overflow-hidden bg-secondary/40">
+    <article
+      className={cn(
+        "group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card",
+        className,
+      )}
+    >
+      <div className="relative aspect-square overflow-hidden bg-white">
         <Link
           to="/listing/$listingId"
           params={{ listingId: product.id }}
@@ -81,11 +95,11 @@ export function ProductCard({
               alt={product.title}
               width={640}
               height={640}
-              sizes="(max-width: 768px) 80vw, 28vw"
+              sizes="(max-width: 768px) 50vw, 25vw"
               className={cn(
                 "h-full w-full",
                 imageFit === "contain"
-                  ? "object-contain p-3"
+                  ? "object-contain p-4"
                   : "object-cover transition-transform duration-300 group-hover:scale-105",
               )}
               loading={priority ? "eager" : "lazy"}
@@ -98,8 +112,13 @@ export function ProductCard({
             </div>
           )}
         </Link>
-        {product.isNew && (
-          <span className="absolute left-3 top-3 rounded-full bg-accent px-2.5 py-1 text-xs font-semibold text-accent-foreground">
+        {soldOut && (
+          <span className="absolute left-2 top-2 rounded bg-neutral-900 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+            Sold out
+          </span>
+        )}
+        {product.isNew && !soldOut && (
+          <span className="absolute left-2 top-2 rounded bg-accent px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-accent-foreground">
             New
           </span>
         )}
@@ -121,66 +140,47 @@ export function ProductCard({
             >
               <ChevronRight className="size-4" />
             </button>
-            <div className="pointer-events-none absolute bottom-2 left-1/2 z-10 flex -translate-x-1/2 gap-1">
-              {gallery.map((_, i) => (
-                <span
-                  key={i}
-                  className={cn(
-                    "size-1.5 rounded-full",
-                    i === shot ? "bg-accent" : "bg-white/70",
-                  )}
-                />
-              ))}
-            </div>
           </>
         )}
       </div>
 
-      <div className="flex flex-1 flex-col gap-3 p-4">
-        <p className="truncate text-xs uppercase tracking-wide text-muted-foreground">
+      <div className="flex flex-1 flex-col gap-2 p-3 sm:p-4">
+        <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
           {categoryBadge(product)}
         </p>
         <Link
           to="/listing/$listingId"
           params={{ listingId: product.id }}
-          className="line-clamp-2 text-pretty text-sm font-medium leading-snug hover:text-primary"
+          className="line-clamp-2 min-h-[2.5rem] text-pretty text-sm font-semibold leading-snug hover:text-primary"
         >
           {product.title}
         </Link>
 
-        <div className="mt-auto flex items-end justify-between gap-2 pt-2">
-          <div>
-            <p className="font-display text-lg font-bold text-[#ff9a00]">
-              {product.priceLabel}
-            </p>
-            {canBuy ? null : (
-              <p className="text-xs text-muted-foreground">View details</p>
-            )}
-          </div>
-
-          {canBuy ? (
-            <KeyButton
-              size="sm"
-              tone="teal"
-              onClick={handleAdd}
-              disabled={alreadyMaxed || adding}
-            >
-              {added || alreadyMaxed ? (
+        <div className="mt-auto space-y-2 pt-1">
+          <p className="font-display text-xl font-bold tabular-nums text-foreground">
+            {product.priceLabel}
+          </p>
+          {product.amount > 0 ? <AfterpayLine amount={product.amount} /> : null}
+          <button
+            type="button"
+            onClick={handleAdd}
+            disabled={!soldOut && (alreadyMaxed || adding || !canBuy)}
+            className="shop-add"
+          >
+            {soldOut ? (
+              "View item"
+            ) : alreadyMaxed || added ? (
+              <>
                 <Check className="size-4" />
-              ) : (
+                {alreadyMaxed ? "In cart" : "Added"}
+              </>
+            ) : (
+              <>
                 <ShoppingCart className="size-4" />
-              )}
-              {alreadyMaxed ? "In cart" : added ? "Added" : adding ? "Adding" : "Add"}
-            </KeyButton>
-          ) : (
-            <KeyLink
-              size="sm"
-              to="/listing/$listingId"
-              params={{ listingId: product.id }}
-            >
-              View
-            </KeyLink>
-          )}
+                {adding ? "Adding" : "Add to cart"}
+              </>
+            )}
+          </button>
         </div>
       </div>
     </article>

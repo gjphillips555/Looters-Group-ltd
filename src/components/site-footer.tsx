@@ -13,7 +13,8 @@ export function SiteFooter({ onOpenCart }: { onOpenCart: () => void }) {
         <div className="flex w-full max-w-2xl flex-wrap items-center justify-center gap-2">
           <ShopSearch
             className="min-w-0 flex-1"
-            placeholder="Search Products"
+            placeholder="Search products"
+            variant="plain"
           />
           <ThemeToggle desktopOnly />
           <AccountButton />

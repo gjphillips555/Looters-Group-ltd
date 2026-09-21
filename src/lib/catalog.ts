@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { productKind } from "@/lib/product-search";
 import {
   categoryLabel,
   type Catalog,
@@ -294,7 +295,51 @@ function normalize(
       }))
       .filter((a) => a.name && a.value),
     viewCount: typeof merged.ViewCount === "number" ? merged.ViewCount : null,
+    soldOut: false,
   };
+}
+
+function soldOutSamples(live: Product[]): Product[] {
+  const used = new Set<string>();
+  const picks: Product[] = [];
+  const want: Array<"laptops" | "desktops" | "components"> = [
+    "laptops",
+    "desktops",
+    "components",
+  ];
+
+  function clone(p: Product, label: string): Product {
+    const cleanTitle = p.title
+      .replace(/\s*[|\-–]\s*["“]?[LDC][430]["”]?\s*$/i, "")
+      .trim();
+    return {
+      ...p,
+      id: `sold-${p.id}`,
+      title: `${cleanTitle} — ${label}`,
+      soldOut: true,
+      buyNow: false,
+      maxQty: 0,
+      listingUrl: "",
+    };
+  }
+
+  for (const kind of want) {
+    const hit = live.find(
+      (p) => p.photo && p.amount > 0 && productKind(p) === kind && !used.has(p.id),
+    );
+    if (!hit) continue;
+    used.add(hit.id);
+    picks.push(clone(hit, "similar unit"));
+  }
+
+  for (const p of live) {
+    if (picks.length >= 3) break;
+    if (!p.photo || used.has(p.id)) continue;
+    used.add(p.id);
+    picks.push(clone(p, "display model"));
+  }
+
+  return picks;
 }
 
 async function loadCatalogFresh(): Promise<Catalog> {
@@ -302,10 +347,10 @@ async function loadCatalogFresh(): Promise<Catalog> {
     `/Search/General.json?member_listing=${MEMBER_ID}&category=${COMPUTERS_CATEGORY}-&rows=50&sort_order=Default`,
   );
   const list = data.List ?? [];
-  const products = list
+  const live = list
     .filter((listing) => isComputersListing(listing))
     .map((listing) => normalize(listing, null, "large"));
-  return { products, seller: null };
+  return { products: [...live, ...soldOutSamples(live)], seller: null };
 }
 
 async function getCachedCatalog(): Promise<Catalog> {
@@ -332,13 +377,14 @@ export const getCatalog = createServerFn({ method: "GET" }).handler(async () => 
 export const getProduct = createServerFn({ method: "GET" })
   .validator((input: unknown) => {
     const id = String((input as { id?: unknown } | null)?.id ?? "");
-    if (!/^\d+$/.test(id)) throw new Error("Invalid product id");
-    return { id };
+    if (/^sold-\d+$/.test(id) || /^\d+$/.test(id)) return { id };
+    throw new Error("Invalid product id");
   })
   .handler(async ({ data }): Promise<Product | null> => {
     try {
       const catalog = await getCachedCatalog();
       const hit = catalog.products.find((p) => p.id === data.id);
+      if (data.id.startsWith("sold-")) return hit ?? null;
       const detail = await fetchDetail(Number(data.id));
       if (!detail) return hit ?? null;
       const memberId = detail.Member?.MemberId ?? detail.MemberId;

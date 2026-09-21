@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/app-shell";
 import { BrandLogo } from "@/components/brand-logo";
 import { BrandTicker } from "@/components/brand-ticker";
-import { CategoryCarousel } from "@/components/category-carousel";
+import { CategoryNav } from "@/components/category-nav";
 import { KeyLink } from "@/components/key-button";
 import { ProductGrid } from "@/components/product-grid";
 import { RefineBar } from "@/components/refine-bar";
@@ -37,11 +37,12 @@ function Home() {
         Shop Now for great bargains on our range of refurbished Desktop PC's,
         Laptops, Graphics Cards, Components and other Accessories.
       </p>
-      <CategoryCarousel />
+      <CategoryNav />
       <div className="mx-auto mt-3 flex w-full max-w-lg justify-center px-1">
         <ShopSearch
-          className="min-w-0 w-full"
-          placeholder="Search Products"
+          className="w-full"
+          placeholder="Search products"
+          variant="plain"
         />
       </div>
       <Rule />
@@ -183,6 +184,7 @@ function Home() {
         products={catalog.products}
         error={catalog.error}
         unfiltered
+        layout="grid"
       />
 
       <div className="mt-6 flex flex-col items-center gap-12 pb-4 pt-4">

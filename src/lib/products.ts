@@ -29,6 +29,7 @@ export type Product = {
   description: string | null;
   attributes: ProductAttribute[];
   viewCount: number | null;
+  soldOut?: boolean;
 };
 
 export type Seller = {

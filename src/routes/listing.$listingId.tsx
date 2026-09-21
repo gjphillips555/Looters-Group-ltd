@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { Check, ShoppingCart, Truck } from "lucide-react";
 import { toast } from "sonner";
+import { AfterpayLine } from "@/components/afterpay-mark";
 import { AppShell } from "@/components/app-shell";
 import { KeyButton, KeyLink } from "@/components/key-button";
 import { PayPalMark } from "@/components/pay-with-paypal";
@@ -48,7 +49,8 @@ function ProductPage() {
   const [added, setAdded] = useState(false);
   const [shippingId, setShippingId] = useState(line?.shippingId ?? "");
   const [qty, setLocalQty] = useState(1);
-  const canBuy = product.buyNow && product.amount > 0;
+  const canBuy = !product.soldOut && product.buyNow && product.amount > 0;
+  const soldOut = Boolean(product.soldOut);
   const inCart = isInCart(product.id, lines);
   const photos = product.photos.length > 0 ? product.photos : product.photo ? [product.photo] : [];
   const activePhoto = photos[photoIndex] ?? photos[0];
@@ -100,7 +102,7 @@ function ProductPage() {
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
         <div>
           <div className="overflow-hidden rounded-2xl border border-border bg-card">
-            <div className="relative aspect-square bg-secondary/40">
+            <div className="relative aspect-square bg-white">
               {activePhoto ? (
                 <img
                   src={activePhoto}
@@ -109,11 +111,18 @@ function ProductPage() {
                   height={900}
                   fetchPriority="high"
                   decoding="async"
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-contain p-6"
                 />
               ) : (
                 <div className="grid h-full place-items-center text-muted-foreground">
                   No photo
+                </div>
+              )}
+              {soldOut && (
+                <div className="absolute inset-0 grid place-items-center bg-white/70">
+                  <span className="rounded bg-neutral-900 px-4 py-2 text-sm font-bold uppercase tracking-widest text-white">
+                    Sold out
+                  </span>
                 </div>
               )}
             </div>
@@ -155,15 +164,24 @@ function ProductPage() {
           </h1>
 
           <div>
-            <p className="font-display text-3xl font-bold text-accent">
+            <p className="font-display text-3xl font-bold text-foreground">
               {product.priceLabel}
             </p>
+            {product.amount > 0 ? (
+              <div className="mt-2">
+                <AfterpayLine amount={product.amount} className="text-sm" />
+              </div>
+            ) : null}
             <p className="mt-1 text-sm text-muted-foreground">
-              {canBuy ? "GST inclusive" : "Price on request"}
+              {soldOut
+                ? "This unit has sold — similar live stock is on the shop floor."
+                : canBuy
+                  ? "GST inclusive"
+                  : "Price on request"}
             </p>
           </div>
 
-          {needsShipping && (
+          {needsShipping && !soldOut && (
             <fieldset className="rounded-xl border border-border bg-secondary/30 p-4">
               <legend className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 <Truck className="size-3.5" /> Choose shipping
@@ -209,7 +227,16 @@ function ProductPage() {
           )}
 
           <div className="flex w-full flex-col gap-3">
-            {canBuy ? (
+            {soldOut ? (
+              <>
+                <p className="rounded-lg border border-border bg-secondary/40 px-4 py-3 text-sm font-semibold">
+                  Sold out — this similar unit is no longer available.
+                </p>
+                <KeyLink to="/shop" tone="teal" className="kb-spacebar w-full">
+                  Browse live stock
+                </KeyLink>
+              </>
+            ) : canBuy ? (
               <>
                 {product.maxQty > 1 && (
                   <QuantityStepper
@@ -272,7 +299,9 @@ function ProductPage() {
             ) : (
               <KeyLink to="/shop">Back to shop</KeyLink>
             )}
-            <PayWithTradeMe href={product.listingUrl} />
+            {soldOut ? null : (
+              <PayWithTradeMe href={product.listingUrl} />
+            )}
           </div>
         </div>
       </div>

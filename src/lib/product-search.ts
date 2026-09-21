@@ -35,10 +35,36 @@ const TITLE_STAMP: Record<string, ShopCategoryPage> = {
 };
 
 export function categoryFromTitleCode(title: string): ShopCategoryPage | null {
-  const tokens = title.toUpperCase().split(/[^A-Z0-9]+/).filter(Boolean);
-  for (const token of tokens) {
-    const id = TITLE_STAMP[token];
-    if (id) return id;
+  const upper = title.toUpperCase();
+  const found: { id: ShopCategoryPage; index: number }[] = [];
+  for (const [code, id] of Object.entries(TITLE_STAMP) as [string, ShopCategoryPage][]) {
+    const re = new RegExp(`(^|[^A-Z0-9])${code}([^A-Z0-9]|$)`);
+    const m = re.exec(upper);
+    if (m && m.index != null) found.push({ id, index: m.index });
+  }
+  if (found.length === 0) return null;
+  found.sort((a, b) => a.index - b.index);
+  return found[0].id;
+}
+
+function inferFromTradeMe(product: Product): ShopCategoryPage | null {
+  const n = (product.categoryNumber ?? "").replace(/-+$/g, "");
+  const path = (product.categoryPath ?? "")
+    .toLowerCase()
+    .replace(/_/g, "-")
+    .replace(/\s+/g, "");
+  const trimmed = path.startsWith("/") ? path : `/${path}`;
+  if (n.startsWith("0002-0356") || trimmed.includes("/computers/laptops")) {
+    return "laptops";
+  }
+  if (n.startsWith("0002-4715") || trimmed.includes("/computers/desktops")) {
+    return "desktops";
+  }
+  if (
+    n.startsWith("0002-0359") ||
+    /\/computers\/(components|parts|internal-storage|memory|graphics)/.test(trimmed)
+  ) {
+    return "components";
   }
   return null;
 }
@@ -63,9 +89,12 @@ function inferKindFromTitle(title: string): ShopCategoryPage {
   return "components";
 }
 
-/** Stamp L4 / D3 / C0 wins. Unstamped titles fall back to laptop / desktop / parts. */
+/** Stamp L4 / D3 / C0 wins, then Trade Me path, then title words. */
 export function productKind(product: Product): ShopCategoryPage {
-  return categoryFromTitleCode(product.title) ?? inferKindFromTitle(product.title);
+  const stamped = categoryFromTitleCode(product.title);
+  if (stamped) return stamped;
+  if (LAPTOP_PART.test(product.title)) return "components";
+  return inferFromTradeMe(product) ?? inferKindFromTitle(product.title);
 }
 
 export type PriceSort = "default" | "price-asc" | "price-desc";

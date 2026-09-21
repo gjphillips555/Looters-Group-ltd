@@ -1,15 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import {
-  productBrand,
-  productKind,
-} from "./product-search.ts";
+import { afterpayEach, afterpayLabel } from "./afterpay.ts";
+import { productBrand, productKind } from "./product-search.ts";
 import type { Product } from "./products.ts";
 
-function item(
-  title: string,
-  extra: Partial<Product> = {},
-): Product {
+function item(title: string, extra: Partial<Product> = {}): Product {
   return {
     id: "1",
     title,
@@ -59,6 +54,34 @@ test("title stamps L4 D3 C0 beat the fallback", () => {
   assert.equal(kind("(C0) CPU cooler"), "components");
 });
 
+test("quoted stamps in live Trade Me titles still match", () => {
+  assert.equal(
+    kind('HP ProDesk 400 G4 SFF – Intel Core i5 Business Desktop - Refurbished | "D3"'),
+    "desktops",
+  );
+  assert.equal(
+    kind('Dell Latitude 3160 – 8GB RAM, 256GB SSD, Windows 11 Pro – Refurbished | "L4"'),
+    "laptops",
+  );
+  assert.equal(kind('3 Port 1394A PCI Card | "C0"'), "components");
+});
+
+test("Trade Me laptop tree without a stamp is still a laptop", () => {
+  assert.equal(
+    kind("Something odd", {
+      categoryPath: "/Computers/Laptops/Laptops",
+      categoryNumber: "0002-0356-0032",
+    }),
+    "laptops",
+  );
+  assert.equal(
+    kind("Office box", {
+      categoryPath: "/Computers/Desktops",
+      categoryNumber: "0002-4715",
+    }),
+    "desktops",
+  );
+});
 
 test("brand detection from title and attributes", () => {
   assert.equal(productBrand(item("Refurbished HP 11-k009tu Laptop")), "HP");
@@ -71,4 +94,9 @@ test("brand detection from title and attributes", () => {
     ),
     "ASUS",
   );
+});
+
+test("Afterpay splits the price into four instalments", () => {
+  assert.equal(afterpayEach(199.95), 49.99);
+  assert.equal(afterpayLabel(199.95), "Pay 4 instalments of $49.99");
 });

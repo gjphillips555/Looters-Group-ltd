@@ -1,9 +1,10 @@
 import { useEffect } from "react";
 import { AppShell } from "@/components/app-shell";
 import { BrandTicker } from "@/components/brand-ticker";
-import { CategoryCarousel } from "@/components/category-carousel";
+import { CategoryNav } from "@/components/category-nav";
 import { ProductGrid } from "@/components/product-grid";
 import { RefineBar } from "@/components/refine-bar";
+import { ShopSearch } from "@/components/shop-search";
 import {
   productInCategory,
   SHOP_CATEGORIES,
@@ -35,10 +36,10 @@ export function ShopCatalog({
   return (
     <AppShell>
       <BrandTicker />
-      <CategoryCarousel />
-      <div className="mb-4 flex items-center justify-between gap-4">
+      <CategoryNav />
+      <div className="mb-3 mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="font-display text-xl font-semibold">{label}</h1>
-        <p className="text-sm text-muted-foreground">Afterpay Available Now!</p>
+        <ShopSearch className="w-full sm:max-w-md" variant="plain" />
       </div>
       <RefineBar products={products} />
       <ProductGrid

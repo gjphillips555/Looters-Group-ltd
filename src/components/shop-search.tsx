@@ -8,14 +8,16 @@ export function ShopSearch({
   className,
   inputClassName,
   autoFocus = false,
-  placeholder = "Search Products",
+  placeholder = "Search products",
   showButton = true,
+  variant = "key",
 }: {
   className?: string;
   inputClassName?: string;
   autoFocus?: boolean;
   placeholder?: string;
   showButton?: boolean;
+  variant?: "key" | "plain";
 }) {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -23,7 +25,36 @@ export function ShopSearch({
   const setQuery = useProductSearch((s) => s.setQuery);
 
   function goShop() {
-    if (pathname !== "/shop") void navigate({ to: "/shop" });
+    if (pathname === "/" || !pathname.startsWith("/shop")) {
+      void navigate({ to: "/shop" });
+    }
+  }
+
+  if (variant === "plain") {
+    return (
+      <form
+        className={cn("shop-search", className)}
+        onSubmit={(e) => {
+          e.preventDefault();
+          goShop();
+        }}
+      >
+        <Search className="shop-search-icon" />
+        <input
+          value={query}
+          autoFocus={autoFocus}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={placeholder}
+          aria-label="Search products"
+          className={cn("shop-search-input", inputClassName)}
+        />
+        {showButton ? (
+          <button type="submit" className="shop-search-btn">
+            Search
+          </button>
+        ) : null}
+      </form>
+    );
   }
 
   return (
