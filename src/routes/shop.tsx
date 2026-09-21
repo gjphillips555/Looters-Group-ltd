@@ -1,12 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ShopCatalog } from "@/components/shop-catalog";
+import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { getCatalog } from "@/lib/catalog";
 
 export const Route = createFileRoute("/shop")({
   loader: () => getCatalog(),
-  component: ShopPage,
+  component: ShopLayout,
 });
 
-function ShopPage() {
-  return <ShopCatalog catalog={Route.useLoaderData()} category="all" />;
+function ShopLayout() {
+  return <Outlet />;
 }

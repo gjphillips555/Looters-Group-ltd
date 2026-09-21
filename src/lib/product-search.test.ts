@@ -96,6 +96,23 @@ test("brand detection from title and attributes", () => {
   );
 });
 
+test("laptop or desktop in the title beats a wrong Trade Me folder", () => {
+  assert.equal(
+    kind("Refurbished HP 11-k009tu Laptop – Windows 10 – Includes Charger – Warranty", {
+      categoryPath: "/Computers/Components",
+      categoryNumber: "0002-0359",
+    }),
+    "laptops",
+  );
+  assert.equal(
+    kind("Refurbished Dell OptiPlex 9020 – Intel i5 | 8GB RAM | Windows 11", {
+      categoryPath: "/Computers/Components",
+      categoryNumber: "0002-0359",
+    }),
+    "desktops",
+  );
+});
+
 test("Afterpay splits the price into four instalments", () => {
   assert.equal(afterpayEach(199.95), 49.99);
   assert.equal(afterpayLabel(199.95), "Pay 4 instalments of $49.99");

@@ -20,6 +20,7 @@ import { Route as TermsandconditionsRouteImport } from './routes/termsandconditi
 import { Route as HiddenForumRouteImport } from './routes/hidden.forum'
 import { Route as ListingListingIdRouteImport } from './routes/listing.$listingId'
 import { Route as OrderOrderIdRouteImport } from './routes/order.$orderId'
+import { Route as ShopIndexRouteImport } from './routes/shop.index'
 import { Route as ShopCategoryRouteImport } from './routes/shop.$category'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as HiddenLetterTokenRouteImport } from './routes/hidden.letter.$token'
@@ -79,6 +80,11 @@ const OrderOrderIdRoute = OrderOrderIdRouteImport.update({
   path: '/order/$orderId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShopIndexRoute = ShopIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ShopRoute,
+} as any)
 const ShopCategoryRoute = ShopCategoryRouteImport.update({
   id: '/$category',
   path: '/$category',
@@ -108,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/listing/$listingId': typeof ListingListingIdRoute
   '/order/$orderId': typeof OrderOrderIdRoute
   '/shop/$category': typeof ShopCategoryRoute
+  '/shop/': typeof ShopIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/hidden/letter/$token': typeof HiddenLetterTokenRoute
 }
@@ -117,13 +124,13 @@ export interface FileRoutesByTo {
   '/hidden': typeof HiddenRouteWithChildren
   '/login': typeof LoginRoute
   '/overlay': typeof OverlayRoute
-  '/shop': typeof ShopRouteWithChildren
   '/storepolicy': typeof StorepolicyRoute
   '/termsandconditions': typeof TermsandconditionsRoute
   '/hidden/forum': typeof HiddenForumRoute
   '/listing/$listingId': typeof ListingListingIdRoute
   '/order/$orderId': typeof OrderOrderIdRoute
   '/shop/$category': typeof ShopCategoryRoute
+  '/shop': typeof ShopIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/hidden/letter/$token': typeof HiddenLetterTokenRoute
 }
@@ -141,6 +148,7 @@ export interface FileRoutesById {
   '/listing/$listingId': typeof ListingListingIdRoute
   '/order/$orderId': typeof OrderOrderIdRoute
   '/shop/$category': typeof ShopCategoryRoute
+  '/shop/': typeof ShopIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/hidden/letter/$token': typeof HiddenLetterTokenRoute
 }
@@ -159,6 +167,7 @@ export interface FileRouteTypes {
     | '/listing/$listingId'
     | '/order/$orderId'
     | '/shop/$category'
+    | '/shop/'
     | '/api/auth/$'
     | '/hidden/letter/$token'
   fileRoutesByTo: FileRoutesByTo
@@ -168,13 +177,13 @@ export interface FileRouteTypes {
     | '/hidden'
     | '/login'
     | '/overlay'
-    | '/shop'
     | '/storepolicy'
     | '/termsandconditions'
     | '/hidden/forum'
     | '/listing/$listingId'
     | '/order/$orderId'
     | '/shop/$category'
+    | '/shop'
     | '/api/auth/$'
     | '/hidden/letter/$token'
   id:
@@ -191,6 +200,7 @@ export interface FileRouteTypes {
     | '/listing/$listingId'
     | '/order/$orderId'
     | '/shop/$category'
+    | '/shop/'
     | '/api/auth/$'
     | '/hidden/letter/$token'
   fileRoutesById: FileRoutesById
@@ -288,6 +298,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrderOrderIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shop/': {
+      id: '/shop/'
+      path: '/'
+      fullPath: '/shop/'
+      preLoaderRoute: typeof ShopIndexRouteImport
+      parentRoute: typeof ShopRoute
+    }
     '/shop/$category': {
       id: '/shop/$category'
       path: '/$category'
@@ -327,10 +344,12 @@ const HiddenRouteWithChildren =
 
 interface ShopRouteChildren {
   ShopCategoryRoute: typeof ShopCategoryRoute
+  ShopIndexRoute: typeof ShopIndexRoute
 }
 
 const ShopRouteChildren: ShopRouteChildren = {
   ShopCategoryRoute: ShopCategoryRoute,
+  ShopIndexRoute: ShopIndexRoute,
 }
 
 const ShopRouteWithChildren = ShopRoute._addFileChildren(ShopRouteChildren)

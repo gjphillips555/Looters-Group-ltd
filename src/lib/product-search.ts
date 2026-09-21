@@ -89,11 +89,13 @@ function inferKindFromTitle(title: string): ShopCategoryPage {
   return "components";
 }
 
-/** Stamp L4 / D3 / C0 wins, then Trade Me path, then title words. */
+/** Stamp L4 / D3 / C0 wins. Title laptop/desktop words beat Trade Me folders. */
 export function productKind(product: Product): ShopCategoryPage {
   const stamped = categoryFromTitleCode(product.title);
   if (stamped) return stamped;
   if (LAPTOP_PART.test(product.title)) return "components";
+  if (LAPTOP_MACHINE.test(product.title)) return "laptops";
+  if (DESKTOP_MACHINE.test(product.title)) return "desktops";
   return inferFromTradeMe(product) ?? inferKindFromTitle(product.title);
 }
 
