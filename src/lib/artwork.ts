@@ -6,6 +6,7 @@ export const ARTWORK = {
   logoPixel: "/artwork/logo-pixel.png",
   payments: "/artwork/payment-methods.png",
   afterpay: "/artwork/afterpay.webp",
+  afterpayMark: "/artwork/afterpay-mark.png",
   afterpayNews: "/artwork/afterpay-news.webp",
   afterpayTile: "/artwork/afterpay-tile.webp",
   trademe: "/artwork/trademe.png",

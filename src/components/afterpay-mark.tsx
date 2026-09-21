@@ -1,26 +1,16 @@
+import { ARTWORK } from "@/lib/artwork";
 import { cn } from "@/lib/utils";
 
 export function AfterpayMark({ className }: { className?: string }) {
   return (
-    <svg
-      viewBox="0 0 92 22"
-      className={cn("inline-block h-4 w-auto shrink-0", className)}
-      aria-hidden="true"
-      focusable="false"
-    >
-      <rect width="92" height="22" rx="4" fill="#b2fce4" />
-      <text
-        x="46"
-        y="15.5"
-        textAnchor="middle"
-        fill="#111"
-        fontFamily="Arial, Helvetica, sans-serif"
-        fontSize="11.5"
-        fontWeight="700"
-      >
-        afterpay
-      </text>
-    </svg>
+    <img
+      src={ARTWORK.afterpayMark}
+      alt="Afterpay"
+      width={139}
+      height={49}
+      className={cn("inline-block h-5 w-auto shrink-0", className)}
+      decoding="async"
+    />
   );
 }
 
