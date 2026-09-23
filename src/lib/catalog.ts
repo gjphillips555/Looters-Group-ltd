@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { productKind } from "@/lib/product-search";
+import { FLOOR_STOCK } from "@/lib/floor-stock";
 import {
   categoryLabel,
   type Catalog,
@@ -299,49 +299,6 @@ function normalize(
   };
 }
 
-function soldOutSamples(live: Product[]): Product[] {
-  const used = new Set<string>();
-  const picks: Product[] = [];
-  const want: Array<"laptops" | "desktops" | "components"> = [
-    "laptops",
-    "desktops",
-    "components",
-  ];
-
-  function clone(p: Product, label: string): Product {
-    const cleanTitle = p.title
-      .replace(/\s*[|\-–]\s*["“]?[LDC][430]["”]?\s*$/i, "")
-      .trim();
-    return {
-      ...p,
-      id: `sold-${p.id}`,
-      title: `${cleanTitle} — ${label}`,
-      soldOut: true,
-      buyNow: false,
-      maxQty: 0,
-      listingUrl: "",
-    };
-  }
-
-  for (const kind of want) {
-    const hit = live.find(
-      (p) => p.photo && p.amount > 0 && productKind(p) === kind && !used.has(p.id),
-    );
-    if (!hit) continue;
-    used.add(hit.id);
-    picks.push(clone(hit, "similar unit"));
-  }
-
-  for (const p of live) {
-    if (picks.length >= 3) break;
-    if (!p.photo || used.has(p.id)) continue;
-    used.add(p.id);
-    picks.push(clone(p, "display model"));
-  }
-
-  return picks;
-}
-
 async function loadCatalogFresh(): Promise<Catalog> {
   const data = await tmGet<TradeMeSearchResponse>(
     `/Search/General.json?member_listing=${MEMBER_ID}&category=${COMPUTERS_CATEGORY}-&rows=50&sort_order=Default`,
@@ -350,7 +307,7 @@ async function loadCatalogFresh(): Promise<Catalog> {
   const live = list
     .filter((listing) => isComputersListing(listing))
     .map((listing) => normalize(listing, null, "large"));
-  return { products: [...live, ...soldOutSamples(live)], seller: null };
+  return { products: [...live, ...FLOOR_STOCK], seller: null };
 }
 
 async function getCachedCatalog(): Promise<Catalog> {

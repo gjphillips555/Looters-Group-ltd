@@ -174,7 +174,7 @@ function ProductPage() {
             ) : null}
             <p className="mt-1 text-sm text-muted-foreground">
               {soldOut
-                ? "This unit has sold — similar live stock is on the shop floor."
+                ? "Sold out. This one has already gone."
                 : canBuy
                   ? "GST inclusive"
                   : "Price on request"}
