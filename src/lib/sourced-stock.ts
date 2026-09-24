@@ -8,7 +8,7 @@ const SHIP: ShippingOption[] = [
   { id: "south", label: "South Island courier", price: 12.5 },
 ];
 
-type Kind = "batteries" | "ink";
+type Kind = "batteries" | "ink" | "components";
 
 type Row = {
   id: string;
@@ -19,6 +19,7 @@ type Row = {
   brand: string;
   fit: string;
   genuine?: boolean;
+  shipping?: ShippingOption[];
 };
 
 const PHOTO = {
@@ -38,7 +39,16 @@ const PHOTO = {
   lc431y: "/artwork/sourced/lc431y.jpg",
   lc3319: "/artwork/sourced/lc3319.jpg",
   lc3313: "/artwork/sourced/lc3313.jpg",
+  gt710: "/artwork/sourced/gt710.jpg",
+  rtx3050: "/artwork/sourced/rtx3050.jpg",
+  b570: "/artwork/sourced/b570.jpg",
+  rx9060: "/artwork/sourced/rx9060.jpg",
 } as const;
+
+const GPU_SHIP: ShippingOption[] = [
+  { id: "north", label: "North Island courier", price: 15 },
+  { id: "south", label: "South Island courier", price: 22 },
+];
 
 /**
  * Cheap NZ lines we can reorder (Sunny Way Tech batteries/chargers, Good Egg ink).
@@ -67,6 +77,11 @@ const ROWS: Row[] = [
   { id: "src-9420", kind: "batteries", cost: 36, photo: "dellCharger", brand: "Dell", fit: "Dell 65W USB-C", title: "Compatible Laptop Charger for Dell 65W USB-C" },
   { id: "src-9421", kind: "batteries", cost: 25.2, photo: "lenovoCharger", brand: "Lenovo", fit: "Lenovo 45W 4.0×1.7mm", title: "Compatible Laptop Charger for Lenovo 45W 20V 4.0×1.7mm" },
   { id: "src-9422", kind: "batteries", cost: 25.2, photo: "lenovoCharger", brand: "Lenovo", fit: "Lenovo 65W 4.0×1.7mm", title: "Compatible Laptop Charger for Lenovo 65W 20V 4.0×1.7mm" },
+
+  { id: "src-9601", kind: "components", cost: 99, photo: "gt710", brand: "Gigabyte", fit: "Extra monitor or an old PC", title: "Gigabyte GeForce GT 710 2GB Graphics Card", shipping: GPU_SHIP },
+  { id: "src-9602", kind: "components", cost: 439, photo: "rtx3050", brand: "MSI", fit: "1080p", title: "MSI GeForce RTX 3050 Ventus 2X OC 6GB Graphics Card", shipping: GPU_SHIP },
+  { id: "src-9603", kind: "components", cost: 479, photo: "b570", brand: "ASRock", fit: "1080p and 1440p", title: "ASRock Intel Arc B570 Challenger OC 10GB Graphics Card", shipping: GPU_SHIP },
+  { id: "src-9604", kind: "components", cost: 769, photo: "rx9060", brand: "XFX", fit: "1440p", title: "XFX Swift AMD Radeon RX 9060 XT 16GB Graphics Card", shipping: GPU_SHIP },
 
   { id: "src-9501", kind: "ink", cost: 6.56, photo: "lc38", brand: "Brother", fit: "Brother LC38 / LC67", title: "Compatible Brother LC38 LC67 Black Ink Cartridge" },
   { id: "src-9502", kind: "ink", cost: 9.06, photo: "lc233", brand: "Brother", fit: "Brother LC233", title: "Compatible Brother LC233 Black Ink Cartridge" },
@@ -98,6 +113,12 @@ const PATH = {
     name: "Ink",
     stamp: "I1",
   },
+  components: {
+    path: "/Computers/Components",
+    number: "0002-gpu",
+    name: "Components",
+    stamp: "C0",
+  },
 } as const;
 
 function toProduct(row: Row): Product {
@@ -119,15 +140,18 @@ function toProduct(row: Row): Product {
     suburb: null,
     listingUrl: "",
     isNew: false,
-    shipping: SHIP,
+    shipping: row.shipping ?? SHIP,
     maxQty: row.kind === "ink" ? 12 : 4,
-    description: genuine
-      ? `Genuine ${row.brand} ${row.fit}. Ordered in when you buy and posted from Wellington. If we cannot get this exact item, you get a full refund before it ships.`
-      : `Compatible ${row.brand} replacement for ${row.fit}. Not a genuine OEM part. Ordered in when you buy and posted from Wellington. If we cannot get this exact part, you get a full refund before it ships.`,
+    description:
+      row.kind === "components"
+        ? `New ${row.brand} card, bought in from a New Zealand shop when you order and posted from Wellington. ${row.id === "src-9601" ? "This is a basic display card for an extra screen or an old PC, not for modern games. " : ""}If that exact card has already sold there, you get a full refund before it ships.`
+        : genuine
+          ? `Genuine ${row.brand} ${row.fit}. Ordered in when you buy and posted from Wellington. If we cannot get this exact item, you get a full refund before it ships.`
+          : `Compatible ${row.brand} replacement for ${row.fit}. Not a genuine OEM part. Ordered in when you buy and posted from Wellington. If we cannot get this exact part, you get a full refund before it ships.`,
     attributes: [
       { name: "Brand", value: row.brand },
       { name: "Fits", value: row.fit },
-      { name: "Type", value: genuine ? "Genuine" : "Compatible" },
+      { name: "Type", value: row.kind === "components" ? "New" : genuine ? "Genuine" : "Compatible" },
     ],
     viewCount: null,
     soldOut: false,

@@ -204,6 +204,7 @@ const BRAND_DETECT = [
   "Elgato",
   "EVGA",
   "ASRock",
+  "XFX",
   "Sapphire",
   "PowerColor",
   "Zotac",
