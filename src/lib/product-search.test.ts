@@ -40,7 +40,7 @@ test("unstamped titles still split laptop / desktop / parts", () => {
   assert.equal(kind("Dell Latitude 7490 i5 8GB"), "laptops");
   assert.equal(kind("Refurbished HP 11-k009tu Laptop – Windows 10"), "laptops");
   assert.equal(kind("HP ProDesk 400 G4 SFF Desktop"), "desktops");
-  assert.equal(kind("HP Laptop Charger 19V 65W"), "components");
+  assert.equal(kind("HP Laptop Charger 19V 65W"), "batteries");
 });
 
 test("title stamps L4 D3 C0 beat the fallback", () => {
@@ -110,6 +110,22 @@ test("laptop or desktop in the title beats a wrong Trade Me folder", () => {
       categoryNumber: "0002-0359",
     }),
     "desktops",
+  );
+});
+
+test("battery and ink titles stay out of laptops", () => {
+  assert.equal(
+    kind('Compatible Laptop Battery for HP 240 245 255 G4 – HS04 | "B4"'),
+    "batteries",
+  );
+  assert.equal(kind("Compatible Laptop Charger for Dell 65W USB-C"), "batteries");
+  assert.equal(
+    kind('Compatible Brother LC233 Ink Cartridges – 4 Colour Value Pack | "I1"'),
+    "ink",
+  );
+  assert.equal(
+    kind("Refurbished HP 11-k009tu Laptop – Windows 10 – Includes Charger – Warranty"),
+    "laptops",
   );
 });
 

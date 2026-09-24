@@ -299,7 +299,7 @@ function ProductPage() {
             ) : (
               <KeyLink to="/shop">Back to shop</KeyLink>
             )}
-            {soldOut ? null : (
+            {soldOut || !product.listingUrl ? null : (
               <PayWithTradeMe href={product.listingUrl} />
             )}
           </div>

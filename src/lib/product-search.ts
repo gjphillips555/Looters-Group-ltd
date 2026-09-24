@@ -1,22 +1,36 @@
 import { create } from "zustand";
 import type { Product } from "@/lib/products";
 
-export type ShopCategoryId = "desktops" | "laptops" | "components" | "all";
+export type ShopCategoryId =
+  | "desktops"
+  | "laptops"
+  | "components"
+  | "batteries"
+  | "ink"
+  | "all";
 
 export const SHOP_CATEGORIES: { id: ShopCategoryId; label: string }[] = [
   { id: "desktops", label: "Desktops" },
   { id: "laptops", label: "Laptops" },
   { id: "components", label: "Components" },
+  { id: "batteries", label: "Batteries" },
+  { id: "ink", label: "Ink" },
   { id: "all", label: "All products" },
 ];
 
-export const SHOP_CATEGORY_PAGES = ["desktops", "laptops", "components"] as const;
+export const SHOP_CATEGORY_PAGES = [
+  "desktops",
+  "laptops",
+  "components",
+  "batteries",
+  "ink",
+] as const;
 export type ShopCategoryPage = (typeof SHOP_CATEGORY_PAGES)[number];
 
 /**
  * First letter of the category + a digit that looks like the 2nd letter.
- * Laptops LA→L4, Desktops DE→D3, Components CO→C0.
- * Looked up as its own token in the Trade Me title (punctuation ignored).
+ * Laptops LA→L4, Desktops DE→D3, Components CO→C0,
+ * Batteries BA→B4. Ink has no digit-like second letter, so I1.
  */
 export const TITLE_CATEGORY_CODES: {
   id: ShopCategoryPage;
@@ -26,12 +40,16 @@ export const TITLE_CATEGORY_CODES: {
   { id: "laptops", label: "Laptops", sample: "L4" },
   { id: "desktops", label: "Desktops", sample: "D3" },
   { id: "components", label: "Components", sample: "C0" },
+  { id: "batteries", label: "Batteries", sample: "B4" },
+  { id: "ink", label: "Ink", sample: "I1" },
 ];
 
 const TITLE_STAMP: Record<string, ShopCategoryPage> = {
   L4: "laptops",
   D3: "desktops",
   C0: "components",
+  B4: "batteries",
+  I1: "ink",
 };
 
 export function categoryFromTitleCode(title: string): ShopCategoryPage | null {
@@ -76,7 +94,13 @@ const DESKTOP_MACHINE =
   /\b(desktop|optiplex|prodesk|elitedesk|thinkcentre|thinkstation|sff\b|usff\b|mini-?pc|\bnuc\b|mac mini|mac studio|\bimac\b|mac pro|gaming pc|gaming desktop|\btower\b|workstation|hp 290|hp 280|hp 400 g|hp 600 g|hp 800 g)\b/i;
 
 const LAPTOP_PART =
-  /\b((laptop|notebook)s?\s+(bag|sleeve|backpack|case|charger|adapter|adaptor|battery|stand|cooler)|((bag|sleeve|backpack|case|charger|adapter|adaptor)\b.{0,24}\b(laptop|notebook)))\b/i;
+  /\b((laptop|notebook)s?\s+(bag|sleeve|backpack|case|stand|cooler)|((bag|sleeve|backpack|case)\b.{0,24}\b(laptop|notebook)))\b/i;
+
+const INK_ITEM =
+  /\b(ink cartridges?|toner|inkjet|megatank|maintenance cartridge)\b/i;
+
+const BATTERY_ITEM =
+  /\b((laptop|notebook)\s+batter(y|ies)|laptop charger|ac adapter)\b/i;
 
 function inferKindFromTitle(title: string): ShopCategoryPage {
   if (LAPTOP_PART.test(title)) return "components";
@@ -89,10 +113,12 @@ function inferKindFromTitle(title: string): ShopCategoryPage {
   return "components";
 }
 
-/** Stamp L4 / D3 / C0 wins. Title laptop/desktop words beat Trade Me folders. */
+/** Stamp wins. Battery and ink phrases beat the word "laptop" in the title. */
 export function productKind(product: Product): ShopCategoryPage {
   const stamped = categoryFromTitleCode(product.title);
   if (stamped) return stamped;
+  if (INK_ITEM.test(product.title)) return "ink";
+  if (BATTERY_ITEM.test(product.title)) return "batteries";
   if (LAPTOP_PART.test(product.title)) return "components";
   if (LAPTOP_MACHINE.test(product.title)) return "laptops";
   if (DESKTOP_MACHINE.test(product.title)) return "desktops";
@@ -123,6 +149,10 @@ export function categoryBadge(product: Product) {
 const BRAND_DETECT = [
   "HP",
   "Hewlett Packard",
+  "Brother",
+  "Canon",
+  "Epson",
+  "Lexmark",
   "Dell",
   "Lenovo",
   "ThinkPad",

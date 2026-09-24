@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { FLOOR_STOCK } from "@/lib/floor-stock";
+import { SOURCED_STOCK } from "@/lib/sourced-stock";
 import {
   categoryLabel,
   type Catalog,
@@ -307,7 +308,7 @@ async function loadCatalogFresh(): Promise<Catalog> {
   const live = list
     .filter((listing) => isComputersListing(listing))
     .map((listing) => normalize(listing, null, "large"));
-  return { products: [...live, ...FLOOR_STOCK], seller: null };
+  return { products: [...live, ...SOURCED_STOCK, ...FLOOR_STOCK], seller: null };
 }
 
 async function getCachedCatalog(): Promise<Catalog> {
@@ -334,14 +335,14 @@ export const getCatalog = createServerFn({ method: "GET" }).handler(async () => 
 export const getProduct = createServerFn({ method: "GET" })
   .validator((input: unknown) => {
     const id = String((input as { id?: unknown } | null)?.id ?? "");
-    if (/^sold-\d+$/.test(id) || /^\d+$/.test(id)) return { id };
+    if (/^(sold|src)-\d+$/.test(id) || /^\d+$/.test(id)) return { id };
     throw new Error("Invalid product id");
   })
   .handler(async ({ data }): Promise<Product | null> => {
     try {
       const catalog = await getCachedCatalog();
       const hit = catalog.products.find((p) => p.id === data.id);
-      if (data.id.startsWith("sold-")) return hit ?? null;
+      if (data.id.startsWith("sold-") || data.id.startsWith("src-")) return hit ?? null;
       const detail = await fetchDetail(Number(data.id));
       if (!detail) return hit ?? null;
       const memberId = detail.Member?.MemberId ?? detail.MemberId;
