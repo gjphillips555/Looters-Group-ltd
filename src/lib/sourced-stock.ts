@@ -1,7 +1,5 @@
+import { markedUp } from "@/lib/charm";
 import { nzd, type Product, type ShippingOption } from "@/lib/products";
-
-/** Advertised NZ supply price + 7%. Not shown to customers. */
-const sell = (cost: number) => Math.round(cost * 107) / 100;
 
 const SHIP: ShippingOption[] = [
   { id: "north", label: "North Island courier", price: 8.5 },
@@ -78,10 +76,10 @@ const ROWS: Row[] = [
   { id: "src-9421", kind: "batteries", cost: 25.2, photo: "lenovoCharger", brand: "Lenovo", fit: "Lenovo 45W 4.0×1.7mm", title: "Compatible Laptop Charger for Lenovo 45W 20V 4.0×1.7mm" },
   { id: "src-9422", kind: "batteries", cost: 25.2, photo: "lenovoCharger", brand: "Lenovo", fit: "Lenovo 65W 4.0×1.7mm", title: "Compatible Laptop Charger for Lenovo 65W 20V 4.0×1.7mm" },
 
-  { id: "src-9601", kind: "components", cost: 99, photo: "gt710", brand: "Gigabyte", fit: "Extra monitor or an old PC", title: "Gigabyte GeForce GT 710 2GB Graphics Card", shipping: GPU_SHIP },
-  { id: "src-9602", kind: "components", cost: 439, photo: "rtx3050", brand: "MSI", fit: "1080p", title: "MSI GeForce RTX 3050 Ventus 2X OC 6GB Graphics Card", shipping: GPU_SHIP },
-  { id: "src-9603", kind: "components", cost: 479, photo: "b570", brand: "ASRock", fit: "1080p and 1440p", title: "ASRock Intel Arc B570 Challenger OC 10GB Graphics Card", shipping: GPU_SHIP },
-  { id: "src-9604", kind: "components", cost: 769, photo: "rx9060", brand: "XFX", fit: "1440p", title: "XFX Swift AMD Radeon RX 9060 XT 16GB Graphics Card", shipping: GPU_SHIP },
+  { id: "src-9601", kind: "components", cost: 113.85, photo: "gt710", brand: "Gigabyte", fit: "Extra monitor or an old PC", title: "Gigabyte GeForce GT 710 2GB Graphics Card", shipping: GPU_SHIP },
+  { id: "src-9602", kind: "components", cost: 504.85, photo: "rtx3050", brand: "MSI", fit: "1080p", title: "MSI GeForce RTX 3050 Ventus 2X OC 6GB Graphics Card", shipping: GPU_SHIP },
+  { id: "src-9603", kind: "components", cost: 550.85, photo: "b570", brand: "ASRock", fit: "1080p and 1440p", title: "ASRock Intel Arc B570 Challenger OC 10GB Graphics Card", shipping: GPU_SHIP },
+  { id: "src-9604", kind: "components", cost: 884.35, photo: "rx9060", brand: "XFX", fit: "1440p", title: "XFX Swift AMD Radeon RX 9060 XT 16GB Graphics Card", shipping: GPU_SHIP },
 
   { id: "src-9501", kind: "ink", cost: 6.56, photo: "lc38", brand: "Brother", fit: "Brother LC38 / LC67", title: "Compatible Brother LC38 LC67 Black Ink Cartridge" },
   { id: "src-9502", kind: "ink", cost: 9.06, photo: "lc233", brand: "Brother", fit: "Brother LC233", title: "Compatible Brother LC233 Black Ink Cartridge" },
@@ -123,7 +121,7 @@ const PATH = {
 
 function toProduct(row: Row): Product {
   const cat = PATH[row.kind];
-  const amount = sell(row.cost);
+  const amount = markedUp(row.cost);
   const genuine = Boolean(row.genuine);
   return {
     id: row.id,

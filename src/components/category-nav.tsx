@@ -37,6 +37,9 @@ export function CategoryNav() {
           </Link>
         );
       })}
+      <Link to="/build" className={cn("cat-nav-item", pathname === "/build" && "is-active")}>
+        Build a PC
+      </Link>
     </nav>
   );
 }

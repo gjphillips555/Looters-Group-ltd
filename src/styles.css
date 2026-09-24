@@ -1914,3 +1914,130 @@ html.light .kb-key.kb-search-key .kb-cap {
   cursor: pointer;
 }
 
+.builder-orbit {
+  position: relative;
+  min-height: 760px;
+  margin-top: 1.5rem;
+}
+.builder-stage {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  z-index: 1;
+  width: min(420px, 46vw);
+  height: 340px;
+  transform: translate(-50%, -50%);
+  cursor: grab;
+  touch-action: none;
+}
+.builder-drag {
+  margin: 0 0 0.4rem;
+  text-align: center;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--kb-orange, #ff9a00);
+}
+.builder-yaw {
+  height: 280px;
+  perspective: 900px;
+  transform-style: preserve-3d;
+}
+.pc3 {
+  position: relative;
+  width: 210px;
+  height: 250px;
+  margin: 0 auto;
+  transform-style: preserve-3d;
+}
+.pc3.is-itx {
+  width: 170px;
+  height: 180px;
+}
+.pc3 .face {
+  position: absolute;
+  inset: 0;
+  border: 2px solid #2a2a2a;
+  background: #1b1c1e;
+  box-shadow: inset 0 0 0 3px #3a3a3a;
+}
+.pc3.white .face { background: #e7e7e4; border-color: #bfbfbf; }
+.pc3.pink .face { background: #e7a0b4; border-color: #c56d86; }
+.pc3 .front { transform: translateZ(70px); }
+.pc3 .back { transform: rotateY(180deg) translateZ(70px); }
+.pc3 .left { width: 140px; transform: rotateY(-90deg) translateZ(70px); }
+.pc3 .right { width: 140px; right: auto; transform: rotateY(90deg) translateZ(140px); background: rgba(180, 220, 230, 0.18); }
+.pc3.is-itx .left, .pc3.is-itx .right { width: 110px; }
+.pc3.is-itx .front, .pc3.is-itx .back { transform: translateZ(55px); }
+.pc3.is-itx .back { transform: rotateY(180deg) translateZ(55px); }
+.pc3.is-itx .left { transform: rotateY(-90deg) translateZ(55px); }
+.pc3.is-itx .right { transform: rotateY(90deg) translateZ(115px); }
+.pc3 .top { height: 140px; transform: rotateX(90deg) translateZ(70px); }
+.pc3 .bottom { height: 140px; transform: rotateX(-90deg) translateZ(180px); }
+.pc3.is-rgb .right { box-shadow: inset 0 0 24px rgba(0, 210, 190, 0.45); }
+.pc3 .mobo { position: absolute; right: 8px; top: 16px; bottom: 28px; width: 62%; background: #16302a; border-radius: 4px; }
+.pc3 .cpu { position: absolute; right: 28px; top: 42px; width: 28px; height: 28px; background: #d7d7d7; }
+.pc3 .tower { position: absolute; right: 22px; top: 28px; width: 40px; height: 70px; background: #4a4a4a; }
+.pc3 .rad { position: absolute; left: 6px; top: 10px; width: 18px; height: 70%; background: #8fd0c8; }
+.pc3 .gpu { position: absolute; left: 8px; bottom: 34px; height: 16px; background: #222; border-top: 2px solid var(--kb-orange, #ff9a00); }
+.pc3 .rams { position: absolute; right: 18px; top: 78px; width: 34px; height: 42px; background: repeating-linear-gradient(90deg, #111 0 6px, transparent 6px 10px); }
+.pc3 .rams.rgb { background: repeating-linear-gradient(90deg, #19c3b4 0 6px, transparent 6px 10px); }
+.pc3 .fans { position: absolute; left: 6px; top: 12px; bottom: 40px; width: 14px; border-radius: 99px; border: 3px solid #8fd0c8; }
+.pc3 .psu { position: absolute; left: 8px; right: 8px; bottom: 8px; height: 22px; background: #111; }
+.builder-node {
+  position: absolute;
+  width: 190px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+}
+.builder-node select {
+  width: 100%;
+  border: 1px solid #cfcfcf;
+  border-radius: 8px;
+  background: #fff;
+  padding: 0.35rem;
+}
+.builder-shot {
+  position: relative;
+  height: 84px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #f4f4f2;
+}
+.builder-shot img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.builder-shot .is-ghost { filter: grayscale(1); opacity: 0.45; }
+.builder-shot .is-under { filter: grayscale(1); opacity: 0.2; }
+.node-case { left: 50%; top: 0; transform: translateX(-50%); }
+.node-cpu { left: 0; top: 8%; }
+.node-board { right: 0; top: 8%; }
+.node-cooler { left: 0; top: 38%; }
+.node-ram { right: 0; top: 38%; }
+.node-gpu { right: 0; top: 66%; }
+.node-psu { left: 0; top: 66%; }
+.node-fans { left: 50%; bottom: 0; transform: translateX(-50%); }
+.builder-total {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+.builder-total p:first-child {
+  font-size: 1.4rem;
+  color: var(--kb-orange, #ff9a00);
+}
+.builder-total p:nth-child(2) { max-width: 36rem; font-size: 0.8rem; }
+@media (max-width: 860px) {
+  .builder-orbit { min-height: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+  .builder-stage, .builder-node { position: static; width: 100%; transform: none; }
+  .builder-stage { height: 300px; }
+}
+
+
