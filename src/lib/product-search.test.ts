@@ -40,7 +40,7 @@ test("unstamped titles still split laptop / desktop / parts", () => {
   assert.equal(kind("Dell Latitude 7490 i5 8GB"), "laptops");
   assert.equal(kind("Refurbished HP 11-k009tu Laptop – Windows 10"), "laptops");
   assert.equal(kind("HP ProDesk 400 G4 SFF Desktop"), "desktops");
-  assert.equal(kind("HP Laptop Charger 19V 65W"), "batteries");
+  assert.equal(kind("HP Laptop Charger 19V 65W"), "cables");
 });
 
 test("title stamps L4 D3 C0 beat the fallback", () => {
@@ -118,11 +118,23 @@ test("battery and ink titles stay out of laptops", () => {
     kind('Compatible Laptop Battery for HP 240 245 255 G4 – HS04 | "B4"'),
     "batteries",
   );
-  assert.equal(kind("Compatible Laptop Charger for Dell 65W USB-C"), "batteries");
+  assert.equal(kind("Compatible Laptop Charger for Dell 65W USB-C"), "cables");
   assert.equal(
     kind('Compatible Brother LC233 Ink Cartridges – 4 Colour Value Pack | "I1"'),
     "ink",
   );
+  assert.equal(
+    kind("Refurbished HP 11-k009tu Laptop – Windows 10 – Includes Charger – Warranty"),
+    "laptops",
+  );
+});
+
+test("monitors, cables and gift cards use their own stamps", () => {
+  assert.equal(kind('Dell 24" Full HD Monitor | "M0"'), "monitors");
+  assert.equal(kind("HDMI Cable 2m | \"C4\""), "cables");
+  assert.equal(kind("Looters Computas Gift Card | \"G1\""), "gift-cards");
+  assert.equal(kind("Cat6 Ethernet Cable 2m"), "cables");
+  assert.equal(kind("Dell 24 inch Monitor"), "monitors");
   assert.equal(
     kind("Refurbished HP 11-k009tu Laptop – Windows 10 – Includes Charger – Warranty"),
     "laptops",

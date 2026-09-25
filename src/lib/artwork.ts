@@ -2,6 +2,8 @@
 export const ARTWORK = {
   logoDark: "/artwork/logo-mark.png",
   logoLight: "/artwork/logo-mark.png",
+  logoOrange: "/artwork/logo-orange.png",
+  logoPurple: "/artwork/logo-purple.png",
   logoOled: "/artwork/logo-oled.png",
   logoPixel: "/artwork/logo-pixel.png",
   payments: "/artwork/payment-methods.png",

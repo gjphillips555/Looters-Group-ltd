@@ -7,17 +7,24 @@ import { AppShell } from "@/components/app-shell";
 import { KeyButton, KeyLink } from "@/components/key-button";
 import { PayPalMark } from "@/components/pay-with-paypal";
 import { PayWithTradeMe } from "@/components/pay-with-trademe";
+import { ProductCard } from "@/components/product-card";
 import { QuantityStepper } from "@/components/quantity-stepper";
-import { getProduct } from "@/lib/catalog";
+import { getCatalog, getProduct } from "@/lib/catalog";
 import { cartProductFrom, isInCart, useCart } from "@/lib/cart-store";
 import { cartCheckoutSearch } from "@/lib/orders";
-import { nzd } from "@/lib/products";
+import { nzd, type Product } from "@/lib/products";
+import { similarAvailable } from "@/lib/product-search";
 
 export const Route = createFileRoute("/listing/$listingId")({
   loader: async ({ params }) => {
     const product = await getProduct({ data: { id: params.listingId } });
     if (!product) throw notFound();
-    return product;
+    let suggestions: Product[] = [];
+    if (product.soldOut) {
+      const catalog = await getCatalog();
+      suggestions = similarAvailable(product, catalog.products);
+    }
+    return { product, suggestions };
   },
   component: ProductPage,
   notFoundComponent: ProductNotFound,
@@ -38,7 +45,7 @@ function ProductNotFound() {
 }
 
 function ProductPage() {
-  const product = Route.useLoaderData();
+  const { product, suggestions } = Route.useLoaderData();
   const navigate = useNavigate();
   const add = useCart((s) => s.add);
   const setQty = useCart((s) => s.setQty);
@@ -305,6 +312,25 @@ function ProductPage() {
           </div>
         </div>
       </div>
+
+      {soldOut && (
+        <section className="mt-10">
+          <h2 className="mb-4 font-display text-lg font-semibold">
+            Still in stock, same sort of thing
+          </h2>
+          {suggestions.length > 0 ? (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {suggestions.map((item) => (
+                <ProductCard key={item.id} product={item} imageFit="contain" />
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Nothing else like this is available right now.
+            </p>
+          )}
+        </section>
+      )}
 
       {product.description && (
         <section className="mt-10 rounded-2xl border border-border bg-card p-6 sm:p-8">

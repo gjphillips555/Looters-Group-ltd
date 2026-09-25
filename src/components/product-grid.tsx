@@ -79,7 +79,7 @@ export function ProductGrid({
   if (filtered.length === 0) {
     return (
       <div className="py-16 text-center text-sm text-muted-foreground">
-        No products match that search.
+        No products match that.
       </div>
     );
   }

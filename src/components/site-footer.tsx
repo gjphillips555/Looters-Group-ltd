@@ -4,7 +4,7 @@ import { CartButton } from "@/components/cart-button";
 import { LegalLinks } from "@/components/legal-links";
 import { ShopSearch } from "@/components/shop-search";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { SITE_DOMAIN, SITE_URL } from "@/lib/site";
+import { SITE_URL } from "@/lib/site";
 
 export function SiteFooter({ onOpenCart }: { onOpenCart: () => void }) {
   return (
@@ -46,11 +46,16 @@ export function SiteFooter({ onOpenCart }: { onOpenCart: () => void }) {
           </a>
         </p>
         <LegalLinks className="text-neutral-600 [&_a]:text-neutral-600 [&_a:hover]:text-neutral-900" />
-        <a
-          href={SITE_URL}
-          className="text-[11px] font-medium tracking-wide text-neutral-500 underline-offset-2 hover:text-neutral-900 hover:underline"
-        >
-          {SITE_DOMAIN}
+        <a href={SITE_URL} className="mt-2 block" aria-label="Looters Computas">
+          <img
+            src={ARTWORK.logoPurple}
+            alt="Looters Computas"
+            width={1191}
+            height={433}
+            className="mx-auto h-auto w-full max-w-xs"
+            loading="lazy"
+            decoding="async"
+          />
         </a>
       </div>
     </footer>

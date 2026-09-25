@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/app-shell";
 import { BrandLogo } from "@/components/brand-logo";
+import { BrandPicker } from "@/components/brand-picker";
 import { BrandTicker } from "@/components/brand-ticker";
 import { CategoryNav } from "@/components/category-nav";
 import { KeyLink } from "@/components/key-button";
@@ -37,6 +38,7 @@ function Home() {
         Shop Now for great bargains on our range of refurbished Desktop PC's,
         Laptops, Graphics Cards, Components and other Accessories.
       </p>
+      <BrandPicker />
       <CategoryNav />
       <div className="mx-auto mt-3 flex w-full max-w-lg justify-center px-1">
         <ShopSearch
@@ -173,7 +175,7 @@ function Home() {
         </NewsCard>
       </div>
 
-      <div className="mb-4 mt-10 flex items-center justify-between gap-4">
+      <div id="browse" className="mb-4 mt-10 flex items-center justify-between gap-4">
         <h2 className="font-display text-xl font-semibold">Browse the loot</h2>
         <p className="text-sm text-muted-foreground">
           Afterpay Available Now!

@@ -13,15 +13,35 @@ export function BrandLogo({
   className?: string;
   variant?: "mark" | "oled";
 }) {
+  if (variant === "oled") {
+    return (
+      <img
+        src={ARTWORK.logoOled}
+        alt="Looters Computas"
+        width={866}
+        height={288}
+        decoding="async"
+        className={className}
+      />
+    );
+  }
   return (
     <img
-      src={variant === "oled" ? ARTWORK.logoOled : ARTWORK.logoDark}
+      src={ARTWORK.logoOrange}
       alt="Looters Computas"
-      width={866}
-      height={288}
+      width={1190}
+      height={436}
       decoding="async"
       className={className}
     />
+  );
+}
+
+export function SiteDomainLine({ className = "" }: { className?: string }) {
+  return (
+    <span className={className}>
+      <span className="site-domain-cap">L</span>ooters<span className="site-domain-cap">C</span>omputas.online
+    </span>
   );
 }
 

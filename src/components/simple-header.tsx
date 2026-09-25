@@ -4,7 +4,6 @@ import { BrandLogo } from "@/components/brand-logo";
 import { CartButton } from "@/components/cart-button";
 import { ShopSearch } from "@/components/shop-search";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { SITE_DOMAIN } from "@/lib/site";
 
 export function SimpleHeader({
   onOpenCart,
@@ -19,10 +18,7 @@ export function SimpleHeader({
         <div className="header-key-cap header-key-cap-solid">
           <div className="relative mx-auto flex max-w-6xl items-center gap-2 px-3 py-2 sm:gap-3 sm:px-6">
             <Link to="/" className="flex shrink-0 flex-col items-center" aria-label="Looters Computas home">
-              <BrandLogo className="h-10 w-auto max-w-[180px] object-contain sm:h-12 sm:max-w-[220px]" />
-              <span className="text-[9px] font-medium tracking-wide text-muted-foreground">
-                {SITE_DOMAIN}
-              </span>
+              <BrandLogo className="h-12 w-auto max-w-[210px] object-contain sm:h-14 sm:max-w-[250px]" />
             </Link>
 
             <ShopSearch className="hidden min-w-0 md:flex md:w-[200px] lg:w-[260px]" showButton={false} />

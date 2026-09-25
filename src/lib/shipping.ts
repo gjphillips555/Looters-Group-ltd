@@ -21,6 +21,7 @@ export function lineShippingPrice(line: ShippableLine): number | null {
 export function packingQuote(lines: ShippableLine[]) {
   const slots: { title: string; price: number }[] = [];
   for (const line of lines) {
+    if (line.shipping.length === 0) continue;
     const price = lineShippingPrice(line);
     if (price === null) {
       return {

@@ -29,6 +29,18 @@ export function ShopCatalog({
 
   const label =
     SHOP_CATEGORIES.find((c) => c.id === category)?.label ?? "All products";
+
+  if (category === "gift-cards") {
+    return (
+      <AppShell>
+        <BrandTicker />
+        <CategoryNav />
+        <h1 className="mb-3 mt-2 font-display text-xl font-semibold">{label}</h1>
+        <p className="py-24 text-center text-lg text-muted-foreground">Coming soon.</p>
+      </AppShell>
+    );
+  }
+
   const products = catalog.products.filter((p) =>
     productInCategory(p, category),
   );

@@ -4,7 +4,10 @@ import type { Product } from "@/lib/products";
 export type ShopCategoryId =
   | "desktops"
   | "laptops"
+  | "monitors"
   | "components"
+  | "cables"
+  | "gift-cards"
   | "batteries"
   | "ink"
   | "all";
@@ -12,7 +15,10 @@ export type ShopCategoryId =
 export const SHOP_CATEGORIES: { id: ShopCategoryId; label: string }[] = [
   { id: "desktops", label: "Desktops" },
   { id: "laptops", label: "Laptops" },
+  { id: "monitors", label: "Monitors" },
   { id: "components", label: "Components" },
+  { id: "cables", label: "Cables & Plugs" },
+  { id: "gift-cards", label: "Gift cards" },
   { id: "batteries", label: "Batteries" },
   { id: "ink", label: "Ink" },
   { id: "all", label: "All products" },
@@ -21,7 +27,10 @@ export const SHOP_CATEGORIES: { id: ShopCategoryId; label: string }[] = [
 export const SHOP_CATEGORY_PAGES = [
   "desktops",
   "laptops",
+  "monitors",
   "components",
+  "cables",
+  "gift-cards",
   "batteries",
   "ink",
 ] as const;
@@ -30,6 +39,7 @@ export type ShopCategoryPage = (typeof SHOP_CATEGORY_PAGES)[number];
 /**
  * First letter of the category + a digit that looks like the 2nd letter.
  * Laptops LA→L4, Desktops DE→D3, Components CO→C0,
+ * Monitors MO→M0, Cables CA→C4, Gift cards GI→G1,
  * Batteries BA→B4. Ink has no digit-like second letter, so I1.
  */
 export const TITLE_CATEGORY_CODES: {
@@ -39,7 +49,10 @@ export const TITLE_CATEGORY_CODES: {
 }[] = [
   { id: "laptops", label: "Laptops", sample: "L4" },
   { id: "desktops", label: "Desktops", sample: "D3" },
+  { id: "monitors", label: "Monitors", sample: "M0" },
   { id: "components", label: "Components", sample: "C0" },
+  { id: "cables", label: "Cables & Plugs", sample: "C4" },
+  { id: "gift-cards", label: "Gift cards", sample: "G1" },
   { id: "batteries", label: "Batteries", sample: "B4" },
   { id: "ink", label: "Ink", sample: "I1" },
 ];
@@ -47,7 +60,10 @@ export const TITLE_CATEGORY_CODES: {
 const TITLE_STAMP: Record<string, ShopCategoryPage> = {
   L4: "laptops",
   D3: "desktops",
+  M0: "monitors",
   C0: "components",
+  C4: "cables",
+  G1: "gift-cards",
   B4: "batteries",
   I1: "ink",
 };
@@ -99,8 +115,13 @@ const LAPTOP_PART =
 const INK_ITEM =
   /\b(ink cartridges?|toner|inkjet|megatank|maintenance cartridge)\b/i;
 
-const BATTERY_ITEM =
-  /\b((laptop|notebook)\s+batter(y|ies)|laptop charger|ac adapter)\b/i;
+const BATTERY_ITEM = /\b((laptop|notebook)\s+batter(y|ies))\b/i;
+
+const CABLE_ITEM =
+  /\b(hdmi|display\s?port|displayport|usb-?c|usb\s?type-?c|chargers?|ac adapters?|power (cable|lead|cord)|jug cords?|kettle leads?|iec\s?c[157]|clover|figure-?8|ethernet|cat\s?[56]e?\b|rj-?45|sata|cable ties?|zip ties?|vga\b|dvi\b|extension leads?|power boards?)\b/i;
+
+const MONITOR_ITEM = /\b(monitors?|computer displays?)\b/i;
+const NOT_A_MONITOR = /\b(graphics card|gpu|geforce|radeon|for (an )?extra monitor)\b/i;
 
 function inferKindFromTitle(title: string): ShopCategoryPage {
   if (LAPTOP_PART.test(title)) return "components";
@@ -113,15 +134,21 @@ function inferKindFromTitle(title: string): ShopCategoryPage {
   return "components";
 }
 
-/** Stamp wins. Battery and ink phrases beat the word "laptop" in the title. */
+/** Stamp wins. A whole laptop that merely includes a charger stays a laptop. */
 export function productKind(product: Product): ShopCategoryPage {
   const stamped = categoryFromTitleCode(product.title);
   if (stamped) return stamped;
   if (INK_ITEM.test(product.title)) return "ink";
   if (BATTERY_ITEM.test(product.title)) return "batteries";
+  if (/\bchargers?\b/i.test(product.title) && !/\bincludes chargers?\b/i.test(product.title)) {
+    return "cables";
+  }
   if (LAPTOP_PART.test(product.title)) return "components";
   if (LAPTOP_MACHINE.test(product.title)) return "laptops";
   if (DESKTOP_MACHINE.test(product.title)) return "desktops";
+  if (CABLE_ITEM.test(product.title)) return "cables";
+  if (MONITOR_ITEM.test(product.title) && !NOT_A_MONITOR.test(product.title)) return "monitors";
+  if (/\bgift\s?cards?\b/i.test(product.title)) return "gift-cards";
   return inferFromTradeMe(product) ?? inferKindFromTitle(product.title);
 }
 
@@ -138,6 +165,46 @@ export function shopPath(id: ShopCategoryId) {
 export function productInCategory(product: Product, category: ShopCategoryId) {
   if (category === "all") return true;
   return productKind(product) === category;
+}
+
+/** What sort of thing this is, so a sold-out GPU suggests another GPU. */
+export function itemSort(title: string): string {
+  if (LAPTOP_PART.test(title)) return "laptop-part";
+  if (/\b(charger|ac adapter)\b/i.test(title) && !/\bincludes charger\b/i.test(title)) return "charger";
+  if (BATTERY_ITEM.test(title)) return "battery";
+  if (INK_ITEM.test(title)) return "ink";
+  if (LAPTOP_MACHINE.test(title)) return "laptop";
+  if (DESKTOP_MACHINE.test(title)) return "desktop";
+  if (/\b(graphics card|geforce|radeon|\brtx\b|\bgtx\b|quadro|\barc\b)\b/i.test(title)) return "gpu";
+  if (/\b(ddr[345]|memory kit|\bram\b)\b/i.test(title)) return "ram";
+  if (/\b(nvme|\bssd\b|hard drive|\bhdd\b)\b/i.test(title)) return "storage";
+  if (/\b(power supply|\bpsu\b)\b/i.test(title)) return "psu";
+  if (/\b(system fan|case fan)\b/i.test(title)) return "fan";
+  if (/\b(air cooler|cpu cooler|liquid cool|\baio\b)\b/i.test(title)) return "cooler";
+  if (/\b(motherboard|mainboard)\b/i.test(title)) return "motherboard";
+  if (/\b(\bcpu\b|processor)\b/i.test(title)) return "cpu";
+  if (MONITOR_ITEM.test(title) && !NOT_A_MONITOR.test(title)) return "monitor";
+  if (/\bhdmi\b/i.test(title)) return "hdmi";
+  if (/\bdisplay\s?port\b/i.test(title)) return "displayport";
+  if (/\bethernet|cat\s?[56]/i.test(title)) return "ethernet";
+  if (/\bsata\b/i.test(title)) return "sata";
+  if (/\bvga\b/i.test(title)) return "vga";
+  if (/\b(cable ties|zip ties)\b/i.test(title)) return "cable-tie";
+  if (/\b(jug cord|clover|figure-8|power cable|power lead)\b/i.test(title)) return "power-lead";
+  if (CABLE_ITEM.test(title)) return "cable";
+  return "other";
+}
+
+export function isPurchasable(product: Product) {
+  return !product.soldOut && product.buyNow && product.amount > 0;
+}
+
+export function similarAvailable(product: Product, all: Product[], limit = 3) {
+  const sort = itemSort(product.title);
+  const category = productKind(product);
+  const open = all.filter((p) => p.id !== product.id && isPurchasable(p));
+  const sameSort = open.filter((p) => itemSort(p.title) === sort && productKind(p) === category);
+  return sameSort.slice(0, limit);
 }
 
 export function categoryBadge(product: Product) {

@@ -26,7 +26,7 @@ export const usePadSelect = create<{
 
 export function categoryFromPath(pathname: string): ShopCategoryId | undefined {
   if (pathname === "/shop") return "all";
-  const hit = pathname.match(/^\/shop\/([a-z]+)$/);
+  const hit = pathname.match(/^\/shop\/([a-z0-9-]+)$/);
   if (hit && SHOP_CATEGORIES.some((c) => c.id === hit[1])) {
     return hit[1] as ShopCategoryId;
   }

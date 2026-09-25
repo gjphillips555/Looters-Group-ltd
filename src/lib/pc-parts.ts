@@ -1,4 +1,4 @@
-import { markedUp } from "@/lib/charm";
+import { clearCost } from "@/lib/charm";
 import { nzd, type ShippingOption } from "@/lib/products";
 
 export type Slot = "case" | "board" | "cpu" | "cooler" | "ram" | "gpu" | "psu" | "fans";
@@ -30,11 +30,17 @@ export type Part = {
   sticks?: number;
   rgb?: boolean;
   tone?: "black" | "white" | "pink";
+  /** local = NZ buy price. aliexpress = same field, the most we would pay landed. */
+  lane?: "local" | "aliexpress";
+  /** PB Tech (inc GST) price of the same part. Required for the AliExpress lane. */
+  pb?: number;
+  /** What the part costs landed from AliExpress, in NZD. Omit until we have a real order price. */
+  landed?: number;
 };
 
 export const BUILD_SHIP: ShippingOption[] = [
-  { id: "north", label: "North Island courier", price: 18 },
-  { id: "south", label: "South Island courier", price: 26 },
+  { id: "north", label: "North Island courier", price: 55 },
+  { id: "south", label: "South Island courier", price: 165 },
 ];
 
 export const SLOTS: { id: Slot; label: string }[] = [
@@ -69,7 +75,7 @@ export const PARTS: Part[] = [
     slot: "case",
     brand: "Deepcool",
     name: "CH160 TG White",
-    cost: 78.99,
+    cost: 96,
     photo: P.ch160,
     accepts: ["itx"],
     gpuMax: 305,
@@ -148,7 +154,7 @@ export const PARTS: Part[] = [
     slot: "board",
     brand: "MSI",
     name: "B550M PRO-VDH WIFI",
-    cost: 218.99,
+    cost: 205.85,
     photo: P.board,
     form: "matx",
     socket: "AM4",
@@ -214,7 +220,7 @@ export const PARTS: Part[] = [
     slot: "cpu",
     brand: "AMD",
     name: "Ryzen 5 5600",
-    cost: 269,
+    cost: 263.35,
     photo: P.ryzen,
     socket: "AM4",
     watts: 65,
@@ -224,7 +230,7 @@ export const PARTS: Part[] = [
     slot: "cpu",
     brand: "AMD",
     name: "Ryzen 5 9600X",
-    cost: 459,
+    cost: 458.85,
     photo: P.ryzen,
     socket: "AM5",
     watts: 65,
@@ -238,13 +244,16 @@ export const PARTS: Part[] = [
     photo: P.cooler,
     height: 155,
     rad: 0,
+    lane: "aliexpress",
+    pb: 149,
+    landed: 149,
   },
   {
     id: "ram-d4",
     slot: "ram",
     brand: "Kingston",
     name: "Fury Beast 16GB DDR4-3600",
-    cost: 109.51,
+    cost: 263.35,
     photo: P.ddr4,
     memory: "DDR4",
     sticks: 2,
@@ -254,7 +263,7 @@ export const PARTS: Part[] = [
     slot: "ram",
     brand: "Kingston",
     name: "Fury Beast RGB 16GB DDR4-3200",
-    cost: 117,
+    cost: 290,
     photo: P.ddr4,
     memory: "DDR4",
     sticks: 2,
@@ -265,7 +274,7 @@ export const PARTS: Part[] = [
     slot: "ram",
     brand: "Kingston",
     name: "Fury Beast 32GB DDR5-6000",
-    cost: 516.35,
+    cost: 884.35,
     photo: P.ddr4,
     memory: "DDR5",
     sticks: 1,
@@ -331,6 +340,9 @@ export const PARTS: Part[] = [
     watts: 550,
     psuForm: "atx",
     psuLen: 140,
+    lane: "aliexpress",
+    pb: 85,
+    landed: 85,
   },
   {
     id: "psu-650",
@@ -342,6 +354,9 @@ export const PARTS: Part[] = [
     watts: 650,
     psuForm: "atx",
     psuLen: 140,
+    lane: "aliexpress",
+    pb: 99,
+    landed: 99,
   },
   {
     id: "psu-650g",
@@ -353,6 +368,9 @@ export const PARTS: Part[] = [
     watts: 650,
     psuForm: "atx",
     psuLen: 150,
+    lane: "aliexpress",
+    pb: 119,
+    landed: 119,
   },
   {
     id: "psu-750",
@@ -364,6 +382,9 @@ export const PARTS: Part[] = [
     watts: 750,
     psuForm: "atx",
     psuLen: 160,
+    lane: "aliexpress",
+    pb: 165,
+    landed: 165,
   },
   {
     id: "fan-p12",
@@ -378,7 +399,7 @@ export const PARTS: Part[] = [
 export const partById = Object.fromEntries(PARTS.map((part) => [part.id, part])) as Record<string, Part>;
 
 export function partPrice(part: Part) {
-  return markedUp(part.cost);
+  return clearCost(part.cost, 0);
 }
 
 export function partLabel(part: Part) {

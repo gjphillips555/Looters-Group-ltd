@@ -112,12 +112,7 @@ export function ProductCard({
             </div>
           )}
         </Link>
-        {soldOut && (
-          <span className="absolute left-2 top-2 rounded bg-neutral-900 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-            Sold out
-          </span>
-        )}
-        {product.isNew && !soldOut && (
+        {product.isNew && (
           <span className="absolute left-2 top-2 rounded bg-accent px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-accent-foreground">
             New
           </span>
@@ -167,9 +162,7 @@ export function ProductCard({
             disabled={!soldOut && (alreadyMaxed || adding || !canBuy)}
             className="shop-add"
           >
-            {soldOut ? (
-              "View item"
-            ) : alreadyMaxed || added ? (
+            {alreadyMaxed || added ? (
               <>
                 <Check className="size-4" />
                 {alreadyMaxed ? "In cart" : "Added"}

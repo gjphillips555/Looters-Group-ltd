@@ -12,7 +12,7 @@ export const Route = createFileRoute("/overlay")({
       {
         name: "description",
         content:
-          "Prepare listing images with overlays. Separate from the shop — local browser only.",
+          "Stamp a pile of listing photos with the header logo and download a zip. Separate from the shop.",
       },
     ],
   }),

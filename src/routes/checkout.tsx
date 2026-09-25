@@ -3,7 +3,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/app-shell";
 import { GoogleSignIn } from "@/components/google-sign-in";
 import { KeyButton, KeyLink } from "@/components/key-button";
+import { PayWithCard } from "@/components/pay-with-card";
 import { PayWithPaypal } from "@/components/pay-with-paypal";
+import { airwallexReady } from "@/lib/airwallex";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authEnabled } from "@/lib/auth/client";
@@ -47,9 +49,16 @@ function CheckoutPage() {
   const setShipping = useCart((s) => s.setShipping);
   const { user } = useCurrentUserState();
   const [customer, setCustomer] = useState<Customer>(emptyCustomer);
+  const [cardsOn, setCardsOn] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [orderId] = useState(() => newOrderId());
   const [buyShip, setBuyShip] = useState(ship ?? "");
+
+  useEffect(() => {
+    void airwallexReady()
+      .then(setCardsOn)
+      .catch(() => setCardsOn(false));
+  }, []);
 
   useEffect(() => {
     setCustomer((prev) => {
@@ -113,7 +122,7 @@ function CheckoutPage() {
       setError(
         shippingReady
           ? "Please complete your contact and delivery details."
-          : "Select a shipping option to tally PayPal.",
+          : "Select a shipping option to tally the total.",
       );
       return false;
     }
@@ -284,7 +293,7 @@ function CheckoutPage() {
           </Field>
           <p className="text-xs leading-relaxed text-muted-foreground">
             We store name, email, phone and delivery address with the order so
-            we can pack and ship. Card details stay with PayPal — we never see
+            we can pack and ship. Card details stay with Airwallex or PayPal — we never see
             them.
           </p>
         </section>
@@ -363,6 +372,16 @@ function CheckoutPage() {
             {packingLabel(itemCount, packing.packages, shippingReady)}
           </p>
           {error && <p className="text-sm text-destructive">{error}</p>}
+          {cardsOn ? (
+            <PayWithCard
+              orderId={orderId}
+              amount={shippingReady ? total : 0}
+              title={itemName}
+              disabled={!canPay}
+              onBeforePay={persistOrder}
+              onError={setError}
+            />
+          ) : null}
           <PayWithPaypal
             orderId={orderId}
             amount={shippingReady ? total : 0}
@@ -372,6 +391,11 @@ function CheckoutPage() {
             cancelPath={cancelPath}
             onBeforePay={persistOrder}
           />
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            {cardsOn
+              ? "Card, Apple Pay and Google Pay go through Airwallex. PayPal is still there if that is easier."
+              : "PayPal is on now. Card, Apple Pay and Google Pay appear here once the Airwallex account is connected."}
+          </p>
         </aside>
       </form>
     </AppShell>
