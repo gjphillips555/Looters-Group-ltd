@@ -36,6 +36,20 @@ export function SiteFooter({ onOpenCart }: { onOpenCart: () => void }) {
           loading="lazy"
           decoding="async"
         />
+
+        {/* Siftah Mobile launch button */}
+        <a
+          href="/siftah/"
+          className="inline-flex items-center gap-2 rounded-full border border-red-600/30 bg-neutral-950 px-5 py-2.5 text-sm font-semibold tracking-wide text-white shadow-sm transition hover:bg-neutral-900 hover:border-red-500/50"
+          style={{ boxShadow: "0 0 20px rgba(225, 29, 46, 0.15)" }}
+        >
+          <span className="text-red-500 text-base leading-none" aria-hidden="true">♛</span>
+          <span>
+            <span className="text-red-500 font-black">Siftah</span>
+            <span className="ml-1 italic text-neutral-300 font-medium">Mobile</span>
+          </span>
+        </a>
+
         <p className="text-center text-xs text-neutral-600">
           &copy; 2026 Looters Computas. Prices in NZD, GST inclusive. Contact:{" "}
           <a
