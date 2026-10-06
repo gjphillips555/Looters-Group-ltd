@@ -1,9 +1,1 @@
-(function(){
-  const parts = ["app_part0.js","app_part1.js","app_part2.js"];
-  let i = 0, code = "";
-  function next(){
-    if (i >= parts.length) { const s = document.createElement("script"); s.textContent = code; document.body.appendChild(s); return; }
-    fetch("./" + parts[i++]).then(r => r.text()).then(t => { code += t; next(); }).catch(e => console.error("Siftah load failed", e));
-  }
-  next();
-})();
+(function(){var P=["p0.js","p1.js","p2.js","p3.js","p4.js","p5.js"],i=0,c="";function n(){if(i>=P.length){var s=document.createElement("script");s.textContent=c;document.body.appendChild(s);return}fetch("./"+P[i++]).then(function(r){return r.text()}).then(function(t){c+=t;n()}).catch(function(e){console.error(e)})}n()})();
