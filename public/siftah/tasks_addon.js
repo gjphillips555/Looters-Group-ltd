@@ -49,7 +49,8 @@
     const patterns = [
       /(?:file|filename|path)\s*[:=]\s*[`'*]*([\w./\-]+\.[a-z0-9]{1,12})/i,
       /(?:create|write|save|update|edit|here(?:'s| is)|following is|below is)\s+(?:the\s+)?(?:file\s+)?[`'*]*([\w./\-]+\.[a-z0-9]{1,12})/i,
-      /[`']([\w./\-]+\.[a-z0-9]{1,12})[`']/,n      /\*\*([^*\s/]+\.[a-z0-9]{1,12})\*\*/,
+      /[`']([\w./\-]+\.[a-z0-9]{1,12})[`']/,
+      /\*\*([^*\s/]+\.[a-z0-9]{1,12})\*\*/,
       /(?:^|\n)\s*#{1,6}\s*[`']?([\w./\-]+\.[a-z0-9]{1,12})[`']?\s*(?:\n|$)/,
       /\b((?:index|main|app|script|style|styles|server|client|config|package|readme|utils|helper|component)[\w\-]*\.[a-z0-9]{1,12})\b/i,
       /\b([\w\-]+\.(?:html?|css|jsx?|tsx?|py|json|md|vue|svelte|php|go|rs|java|rb|sql|sh|yml|yaml|toml))\b/i
@@ -290,11 +291,6 @@
     if (taskSelect) taskSelect.onchange = function (e) { setActiveTask(e.target.value); };
     var btnAssemble = document.getElementById("btnAutoAssemble");
     if (btnAssemble) btnAssemble.onclick = autoAssemble;
-    var btnG = document.getElementById("btnGoogleSignIn");
-    if (btnG) btnG.onclick = function () {
-      if (typeof showToast === "function") showToast("Add Firebase config in Settings first");
-      if (typeof openSettings === "function") openSettings();
-    };
     renderTaskSelect();
   }
 
