@@ -1,333 +1,307 @@
-/* Siftah v1.5 tasks + menu + google + smart +Project naming */
-(function(){
-  if (typeof project === "undefined") return;
-  project.activeTask = project.activeTask || "";
+/* Siftah smart +Project naming + tasks (v1.5c) */
+(function () {
+  "use strict";
 
-  function listTasks(){ return Object.keys(project.folders||{}).sort(); }
-
-  window.renderTaskSelect = function(){
-    const sel = document.getElementById("taskSelect");
-    if (!sel) return;
-    const tasks = listTasks();
-    const cur = project.activeTask || "";
-    let html = '<option value="">— root (no task) —</option>';
-    for (const t of tasks) html += '<option value="'+escapeHtml(t)+'"'+(t===cur?' selected':'')+'>'+escapeHtml(t)+'</option>';
-    sel.innerHTML = html;
-  };
-
-  window.setActiveTask = function(name){
-    project.activeTask = name || "";
-    saveProject();
-    if (typeof renderFilesTree === "function") renderFilesTree();
-    renderTaskSelect();
-  };
-
-  window.createTask = function(name){
-    const clean = String(name||"").trim().replace(/[^\w\- .]/g,"").replace(/\s+/g,"-").slice(0,40);
-    if (!clean) return null;
-    ensureFolder(clean);
-    project.activeTask = clean;
-    saveProject();
-    if (typeof renderFilesTree === "function") renderFilesTree();
-    renderTaskSelect();
-    showToast('Task "'+clean+'" active');
-    return clean;
-  };
-
-  function assembleBucket(filename){
-    const ext = (filename.split(".").pop()||"").toLowerCase();
-    if (["html","htm","svg"].includes(ext)) return "public";
-    if (["css","scss","sass","less"].includes(ext)) return "styles";
-    if (["js","jsx","ts","tsx","mjs","cjs","vue","svelte"].includes(ext)) return "src";
-    if (["py","pyw","ipynb"].includes(ext)) return "src";
-    if (["json","yml","yaml","toml","env","ini"].includes(ext)) return "config";
-    if (["md","txt","rst"].includes(ext)) return "docs";
-    if (["sql"].includes(ext)) return "db";
-    if (["sh","bash","ps1","bat"].includes(ext)) return "scripts";
-    return "other";
+  function getProject() {
+    if (typeof window.project !== "undefined" && window.project) return window.project;
+    try { return project; } catch (e) { return null; }
   }
 
-  window.autoAssemble = function(){
-    const task = project.activeTask;
-    if (!task){ showToast("Select or create a Task first"); return; }
-    ensureFolder(task);
-    const files = Object.assign({}, (project.folders[task]&&project.folders[task].files)||{});
-    const keys = Object.keys(files);
-    if (!keys.length){ showToast("No files in this task yet"); return; }
-    let moved = 0;
-    for (const name of keys){
-      const content = files[name];
-      const bucket = assembleBucket(name);
-      let baseName = name;
-      const pref = name.match(/^(public|styles|src|config|docs|db|scripts|other)__(.+)$/);
-      if (pref) baseName = pref[2];
-      const destFolder = ensureFolder(task + "__" + bucket);
-      let destName = baseName;
-      if (project.folders[destFolder].files[destName] != null && project.folders[destFolder].files[destName] !== content){
-        const dot = destName.lastIndexOf(".");
-        const b = dot>=0?destName.slice(0,dot):destName;
-        const e = dot>=0?destName.slice(dot):"";
-        let i=2, candidate=b+i+e;
-        while (project.folders[destFolder].files[candidate]!=null){ i++; candidate=b+i+e; }
-        destName = candidate;
-      }
-      project.folders[destFolder].files[destName] = content;
-      delete project.folders[task].files[name];
-      moved++;
-    }
-    saveProject();
-    if (typeof renderFilesTree === "function") renderFilesTree();
-    showToast("Assembled "+moved+" file(s)");
-  };
-
-  function looksLikeFile(s){
+  function looksLikeFile(s) {
     if (!s) return false;
-    s = String(s).trim().replace(/^[`'"*#_:\-\s]+|[`'"*#_:\-\s]+$/g,"");
+    s = String(s).trim().replace(/^[`'"*#_:\-\s]+|[`'"*#_:\-\s]+$/g, "");
+    if (s.length < 3 || s.length > 120) return false;
     if (!/^[\w./\-]+$/.test(s)) return false;
-    return /\.[a-z0-9]{1,12}$/i.test(s) || (/[\/]/.test(s) && s.length < 120);
+    return /\.[a-z0-9]{1,12}$/i.test(s);
   }
-  function cleanFile(s){
-    return String(s||"").trim()
+  function cleanFile(s) {
+    return String(s || "")
+      .trim()
       .replace(/^[`'"*#:\-\s]+/, "")
       .replace(/[`'"*#:\-\s]+$/, "")
       .replace(/^\.\//, "")
-      .replace(/^(?:File|Filename|Path|Name)\s*:\s*/i, "");
+      .replace(/^(?:File|Filename|Path|Name)\s*:\s*/i, "")
+      .split("/")
+      .pop();
   }
-  function extractNameFromCode(code){
+  function extractFromCode(code) {
     if (!code) return null;
-    const lines = code.split(/\n/).slice(0, 8);
-    for (const line of lines){
+    for (const line of String(code).split(/\n/).slice(0, 12)) {
       const t = line.trim();
-      let m =
-        t.match(/^\/\/\s*([^\s*]+?\.[a-z0-9]{1,12})\s*$/i) ||
-        t.match(/^#\s*([^\s]+?\.[a-z0-9]{1,12})\s*$/i) ||
-        t.match(/^\/\*\s*([^\s*]+?\.[a-z0-9]{1,12})\s*\*\//i) ||
-        t.match(/^<!--\s*([^\s>]+?\.[a-z0-9]{1,12})\s*-->/i) ||
-        t.match(/^(?:\/\/|#|--)\s*(?:file|filename|path)\s*[:=]\s*[`']?([^\s`']+)/i) ||
-        t.match(/^(?:file|filename|path)\s*[:=]\s*[`']?([^\s`']+)/i);
-      if (m && looksLikeFile(m[1])) return cleanFile(m[1]).split("/").pop();
+      const patterns = [
+        /^\/\/\s*([^\s]+?\.[a-z0-9]{1,12})\s*$/i,
+        /^#\s*([^\s]+?\.[a-z0-9]{1,12})\s*$/i,
+        /^\/\*\s*([^\s*]+?\.[a-z0-9]{1,12})\s*\*\//i,
+        /^<!--\s*([^\s>]+?\.[a-z0-9]{1,12})\s*-->/i,
+        /^(?:\/\/|#|--)\s*(?:file|filename|path)\s*[:=]\s*[`']?([^\s`']+)/i,
+        /^(?:file|filename|path)\s*[:=]\s*[`']?([^\s`']+)/i,
+        /^([a-zA-Z0-9_\-./]+\.[a-z0-9]{1,12})\s*$/i
+      ];
+      for (const re of patterns) {
+        const m = t.match(re);
+        if (m && looksLikeFile(m[1])) return cleanFile(m[1]);
+      }
     }
     return null;
   }
-  function extractNameNearBlock(btn){
+  function extractFromText(text) {
+    if (!text) return null;
+    const patterns = [
+      /(?:file|filename|path)\s*[:=]\s*[`'*]*([\w./\-]+\.[a-z0-9]{1,12})/i,
+      /(?:create|write|save|update|edit|here(?:'s| is)|following is|below is)\s+(?:the\s+)?(?:file\s+)?[`'*]*([\w./\-]+\.[a-z0-9]{1,12})/i,
+      /[`']([\w./\-]+\.[a-z0-9]{1,12})[`']/,n      /\*\*([^*\s/]+\.[a-z0-9]{1,12})\*\*/,
+      /(?:^|\n)\s*#{1,6}\s*[`']?([\w./\-]+\.[a-z0-9]{1,12})[`']?\s*(?:\n|$)/,
+      /\b((?:index|main|app|script|style|styles|server|client|config|package|readme|utils|helper|component)[\w\-]*\.[a-z0-9]{1,12})\b/i,
+      /\b([\w\-]+\.(?:html?|css|jsx?|tsx?|py|json|md|vue|svelte|php|go|rs|java|rb|sql|sh|yml|yaml|toml))\b/i
+    ];
+    for (const re of patterns) {
+      const m = text.match(re);
+      if (m && looksLikeFile(m[1])) return cleanFile(m[1]);
+    }
+    return null;
+  }
+  function extractNearBlock(btn) {
     try {
       const block = btn.closest(".code-block");
       if (!block) return null;
-      const langEl = block.querySelector(".lang");
-      if (langEl){
-        const lab = cleanFile(langEl.textContent||"");
-        if (looksLikeFile(lab)) return lab.split("/").pop();
+      const langEl = block.querySelector(".lang, .code-header span");
+      if (langEl) {
+        const lab = cleanFile(langEl.textContent || "");
+        if (looksLikeFile(lab)) return lab;
       }
       const bubble = btn.closest(".bubble");
-      if (bubble){
-        let node = block.previousSibling;
-        const chunks = [];
-        while (node && chunks.length < 6){
-          const text = (node.textContent||"").trim();
-          if (text) chunks.unshift(text);
-          node = node.previousSibling;
+      if (bubble) {
+        let node = block.previousElementSibling || block.previousSibling;
+        const bits = [];
+        let hops = 0;
+        while (node && hops < 10) {
+          const t = (node.textContent || "").trim();
+          if (t) bits.unshift(t);
+          node = node.previousElementSibling || node.previousSibling;
+          hops++;
         }
-        const before = chunks.join("\n");
-        const patterns = [
-          /(?:file|filename|path)\s*[:=]\s*[`']?([\w./\-]+\.[a-z0-9]{1,12})/i,
-          /(?:create|write|save|update|edit|here(?:'s| is)|following)\s+(?:the\s+)?(?:file\s+)?[`'*]*([\w./\-]+\.[a-z0-9]{1,12})/i,
-          /[`']([\w./\-]+\.[a-z0-9]{1,12})[`']/,
-          /\*\*([^*\s]+\.[a-z0-9]{1,12})\*\*/,
-          /(?:^|\n)\s*#+\s*[`']?([\w./\-]+\.[a-z0-9]{1,12})[`']?\s*$/m
-        ];
-        for (const re of patterns){
-          const m = before.match(re);
-          if (m && looksLikeFile(m[1])) return cleanFile(m[1]).split("/").pop();
-        }
+        const found = extractFromText(bits.join("\n"));
+        if (found) return found;
+        return extractFromText(bubble.textContent || "");
       }
-    } catch(e){}
+    } catch (e) {}
     return null;
   }
-  function defaultGuess(lang){
+  function defaultGuess(lang) {
+    const proj = getProject() || { files: {}, folders: {} };
     const used = new Set([
-      ...Object.keys(project.files||{}),
-      ...Object.values(project.folders||{}).flatMap(f => Object.keys(f.files||{}))
+      ...Object.keys(proj.files || {}),
+      ...Object.values(proj.folders || {}).flatMap(function (f) { return Object.keys(f.files || {}); })
     ]);
-    if (typeof guessFilename === "function") return guessFilename(lang||"txt", used);
-    const map = {javascript:"js",js:"js",python:"py",py:"py",html:"html",css:"css",typescript:"ts",ts:"ts",json:"json",md:"md"};
-    const ext = map[(lang||"txt").toLowerCase()] || "txt";
-    const base = {html:"index",css:"styles",js:"script",javascript:"script",py:"main",python:"main",ts:"index",json:"data",md:"README"}[ (lang||"").toLowerCase() ] || "file";
-    let name = base+"."+ext, i=2;
-    while (used.has(name)) { name = base+i+"."+ext; i++; }
+    if (typeof guessFilename === "function") return guessFilename(lang || "txt", used);
+    const map = { javascript: "js", js: "js", python: "py", py: "py", html: "html", css: "css", typescript: "ts", ts: "ts", json: "json", md: "md", bash: "sh", shell: "sh" };
+    const l = (lang || "txt").toLowerCase();
+    const ext = map[l] || (l.match(/^[a-z0-9]+$/) ? l : "txt");
+    const base = { html: "index", css: "styles", js: "script", javascript: "script", py: "main", python: "main", ts: "index", json: "data", md: "README" }[l] || "file";
+    let name = base + "." + ext, i = 2;
+    while (used.has(name)) { name = base + i + "." + ext; i++; }
     return name;
   }
-
-  function resolveProjectPath(btn, pre){
-    let path = (btn.getAttribute("data-path")||"").trim();
-    if (path && looksLikeFile(path)) return cleanFile(path).split("/").pop();
-    const fromNear = extractNameNearBlock(btn);
-    if (fromNear) return fromNear;
-    const fromCode = extractNameFromCode(pre ? pre.textContent : "");
-    if (fromCode) return fromCode;
-    const lang = btn.getAttribute("data-lang") || "txt";
-    const guess = defaultGuess(lang);
-    const entered = prompt("Filename for this code:", guess);
-    if (entered == null) return null;
-    const cleaned = cleanFile(entered).replace(/[^\w./\-]+/g,"").split("/").pop();
+  function resolveName(btn, pre) {
+    var path = (btn.getAttribute("data-path") || "").trim();
+    if (looksLikeFile(path)) return cleanFile(path);
+    var n = extractNearBlock(btn);
+    if (n) return n;
+    n = extractFromCode(pre ? pre.textContent : "");
+    if (n) return n;
+    var lang = btn.getAttribute("data-lang") || "txt";
+    if (looksLikeFile(lang)) return cleanFile(lang);
+    var guess = defaultGuess(lang);
+    var entered = window.prompt("Filename for this code:", guess);
+    if (entered === null) return null;
+    var cleaned = cleanFile(entered).replace(/[^\w.\-]+/g, "");
     return cleaned || guess;
   }
 
-  document.addEventListener("click", function(e){
-    const btn = e.target && e.target.closest && e.target.closest(".add-btn");
-    if (!btn) return;
-    e.preventDefault();
-    e.stopPropagation();
-    e.stopImmediatePropagation();
-    const pre = document.getElementById(btn.getAttribute("data-add"));
-    if (!pre) return;
-    const path = resolveProjectPath(btn, pre);
-    if (!path) return;
-    const block = btn.closest(".code-block");
-    if (block){
-      const langEl = block.querySelector(".lang");
-      if (langEl) langEl.textContent = path;
-      btn.setAttribute("data-path", path);
-    }
-    putFile(path, pre.textContent||"", true);
-    btn.textContent = "Added";
-    setTimeout(function(){ btn.textContent = "+ Project"; }, 1200);
-  }, true);
-
-  const _putFile = window.putFile;
-  if (typeof _putFile === "function") {
-    window.putFile = function(path, content, flash){
-      path = String(path||"").replace(/^\/+/,"").replace(/\\/g,"/");
-      let parts = path.split("/").filter(Boolean);
-      if (project.activeTask && parts.length===1){
-        parts = [project.activeTask, parts[0]];
-        path = parts.join("/");
+  document.addEventListener(
+    "click",
+    function (e) {
+      var btn = e.target && e.target.closest && e.target.closest("button.add-btn, .add-btn");
+      if (!btn) return;
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      var id = btn.getAttribute("data-add");
+      var pre = id ? document.getElementById(id) : null;
+      if (!pre) {
+        pre = btn.closest(".code-block") && btn.closest(".code-block").querySelector("pre");
       }
-      return _putFile.call(this, path, content, flash);
+      if (!pre) return;
+      var path = resolveName(btn, pre);
+      if (!path) return;
+      var block = btn.closest(".code-block");
+      if (block) {
+        var langEl = block.querySelector(".lang");
+        if (langEl) langEl.textContent = path;
+        btn.setAttribute("data-path", path);
+      }
+      if (typeof putFile === "function") {
+        putFile(path, pre.textContent || "", true);
+      } else {
+        console.error("putFile missing");
+        return;
+      }
+      btn.textContent = "Added · " + path;
+      setTimeout(function () { btn.textContent = "+ Project"; }, 1500);
+      if (typeof showToast === "function") showToast("Added " + path);
+    },
+    true
+  );
+
+  function listTasks() {
+    var p = getProject();
+    if (!p || !p.folders) return [];
+    return Object.keys(p.folders).sort();
+  }
+  window.renderTaskSelect = function () {
+    var sel = document.getElementById("taskSelect");
+    if (!sel) return;
+    var p = getProject();
+    var tasks = listTasks();
+    var cur = (p && p.activeTask) || "";
+    var html = '<option value="">— root (no task) —</option>';
+    for (var i = 0; i < tasks.length; i++) {
+      var t = tasks[i];
+      html += '<option value="' + escapeHtml(t) + '"' + (t === cur ? " selected" : "") + ">" + escapeHtml(t) + "</option>";
+    }
+    sel.innerHTML = html;
+  };
+  window.setActiveTask = function (name) {
+    var p = getProject();
+    if (!p) return;
+    p.activeTask = name || "";
+    if (typeof saveProject === "function") saveProject();
+    if (typeof renderFilesTree === "function") renderFilesTree();
+    renderTaskSelect();
+  };
+  window.createTask = function (name) {
+    var clean = String(name || "").trim().replace(/[^\w\- .]/g, "").replace(/\s+/g, "-").slice(0, 40);
+    if (!clean) return null;
+    if (typeof ensureFolder === "function") ensureFolder(clean);
+    var p = getProject();
+    if (p) p.activeTask = clean;
+    if (typeof saveProject === "function") saveProject();
+    if (typeof renderFilesTree === "function") renderFilesTree();
+    renderTaskSelect();
+    if (typeof showToast === "function") showToast('Task "' + clean + '" active');
+    return clean;
+  };
+  function assembleBucket(filename) {
+    var ext = (filename.split(".").pop() || "").toLowerCase();
+    if (["html", "htm", "svg"].indexOf(ext) >= 0) return "public";
+    if (["css", "scss", "sass", "less"].indexOf(ext) >= 0) return "styles";
+    if (["js", "jsx", "ts", "tsx", "mjs", "cjs", "vue", "svelte", "py", "pyw"].indexOf(ext) >= 0) return "src";
+    if (["json", "yml", "yaml", "toml", "env", "ini"].indexOf(ext) >= 0) return "config";
+    if (["md", "txt", "rst"].indexOf(ext) >= 0) return "docs";
+    if (ext === "sql") return "db";
+    if (["sh", "bash", "ps1", "bat"].indexOf(ext) >= 0) return "scripts";
+    return "other";
+  }
+  window.autoAssemble = function () {
+    var p = getProject();
+    if (!p || !p.activeTask) {
+      if (typeof showToast === "function") showToast("Select or create a Task first");
+      return;
+    }
+    var task = p.activeTask;
+    if (typeof ensureFolder === "function") ensureFolder(task);
+    var files = Object.assign({}, (p.folders[task] && p.folders[task].files) || {});
+    var keys = Object.keys(files);
+    if (!keys.length) {
+      if (typeof showToast === "function") showToast("No files in this task yet");
+      return;
+    }
+    var moved = 0;
+    for (var i = 0; i < keys.length; i++) {
+      var name = keys[i];
+      var content = files[name];
+      var bucket = assembleBucket(name);
+      var baseName = name;
+      var pref = name.match(/^(public|styles|src|config|docs|db|scripts|other)__(.+)$/);
+      if (pref) baseName = pref[2];
+      var destFolder = ensureFolder(task + "__" + bucket);
+      var destName = baseName;
+      if (p.folders[destFolder].files[destName] != null && p.folders[destFolder].files[destName] !== content) {
+        var dot = destName.lastIndexOf(".");
+        var b = dot >= 0 ? destName.slice(0, dot) : destName;
+        var e = dot >= 0 ? destName.slice(dot) : "";
+        var n = 2, candidate = b + n + e;
+        while (p.folders[destFolder].files[candidate] != null) { n++; candidate = b + n + e; }
+        destName = candidate;
+      }
+      p.folders[destFolder].files[destName] = content;
+      delete p.folders[task].files[name];
+      moved++;
+    }
+    if (typeof saveProject === "function") saveProject();
+    if (typeof renderFilesTree === "function") renderFilesTree();
+    if (typeof showToast === "function") showToast("Assembled " + moved + " file(s)");
+  };
+
+  function patchPutFile() {
+    if (typeof putFile !== "function" || putFile.__siftahPatched) return;
+    var _put = putFile;
+    window.putFile = function (path, content, flash) {
+      path = String(path || "").replace(/^\/+/, "").replace(/\\/g, "/");
+      var p = getProject();
+      var parts = path.split("/").filter(Boolean);
+      if (p && p.activeTask && parts.length === 1) {
+        path = p.activeTask + "/" + parts[0];
+      }
+      return _put.call(this, path, content, flash);
     };
+    window.putFile.__siftahPatched = true;
   }
 
-  window.openMenu = function(){ const o=document.getElementById("menuOverlay"); if(o) o.classList.add("show"); };
-  window.closeMenu = function(){ const o=document.getElementById("menuOverlay"); if(o) o.classList.remove("show"); };
+  window.openMenu = function () {
+    var o = document.getElementById("menuOverlay");
+    if (o) o.classList.add("show");
+  };
+  window.closeMenu = function () {
+    var o = document.getElementById("menuOverlay");
+    if (o) o.classList.remove("show");
+  };
 
-  function wire(){
-    const menuBtn = document.getElementById("menuBtn");
+  function wire() {
+    patchPutFile();
+    var menuBtn = document.getElementById("menuBtn");
     if (menuBtn) menuBtn.onclick = openMenu;
-    const menuClose = document.getElementById("menuClose");
+    var menuClose = document.getElementById("menuClose");
     if (menuClose) menuClose.onclick = closeMenu;
-    const overlay = document.getElementById("menuOverlay");
-    if (overlay) overlay.addEventListener("click", function(e){ if(e.target===overlay) closeMenu(); });
-    const ms = document.getElementById("menuSettings");
-    if (ms) ms.onclick = function(){ closeMenu(); if(typeof openSettings==="function") openSettings(); };
-    const mf = document.getElementById("menuForum");
-    if (mf) mf.onclick = function(){ showToast("Siftah Forum — coming soon"); };
-    const m3 = document.getElementById("menu3d");
-    if (m3) m3.onclick = function(){ showToast("3D Blueprints — coming soon"); };
-
-    const btnNewTask = document.getElementById("btnNewTask");
-    if (btnNewTask) btnNewTask.onclick = function(){
-      const name = prompt("Task name (software / project):");
+    var overlay = document.getElementById("menuOverlay");
+    if (overlay) overlay.addEventListener("click", function (e) { if (e.target === overlay) closeMenu(); });
+    var ms = document.getElementById("menuSettings");
+    if (ms) ms.onclick = function () { closeMenu(); if (typeof openSettings === "function") openSettings(); };
+    var mf = document.getElementById("menuForum");
+    if (mf) mf.onclick = function () { if (typeof showToast === "function") showToast("Siftah Forum — coming soon"); };
+    var m3 = document.getElementById("menu3d");
+    if (m3) m3.onclick = function () { if (typeof showToast === "function") showToast("3D Blueprints — coming soon"); };
+    var btnNewTask = document.getElementById("btnNewTask");
+    if (btnNewTask) btnNewTask.onclick = function () {
+      var name = prompt("Task name (software / project):");
       if (name) createTask(name);
     };
-    const taskSelect = document.getElementById("taskSelect");
-    if (taskSelect) taskSelect.onchange = function(e){ setActiveTask(e.target.value); };
-    const btnAssemble = document.getElementById("btnAutoAssemble");
+    var taskSelect = document.getElementById("taskSelect");
+    if (taskSelect) taskSelect.onchange = function (e) { setActiveTask(e.target.value); };
+    var btnAssemble = document.getElementById("btnAutoAssemble");
     if (btnAssemble) btnAssemble.onclick = autoAssemble;
-
-    const btnG = document.getElementById("btnGoogleSignIn");
-    if (btnG) btnG.onclick = signInWithGoogle;
-    const btnOut = document.getElementById("btnSignOut");
-    if (btnOut) btnOut.onclick = signOut;
-
+    var btnG = document.getElementById("btnGoogleSignIn");
+    if (btnG) btnG.onclick = function () {
+      if (typeof showToast === "function") showToast("Add Firebase config in Settings first");
+      if (typeof openSettings === "function") openSettings();
+    };
     renderTaskSelect();
   }
 
-  let firebaseApp=null, firebaseAuth=null, currentUser=null;
-
-  function loadScript(src){
-    return new Promise(function(resolve,reject){
-      if (document.querySelector('script[src="'+src+'"]')) return resolve();
-      const s=document.createElement("script"); s.src=src; s.async=true;
-      s.onload=resolve; s.onerror=reject; document.head.appendChild(s);
-    });
+  function boot() {
+    patchPutFile();
+    wire();
   }
-
-  function updateAuthUI(){
-    const signedIn = !!currentUser;
-    const so = document.getElementById("menuSignedOut");
-    const si = document.getElementById("menuSignedIn");
-    if (so) so.style.display = signedIn ? "none" : "block";
-    if (si) si.style.display = signedIn ? "block" : "none";
-    const chip = document.getElementById("userChip");
-    if (signedIn){
-      const dn = document.getElementById("menuDisplayName");
-      const em = document.getElementById("menuEmail");
-      if (dn) dn.textContent = currentUser.displayName || "User";
-      if (em) em.textContent = currentUser.email || "";
-      if (currentUser.photoURL){
-        const a1=document.getElementById("menuAvatar"); if(a1) a1.src=currentUser.photoURL;
-        const a2=document.getElementById("userAvatar"); if(a2) a2.src=currentUser.photoURL;
-      }
-      const un=document.getElementById("userName");
-      if (un) un.textContent = (currentUser.displayName||currentUser.email||"User").split(" ")[0];
-      if (chip) chip.style.display = "flex";
-    } else if (chip) chip.style.display = "none";
-  }
-
-  window.initFirebase = async function(configStr){
-    if (!configStr || !String(configStr).trim()) return false;
-    let config;
-    try { config = JSON.parse(configStr); } catch { showToast("Invalid Firebase JSON"); return false; }
-    if (!config.apiKey || !config.authDomain){ showToast("Firebase needs apiKey + authDomain"); return false; }
-    try {
-      await loadScript("https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js");
-      await loadScript("https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js");
-      if (!firebaseApp) firebaseApp = firebase.initializeApp(config);
-      firebaseAuth = firebase.auth();
-      firebaseAuth.onAuthStateChanged(function(user){
-        if (user) currentUser = { uid:user.uid, displayName:user.displayName, email:user.email, photoURL:user.photoURL };
-        else currentUser = null;
-        updateAuthUI();
-      });
-      return true;
-    } catch(e){ console.error(e); showToast("Firebase init failed"); return false; }
-  };
-
-  window.signInWithGoogle = async function(){
-    const s = typeof loadSettings==="function" ? loadSettings() : {};
-    const cfg = (s && s.firebaseConfig) || localStorage.getItem("siftah_firebase") || "";
-    if (!cfg){ if(typeof openSettings==="function") openSettings(); showToast("Paste Firebase config in Settings first"); return; }
-    const ok = await initFirebase(cfg);
-    if (!ok || !firebaseAuth) return;
-    try {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      await firebaseAuth.signInWithPopup(provider);
-      showToast("Signed in");
-      closeMenu();
-    } catch(e){ console.error(e); showToast(e.message||"Sign-in failed"); }
-  };
-
-  window.signOut = async function(){
-    try { if (firebaseAuth) await firebaseAuth.signOut(); } catch(e){}
-    currentUser = null;
-    updateAuthUI();
-    showToast("Signed out");
-  };
-
-  const _apply = window.applySettingsFromUI;
-  if (typeof _apply === "function") {
-    window.applySettingsFromUI = function(){
-      _apply();
-      const ta = document.getElementById("firebaseConfig");
-      if (ta) {
-        localStorage.setItem("siftah_firebase", ta.value.trim());
-        initFirebase(ta.value.trim());
-      }
-    };
-  }
-
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", wire);
-  else setTimeout(wire, 50);
-
-  const cfg = localStorage.getItem("siftah_firebase") || "";
-  if (cfg) setTimeout(function(){ initFirebase(cfg); }, 100);
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { setTimeout(boot, 30); });
+  else setTimeout(boot, 30);
 })();
