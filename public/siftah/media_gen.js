@@ -1,23 +1,37 @@
-/* Siftah Media Gen v2 — HF InferenceClient (image + video) */
+/* Siftah Media Gen v3 — text/image → image + text/image → video */
 (function () {
   "use strict";
 
   var IMAGE_MODELS = [
-    { id: "black-forest-labs/FLUX.1-schnell", label: "FLUX.1 Schnell (fast)", provider: "auto" },
-    { id: "black-forest-labs/FLUX.1-dev", label: "FLUX.1 Dev", provider: "auto" },
-    { id: "stabilityai/stable-diffusion-xl-base-1.0", label: "SDXL 1.0", provider: "auto" },
-    { id: "Qwen/Qwen-Image", label: "Qwen Image", provider: "auto" }
+    { id: "black-forest-labs/FLUX.1-schnell", label: "FLUX.1 Schnell (T2I)", mode: "t2i" },
+    { id: "black-forest-labs/FLUX.1-dev", label: "FLUX.1 Dev (T2I)", mode: "t2i" },
+    { id: "stabilityai/stable-diffusion-xl-base-1.0", label: "SDXL 1.0 (T2I / I2I)", mode: "both" },
+    { id: "stabilityai/stable-diffusion-xl-refiner-1.0", label: "SDXL Refiner (I2I)", mode: "i2i" },
+    { id: "Qwen/Qwen-Image", label: "Qwen Image (T2I)", mode: "t2i" }
   ];
 
   var VIDEO_MODELS = [
-    { id: "Wan-AI/Wan2.1-T2V-1.3B", label: "Wan 2.1 T2V 1.3B (fal)", provider: "fal-ai" },
-    { id: "Lightricks/LTX-Video", label: "LTX Video", provider: "fal-ai" },
-    { id: "tencent/HunyuanVideo", label: "HunyuanVideo", provider: "fal-ai" },
-    { id: "Wan-AI/Wan2.1-T2V-14B", label: "Wan 2.1 T2V 14B", provider: "fal-ai" }
+    { id: "Wan-AI/Wan2.1-T2V-1.3B", label: "Wan 2.1 T2V 1.3B (text→video)", mode: "t2v", provider: "fal-ai" },
+    { id: "Wan-AI/Wan2.1-I2V-14B-480P", label: "Wan 2.1 I2V 14B (image→video)", mode: "i2v", provider: "fal-ai" },
+    { id: "Lightricks/LTX-Video", label: "LTX Video (text→video)", mode: "t2v", provider: "fal-ai" },
+    { id: "tencent/HunyuanVideo", label: "HunyuanVideo (text→video)", mode: "t2v", provider: "fal-ai" },
+    { id: "Wan-AI/Wan2.1-T2V-14B", label: "Wan 2.1 T2V 14B (text→video)", mode: "t2v", provider: "fal-ai" }
+  ];
+
+  var FAL_I2V_ENDPOINTS = [
+    "fal-ai/wan/v2.1/i2v-480p",
+    "fal-ai/wan-i2v",
+    "fal-ai/minimax/video-01-live",
+    "fal-ai/ltx-video/image-to-video"
   ];
 
   var hfClient = null;
   var hfClientLoading = null;
+  var imgUploadBlob = null;
+  var vidUploadBlob = null;
+  var lastImgBlob = null;
+  var lastVidBlob = null;
+  var lastVidUrl = null;
 
   function token() {
     try {
@@ -53,6 +67,15 @@
     hfClient = null;
     hfClientLoading = null;
     return loadHFClient();
+  }
+
+  function blobToDataUrl(blob) {
+    return new Promise(function (resolve, reject) {
+      var r = new FileReader();
+      r.onload = function () { resolve(r.result); };
+      r.onerror = reject;
+      r.readAsDataURL(blob);
+    });
   }
 
   function ensureUI() {
@@ -96,12 +119,19 @@
       '<div class="media-sheet-head"><h2>🎨 Image Generator</h2><button type="button" id="imgClose">✕</button></div>' +
       '<div class="media-sheet-body">' +
       "<label>Prompt</label>" +
-      '<textarea id="imgPrompt" placeholder="Describe the image..."></textarea>' +
-      '<p class="media-hint">Uses HF Inference Providers + your token (same as chat). PRO helps with credits.</p>' +
+      '<textarea id="imgPrompt" placeholder="Describe the image (or how to edit the upload)..."></textarea>' +
+      '<p class="media-hint">Optional upload = image-to-image. No upload = text-to-image. Uses your HF token.</p>' +
+      "<label>Reference image (optional)</label>" +
+      '<div class="media-upload-row">' +
+      '<input type="file" id="imgFile" accept="image/*" style="display:none">' +
+      '<button type="button" class="media-upload-btn" id="imgPick">📷 Upload image</button>' +
+      '<button type="button" class="media-upload-btn secondary" id="imgClear" style="display:none">Clear</button>' +
+      "</div>" +
+      '<div class="media-upload-preview" id="imgUploadPreview" style="display:none"></div>' +
       '<div class="media-row"><div><label>Model</label><select id="imgModel"></select></div></div>' +
       '<button type="button" class="media-gen-btn" id="imgGen">Generate image</button>' +
       '<div class="media-status" id="imgStatus"></div>' +
-      '<div class="media-result" id="imgResult"><div class="placeholder">Image will appear here</div></div>' +
+      '<div class="media-result" id="imgResult"><div class="placeholder">Result will appear here</div></div>' +
       '<div class="media-actions" id="imgActions" style="display:none">' +
       '<button type="button" id="imgDl">⬇ Download</button>' +
       '<button type="button" id="imgToProject">+ Project</button>' +
@@ -116,8 +146,15 @@
       '<div class="media-sheet-head"><h2>🎬 Video Generator</h2><button type="button" id="vidClose">✕</button></div>' +
       '<div class="media-sheet-body">' +
       "<label>Prompt</label>" +
-      '<textarea id="vidPrompt" placeholder="Describe the video..."></textarea>' +
-      '<p class="media-hint">Video runs on fal/Replicate via HF. Needs Inference Provider credits (PRO ~$2/mo included). Can take 1–3 min. Token must have <strong>Inference Providers</strong> permission.</p>' +
+      '<textarea id="vidPrompt" placeholder="Describe the video / motion..."></textarea>' +
+      '<p class="media-hint">Upload an image for <strong>image→video</strong>. Leave empty for <strong>text→video</strong>. Needs HF credits + Inference Providers.</p>' +
+      "<label>Start frame (optional — enables image→video)</label>" +
+      '<div class="media-upload-row">' +
+      '<input type="file" id="vidFile" accept="image/*" style="display:none">' +
+      '<button type="button" class="media-upload-btn" id="vidPick">📷 Upload image</button>' +
+      '<button type="button" class="media-upload-btn secondary" id="vidClear" style="display:none">Clear</button>' +
+      "</div>" +
+      '<div class="media-upload-preview" id="vidUploadPreview" style="display:none"></div>' +
       '<div class="media-row"><div><label>Model</label><select id="vidModel"></select></div></div>' +
       '<button type="button" class="media-gen-btn" id="vidGen">Generate video</button>' +
       '<div class="media-status" id="vidStatus"></div>' +
@@ -151,6 +188,63 @@
     document.getElementById("imgDl").onclick = downloadImg;
     document.getElementById("imgToProject").onclick = addImgToProject;
     document.getElementById("vidDl").onclick = downloadVid;
+
+    document.getElementById("imgPick").onclick = function () {
+      document.getElementById("imgFile").click();
+    };
+    document.getElementById("vidPick").onclick = function () {
+      document.getElementById("vidFile").click();
+    };
+    document.getElementById("imgFile").onchange = function (e) {
+      var f = e.target.files && e.target.files[0];
+      if (!f) return;
+      imgUploadBlob = f;
+      showPreview("imgUploadPreview", f);
+      document.getElementById("imgClear").style.display = "";
+      var sel = document.getElementById("imgModel");
+      for (var i = 0; i < IMAGE_MODELS.length; i++) {
+        if (IMAGE_MODELS[i].mode === "both" || IMAGE_MODELS[i].mode === "i2i") {
+          sel.value = IMAGE_MODELS[i].id;
+          break;
+        }
+      }
+    };
+    document.getElementById("vidFile").onchange = function (e) {
+      var f = e.target.files && e.target.files[0];
+      if (!f) return;
+      vidUploadBlob = f;
+      showPreview("vidUploadPreview", f);
+      document.getElementById("vidClear").style.display = "";
+      var sel = document.getElementById("vidModel");
+      for (var i = 0; i < VIDEO_MODELS.length; i++) {
+        if (VIDEO_MODELS[i].mode === "i2v") {
+          sel.value = VIDEO_MODELS[i].id;
+          break;
+        }
+      }
+    };
+    document.getElementById("imgClear").onclick = function () {
+      imgUploadBlob = null;
+      document.getElementById("imgFile").value = "";
+      document.getElementById("imgUploadPreview").style.display = "none";
+      document.getElementById("imgUploadPreview").innerHTML = "";
+      document.getElementById("imgClear").style.display = "none";
+    };
+    document.getElementById("vidClear").onclick = function () {
+      vidUploadBlob = null;
+      document.getElementById("vidFile").value = "";
+      document.getElementById("vidUploadPreview").style.display = "none";
+      document.getElementById("vidUploadPreview").innerHTML = "";
+      document.getElementById("vidClear").style.display = "none";
+    };
+  }
+
+  function showPreview(id, file) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var url = URL.createObjectURL(file);
+    el.style.display = "block";
+    el.innerHTML = '<img src="' + url + '" alt="upload">';
   }
 
   function openImg() {
@@ -170,21 +264,30 @@
     if (o) o.classList.remove("show");
   }
 
-  var lastImgBlob = null;
-  var lastVidBlob = null;
-  var lastVidUrl = null;
-
   function friendlyErr(err) {
     var msg = (err && err.message) || String(err || "unknown error");
     if (/403|401|unauthorized|authentication/i.test(msg))
-      return "Auth failed — token needs Inference Providers permission (fine-grained token).";
+      return "Auth failed — token needs Inference Providers permission.";
     if (/402|payment|credit|billing|quota|exceeded|rate limit/i.test(msg))
-      return "Out of Inference credits. PRO includes ~$2/mo; add credits at huggingface.co/settings/billing";
+      return "Out of Inference credits. Check huggingface.co/settings/billing";
     if (/not support|no provider|not been able to find|404/i.test(msg))
-      return "Model not available on current providers. Try another model in the list.";
+      return "Model/route not available. Try another model or upload mode.";
     if (/Failed to fetch|NetworkError|CORS/i.test(msg))
       return "Network error. Check connection / ad blockers.";
-    return msg.slice(0, 280);
+    return msg.slice(0, 300);
+  }
+
+  function normalizeImageOut(out) {
+    return Promise.resolve().then(async function () {
+      if (out instanceof Blob) return out;
+      if (out && out.arrayBuffer) return new Blob([await out.arrayBuffer()], { type: "image/png" });
+      if (out instanceof ArrayBuffer) return new Blob([out], { type: "image/png" });
+      if (typeof out === "string" && out.indexOf("http") === 0) {
+        var r = await fetch(out);
+        return r.blob();
+      }
+      return new Blob([out], { type: "image/png" });
+    });
   }
 
   async function generateImage() {
@@ -195,8 +298,8 @@
       return;
     }
     var prompt = (document.getElementById("imgPrompt").value || "").trim();
-    if (!prompt) {
-      if (typeof showToast === "function") showToast("Enter a prompt");
+    if (!prompt && !imgUploadBlob) {
+      if (typeof showToast === "function") showToast("Enter a prompt or upload an image");
       return;
     }
     var model = document.getElementById("imgModel").value;
@@ -204,34 +307,45 @@
     var status = document.getElementById("imgStatus");
     var result = document.getElementById("imgResult");
     btn.disabled = true;
-    status.textContent = "Generating… (10–60s)";
+    status.textContent = imgUploadBlob ? "Image-to-image… (20–90s)" : "Text-to-image… (10–60s)";
     result.innerHTML = '<div class="placeholder">Working…</div>';
     document.getElementById("imgActions").style.display = "none";
     lastImgBlob = null;
 
     try {
       var client = await refreshClient();
-      var out = await client.textToImage({
-        model: model,
-        inputs: prompt,
-        provider: "auto"
-      });
-      if (out instanceof Blob) {
-        lastImgBlob = out;
-      } else if (out && out.arrayBuffer) {
-        lastImgBlob = new Blob([await out.arrayBuffer()], { type: "image/png" });
-      } else if (out instanceof ArrayBuffer) {
-        lastImgBlob = new Blob([out], { type: "image/png" });
-      } else if (typeof out === "string" && out.indexOf("http") === 0) {
-        var r = await fetch(out);
-        lastImgBlob = await r.blob();
+      var out;
+      if (imgUploadBlob) {
+        try {
+          out = await client.imageToImage({
+            model: model,
+            inputs: imgUploadBlob,
+            parameters: { prompt: prompt || "enhance this image", strength: 0.75 }
+          });
+        } catch (e1) {
+          try {
+            out = await client.textToImage({
+              model: model,
+              inputs: prompt || "enhance this image",
+              provider: "auto"
+            });
+            status.textContent = "Note: provider fell back to text-only for this model";
+          } catch (e2) {
+            throw e1;
+          }
+        }
       } else {
-        lastImgBlob = new Blob([out], { type: "image/png" });
+        out = await client.textToImage({
+          model: model,
+          inputs: prompt,
+          provider: "auto"
+        });
       }
+      lastImgBlob = await normalizeImageOut(out);
       var url = URL.createObjectURL(lastImgBlob);
       result.innerHTML = '<img src="' + url + '" alt="generated">';
       document.getElementById("imgActions").style.display = "flex";
-      status.textContent = "Done";
+      if (!status.textContent || status.textContent.indexOf("Note") !== 0) status.textContent = "Done";
     } catch (err) {
       console.error(err);
       result.innerHTML = '<div class="err">' + friendlyErr(err) + "</div>";
@@ -260,6 +374,69 @@
     reader.readAsDataURL(lastImgBlob);
   }
 
+  async function tryFalI2V(prompt, imageBlob, statusEl) {
+    var t = token();
+    var dataUrl = await blobToDataUrl(imageBlob);
+    var lastErr = null;
+    for (var i = 0; i < FAL_I2V_ENDPOINTS.length; i++) {
+      var ep = FAL_I2V_ENDPOINTS[i];
+      statusEl.textContent = "I2V via fal: " + ep + "…";
+      try {
+        var url = "https://router.huggingface.co/fal-ai/" + ep;
+        var res = await fetch(url, {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + t,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            prompt: prompt || "animate this image",
+            image_url: dataUrl,
+            image_url_input: dataUrl
+          })
+        });
+        if (!res.ok) {
+          var txt = await res.text();
+          lastErr = new Error(txt.slice(0, 200) || ("HTTP " + res.status));
+          continue;
+        }
+        var ct = (res.headers.get("content-type") || "").toLowerCase();
+        if (ct.indexOf("video/") >= 0) {
+          return { blob: await res.blob() };
+        }
+        var data = await res.json();
+        if (data.request_id || data.status_url || data.response_url) {
+          var pollUrl = data.response_url || data.status_url;
+          if (pollUrl) {
+            for (var p = 0; p < 60; p++) {
+              statusEl.textContent = "Queued… poll " + (p + 1);
+              await new Promise(function (r) { setTimeout(r, 3000); });
+              var pr = await fetch(pollUrl, { headers: { Authorization: "Bearer " + t } });
+              if (!pr.ok) continue;
+              var pd = await pr.json();
+              if (pd.status === "COMPLETED" || pd.video || (pd.video && pd.video.url)) {
+                data = pd;
+                break;
+              }
+              if (pd.status === "FAILED") throw new Error(pd.error || "Queue failed");
+            }
+          }
+        }
+        var vurl =
+          (data.video && data.video.url) ||
+          data.video_url ||
+          data.url ||
+          data.output ||
+          (data.videos && data.videos[0]);
+        if (typeof vurl === "string") return { url: vurl };
+        if (data.video && typeof data.video === "string") return { url: data.video };
+      } catch (e) {
+        lastErr = e;
+      }
+    }
+    throw lastErr || new Error("All I2V endpoints failed");
+  }
+
   async function generateVideo() {
     var t = token();
     if (!t) {
@@ -268,71 +445,85 @@
       return;
     }
     var prompt = (document.getElementById("vidPrompt").value || "").trim();
-    if (!prompt) {
-      if (typeof showToast === "function") showToast("Enter a prompt");
+    if (!prompt && !vidUploadBlob) {
+      if (typeof showToast === "function") showToast("Enter a prompt or upload a start image");
       return;
     }
     var model = document.getElementById("vidModel").value;
-    var meta = VIDEO_MODELS.find(function (m) { return m.id === model; }) || { provider: "fal-ai" };
+    var meta = VIDEO_MODELS.find(function (m) { return m.id === model; }) || { provider: "fal-ai", mode: "t2v" };
     var btn = document.getElementById("vidGen");
     var status = document.getElementById("vidStatus");
     var result = document.getElementById("vidResult");
     btn.disabled = true;
-    status.textContent = "Queued on provider… often 1–3 minutes";
-    result.innerHTML = '<div class="placeholder">Generating video… stay on this screen</div>';
+    status.textContent = vidUploadBlob ? "Image→video… 1–3 min" : "Text→video… 1–3 min";
+    result.innerHTML = '<div class="placeholder">Generating… stay on this screen</div>';
     document.getElementById("vidActions").style.display = "none";
     lastVidBlob = null;
     lastVidUrl = null;
 
-    var providers = [meta.provider, "fal-ai", "replicate", "novita", "auto"];
-    providers = providers.filter(function (p, i, a) { return a.indexOf(p) === i; });
-
-    var lastErr = null;
-    for (var i = 0; i < providers.length; i++) {
-      try {
-        status.textContent = "Trying provider: " + providers[i] + "…";
-        var client = await refreshClient();
-        var out = await client.textToVideo({
-          model: model,
-          inputs: prompt,
-          provider: providers[i]
-        });
-        if (typeof out === "string" && out.indexOf("http") === 0) {
-          lastVidUrl = out;
-          result.innerHTML = '<video src="' + out + '" controls autoplay loop playsinline></video>';
-        } else if (out instanceof Blob) {
-          lastVidBlob = out;
-          lastVidUrl = URL.createObjectURL(out);
+    try {
+      if (vidUploadBlob) {
+        try {
+          var i2v = await tryFalI2V(prompt, vidUploadBlob, status);
+          if (i2v.blob) {
+            lastVidBlob = i2v.blob;
+            lastVidUrl = URL.createObjectURL(i2v.blob);
+          } else if (i2v.url) {
+            lastVidUrl = i2v.url;
+          }
           result.innerHTML = '<video src="' + lastVidUrl + '" controls autoplay loop playsinline></video>';
-        } else if (out && out.url) {
-          lastVidUrl = out.url;
-          result.innerHTML = '<video src="' + lastVidUrl + '" controls autoplay loop playsinline></video>';
-        } else if (out && out.arrayBuffer) {
-          lastVidBlob = new Blob([await out.arrayBuffer()], { type: "video/mp4" });
-          lastVidUrl = URL.createObjectURL(lastVidBlob);
-          result.innerHTML = '<video src="' + lastVidUrl + '" controls autoplay loop playsinline></video>';
-        } else {
-          throw new Error("Unexpected video response type");
+          document.getElementById("vidActions").style.display = "flex";
+          status.textContent = "Done (image→video)";
+          btn.disabled = false;
+          return;
+        } catch (i2vErr) {
+          console.warn("I2V fal path failed, trying HF client", i2vErr);
         }
-        document.getElementById("vidActions").style.display = "flex";
-        status.textContent = "Done (" + providers[i] + ")";
-        btn.disabled = false;
-        return;
-      } catch (err) {
-        console.error("video provider", providers[i], err);
-        lastErr = err;
       }
+
+      var providers = [meta.provider || "fal-ai", "fal-ai", "replicate", "novita", "auto"];
+      providers = providers.filter(function (p, i, a) { return a.indexOf(p) === i; });
+      var lastErr = null;
+      for (var i = 0; i < providers.length; i++) {
+        try {
+          status.textContent = "Trying " + providers[i] + "…";
+          var client = await refreshClient();
+          var out = await client.textToVideo({
+            model: model,
+            inputs: prompt || "cinematic motion",
+            provider: providers[i]
+          });
+          if (typeof out === "string" && out.indexOf("http") === 0) {
+            lastVidUrl = out;
+          } else if (out instanceof Blob) {
+            lastVidBlob = out;
+            lastVidUrl = URL.createObjectURL(out);
+          } else if (out && out.url) {
+            lastVidUrl = out.url;
+          } else if (out && out.arrayBuffer) {
+            lastVidBlob = new Blob([await out.arrayBuffer()], { type: "video/mp4" });
+            lastVidUrl = URL.createObjectURL(lastVidBlob);
+          } else {
+            throw new Error("Unexpected video response");
+          }
+          result.innerHTML = '<video src="' + lastVidUrl + '" controls autoplay loop playsinline></video>';
+          document.getElementById("vidActions").style.display = "flex";
+          status.textContent = "Done (" + providers[i] + ")";
+          btn.disabled = false;
+          return;
+        } catch (err) {
+          console.error(err);
+          lastErr = err;
+        }
+      }
+      throw lastErr || new Error("All providers failed");
+    } catch (err) {
+      result.innerHTML =
+        '<div class="err">' +
+        friendlyErr(err) +
+        "<br><br>Tips: enable fal-ai in HF inference-providers settings; use Wan I2V model when uploading an image; ensure billing credits remain.</div>";
+      status.textContent = "Failed";
     }
-    result.innerHTML =
-      '<div class="err">' +
-      friendlyErr(lastErr) +
-      "<br><br><strong>Checklist:</strong><br>" +
-      "1. Token has <em>Inference Providers</em> write permission<br>" +
-      "2. Billing has credits left (PRO ≈ $2/mo included)<br>" +
-      "3. At hf.co/settings/inference-providers enable fal-ai<br>" +
-      "4. Try Wan 2.1 1.3B first (cheapest/fastest)" +
-      "</div>";
-    status.textContent = "All providers failed";
     btn.disabled = false;
   }
 
