@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#0a0a0c">
 <title>Siftah Mobile</title>
 <link rel="stylesheet" href="./siftah.css">
+<link rel="stylesheet" href="./v15.css">
 </head>
 <body>
 <div class="app">
@@ -79,7 +80,7 @@
         <button type="button" class="google-btn" id="btnGoogleSignIn">
           <span class="g-icon">G</span> Sign in with Google
         </button>
-        <p class="menu-hint">Sync chat history to this device under your account. Optional Firebase config required once.</p>
+        <p class="menu-hint">Sync chat history under your account on this device. Paste Firebase config in Settings once.</p>
       </div>
       <div id="menuSignedIn" style="display:none">
         <div class="menu-user-row">
@@ -126,7 +127,7 @@
         <div class="section-title">🔑 Access Token</div>
         <div class="field">
           <input id="token" type="password" placeholder="hf_..." autocomplete="off">
-          <div class="hint">Create a <strong>fine-grained</strong> token at <a href="https://huggingface.co/settings/tokens" target="_blank" rel="noopener">huggingface.co/settings/tokens</a> and enable <strong>“Make calls to Inference Providers”</strong>. Stored only in this browser. Using <em>your</em> token keeps your rate limits separate.</div>
+          <div class="hint">Create a <strong>fine-grained</strong> token at <a href="https://huggingface.co/settings/tokens" target="_blank" rel="noopener">huggingface.co/settings/tokens</a> and enable <strong>Make calls to Inference Providers</strong>. Using your own token keeps rate limits separate.</div>
         </div>
       </div>
       <div class="section">
@@ -150,8 +151,8 @@
       <div class="section">
         <div class="section-title">🔐 Google / Firebase (optional)</div>
         <div class="field">
-          <textarea id="firebaseConfig" rows="4" placeholder='Paste Firebase web config JSON here, e.g. {"apiKey":"...","authDomain":"...","projectId":"..."}'></textarea>
-          <div class="hint">Create a Firebase project → Authentication → enable Google → paste the web app config. Enables Sign in with Google. Leave empty to skip.</div>
+          <textarea id="firebaseConfig" rows="4" placeholder='Paste Firebase web config JSON'></textarea>
+          <div class="hint">Firebase project → Authentication → enable Google → paste web app config JSON. Leave empty to skip.</div>
         </div>
       </div>
       <div class="section">
