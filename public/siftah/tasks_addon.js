@@ -1,6 +1,6 @@
-/* Siftah v1.5 tasks + menu + google addon */
+/* Siftah v1.5 tasks + menu + google + smart +Project naming */
 (function(){
-  if (!window.project) return;
+  if (typeof project === "undefined") return;
   project.activeTask = project.activeTask || "";
 
   function listTasks(){ return Object.keys(project.folders||{}).sort(); }
@@ -79,6 +79,118 @@
     if (typeof renderFilesTree === "function") renderFilesTree();
     showToast("Assembled "+moved+" file(s)");
   };
+
+  function looksLikeFile(s){
+    if (!s) return false;
+    s = String(s).trim().replace(/^[`'"*#_:\-\s]+|[`'"*#_:\-\s]+$/g,"");
+    if (!/^[\w./\-]+$/.test(s)) return false;
+    return /\.[a-z0-9]{1,12}$/i.test(s) || (/[\/]/.test(s) && s.length < 120);
+  }
+  function cleanFile(s){
+    return String(s||"").trim()
+      .replace(/^[`'"*#:\-\s]+/, "")
+      .replace(/[`'"*#:\-\s]+$/, "")
+      .replace(/^\.\//, "")
+      .replace(/^(?:File|Filename|Path|Name)\s*:\s*/i, "");
+  }
+  function extractNameFromCode(code){
+    if (!code) return null;
+    const lines = code.split(/\n/).slice(0, 8);
+    for (const line of lines){
+      const t = line.trim();
+      let m =
+        t.match(/^\/\/\s*([^\s*]+?\.[a-z0-9]{1,12})\s*$/i) ||
+        t.match(/^#\s*([^\s]+?\.[a-z0-9]{1,12})\s*$/i) ||
+        t.match(/^\/\*\s*([^\s*]+?\.[a-z0-9]{1,12})\s*\*\//i) ||
+        t.match(/^<!--\s*([^\s>]+?\.[a-z0-9]{1,12})\s*-->/i) ||
+        t.match(/^(?:\/\/|#|--)\s*(?:file|filename|path)\s*[:=]\s*[`']?([^\s`']+)/i) ||
+        t.match(/^(?:file|filename|path)\s*[:=]\s*[`']?([^\s`']+)/i);
+      if (m && looksLikeFile(m[1])) return cleanFile(m[1]).split("/").pop();
+    }
+    return null;
+  }
+  function extractNameNearBlock(btn){
+    try {
+      const block = btn.closest(".code-block");
+      if (!block) return null;
+      const langEl = block.querySelector(".lang");
+      if (langEl){
+        const lab = cleanFile(langEl.textContent||"");
+        if (looksLikeFile(lab)) return lab.split("/").pop();
+      }
+      const bubble = btn.closest(".bubble");
+      if (bubble){
+        let node = block.previousSibling;
+        const chunks = [];
+        while (node && chunks.length < 6){
+          const text = (node.textContent||"").trim();
+          if (text) chunks.unshift(text);
+          node = node.previousSibling;
+        }
+        const before = chunks.join("\n");
+        const patterns = [
+          /(?:file|filename|path)\s*[:=]\s*[`']?([\w./\-]+\.[a-z0-9]{1,12})/i,
+          /(?:create|write|save|update|edit|here(?:'s| is)|following)\s+(?:the\s+)?(?:file\s+)?[`'*]*([\w./\-]+\.[a-z0-9]{1,12})/i,
+          /[`']([\w./\-]+\.[a-z0-9]{1,12})[`']/,n          /\*\*([^*\s]+\.[a-z0-9]{1,12})\*\*/,
+          /(?:^|\n)\s*#+\s*[`']?([\w./\-]+\.[a-z0-9]{1,12})[`']?\s*$/m
+        ];
+        for (const re of patterns){
+          const m = before.match(re);
+          if (m && looksLikeFile(m[1])) return cleanFile(m[1]).split("/").pop();
+        }
+      }
+    } catch(e){}
+    return null;
+  }
+  function defaultGuess(lang){
+    const used = new Set([
+      ...Object.keys(project.files||{}),
+      ...Object.values(project.folders||{}).flatMap(f => Object.keys(f.files||{}))
+    ]);
+    if (typeof guessFilename === "function") return guessFilename(lang||"txt", used);
+    const map = {javascript:"js",js:"js",python:"py",py:"py",html:"html",css:"css",typescript:"ts",ts:"ts",json:"json",md:"md"};
+    const ext = map[(lang||"txt").toLowerCase()] || "txt";
+    const base = {html:"index",css:"styles",js:"script",javascript:"script",py:"main",python:"main",ts:"index",json:"data",md:"README"}[ (lang||"").toLowerCase() ] || "file";
+    let name = base+"."+ext, i=2;
+    while (used.has(name)) { name = base+i+"."+ext; i++; }
+    return name;
+  }
+
+  function resolveProjectPath(btn, pre){
+    let path = (btn.getAttribute("data-path")||"").trim();
+    if (path && looksLikeFile(path)) return cleanFile(path).split("/").pop();
+    const fromNear = extractNameNearBlock(btn);
+    if (fromNear) return fromNear;
+    const fromCode = extractNameFromCode(pre ? pre.textContent : "");
+    if (fromCode) return fromCode;
+    const lang = btn.getAttribute("data-lang") || "txt";
+    const guess = defaultGuess(lang);
+    const entered = prompt("Filename for this code:", guess);
+    if (entered == null) return null;
+    const cleaned = cleanFile(entered).replace(/[^\w./\-]+/g,"").split("/").pop();
+    return cleaned || guess;
+  }
+
+  document.addEventListener("click", function(e){
+    const btn = e.target && e.target.closest && e.target.closest(".add-btn");
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    const pre = document.getElementById(btn.getAttribute("data-add"));
+    if (!pre) return;
+    const path = resolveProjectPath(btn, pre);
+    if (!path) return;
+    const block = btn.closest(".code-block");
+    if (block){
+      const langEl = block.querySelector(".lang");
+      if (langEl) langEl.textContent = path;
+      btn.setAttribute("data-path", path);
+    }
+    putFile(path, pre.textContent||"", true);
+    btn.textContent = "Added";
+    setTimeout(function(){ btn.textContent = "+ Project"; }, 1200);
+  }, true);
 
   const _putFile = window.putFile;
   if (typeof _putFile === "function") {
@@ -180,8 +292,8 @@
   };
 
   window.signInWithGoogle = async function(){
-    const s = loadSettings();
-    const cfg = s.firebaseConfig || localStorage.getItem("siftah_firebase") || "";
+    const s = typeof loadSettings==="function" ? loadSettings() : {};
+    const cfg = (s && s.firebaseConfig) || localStorage.getItem("siftah_firebase") || "";
     if (!cfg){ if(typeof openSettings==="function") openSettings(); showToast("Paste Firebase config in Settings first"); return; }
     const ok = await initFirebase(cfg);
     if (!ok || !firebaseAuth) return;
