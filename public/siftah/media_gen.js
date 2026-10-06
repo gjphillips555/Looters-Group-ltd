@@ -1,20 +1,23 @@
-/* Siftah Media Gen — image + video via HF Inference Providers */
+/* Siftah Media Gen v2 — HF InferenceClient (image + video) */
 (function () {
   "use strict";
 
   var IMAGE_MODELS = [
-    { id: "black-forest-labs/FLUX.1-schnell", label: "FLUX.1 Schnell (fast)" },
-    { id: "black-forest-labs/FLUX.1-dev", label: "FLUX.1 Dev (quality)" },
-    { id: "stabilityai/stable-diffusion-xl-base-1.0", label: "SDXL 1.0" },
-    { id: "stabilityai/stable-diffusion-3.5-large", label: "SD 3.5 Large" },
-    { id: "Qwen/Qwen-Image", label: "Qwen Image" }
+    { id: "black-forest-labs/FLUX.1-schnell", label: "FLUX.1 Schnell (fast)", provider: "auto" },
+    { id: "black-forest-labs/FLUX.1-dev", label: "FLUX.1 Dev", provider: "auto" },
+    { id: "stabilityai/stable-diffusion-xl-base-1.0", label: "SDXL 1.0", provider: "auto" },
+    { id: "Qwen/Qwen-Image", label: "Qwen Image", provider: "auto" }
   ];
 
   var VIDEO_MODELS = [
-    { id: "Wan-AI/Wan2.1-T2V-1.3B", label: "Wan 2.1 T2V 1.3B" },
-    { id: "Lightricks/LTX-Video", label: "LTX Video" },
-    { id: "tencent/HunyuanVideo", label: "HunyuanVideo" }
+    { id: "Wan-AI/Wan2.1-T2V-1.3B", label: "Wan 2.1 T2V 1.3B (fal)", provider: "fal-ai" },
+    { id: "Lightricks/LTX-Video", label: "LTX Video", provider: "fal-ai" },
+    { id: "tencent/HunyuanVideo", label: "HunyuanVideo", provider: "fal-ai" },
+    { id: "Wan-AI/Wan2.1-T2V-14B", label: "Wan 2.1 T2V 14B", provider: "fal-ai" }
   ];
+
+  var hfClient = null;
+  var hfClientLoading = null;
 
   function token() {
     try {
@@ -24,7 +27,32 @@
       }
     } catch (e) {}
     var el = document.getElementById("token");
-    return (el && el.value) || localStorage.getItem("siftah_token") || "";
+    return (el && el.value) || "";
+  }
+
+  function loadHFClient() {
+    if (hfClient) return Promise.resolve(hfClient);
+    if (hfClientLoading) return hfClientLoading;
+    hfClientLoading = import("https://cdn.jsdelivr.net/npm/@huggingface/inference@3/+esm")
+      .then(function (mod) {
+        var InferenceClient = mod.InferenceClient || mod.HfInference || mod.default;
+        if (!InferenceClient) throw new Error("InferenceClient not found in SDK");
+        var t = token();
+        if (!t) throw new Error("No HF token — open Settings and paste your token");
+        hfClient = new InferenceClient(t);
+        return hfClient;
+      })
+      .catch(function (err) {
+        hfClientLoading = null;
+        throw err;
+      });
+    return hfClientLoading;
+  }
+
+  function refreshClient() {
+    hfClient = null;
+    hfClientLoading = null;
+    return loadHFClient();
   }
 
   function ensureUI() {
@@ -69,7 +97,7 @@
       '<div class="media-sheet-body">' +
       "<label>Prompt</label>" +
       '<textarea id="imgPrompt" placeholder="Describe the image..."></textarea>' +
-      '<p class="media-hint">Uses your HF token. Open prompts allowed — some providers may still refuse content.</p>' +
+      '<p class="media-hint">Uses HF Inference Providers + your token (same as chat). PRO helps with credits.</p>' +
       '<div class="media-row"><div><label>Model</label><select id="imgModel"></select></div></div>' +
       '<button type="button" class="media-gen-btn" id="imgGen">Generate image</button>' +
       '<div class="media-status" id="imgStatus"></div>' +
@@ -89,7 +117,7 @@
       '<div class="media-sheet-body">' +
       "<label>Prompt</label>" +
       '<textarea id="vidPrompt" placeholder="Describe the video..."></textarea>' +
-      '<p class="media-hint">Video via HF providers (fal / novita). Needs credits on your HF account. May take 1–3 minutes.</p>' +
+      '<p class="media-hint">Video runs on fal/Replicate via HF. Needs Inference Provider credits (PRO ~$2/mo included). Can take 1–3 min. Token must have <strong>Inference Providers</strong> permission.</p>' +
       '<div class="media-row"><div><label>Model</label><select id="vidModel"></select></div></div>' +
       '<button type="button" class="media-gen-btn" id="vidGen">Generate video</button>' +
       '<div class="media-status" id="vidStatus"></div>' +
@@ -143,7 +171,21 @@
   }
 
   var lastImgBlob = null;
+  var lastVidBlob = null;
   var lastVidUrl = null;
+
+  function friendlyErr(err) {
+    var msg = (err && err.message) || String(err || "unknown error");
+    if (/403|401|unauthorized|authentication/i.test(msg))
+      return "Auth failed — token needs Inference Providers permission (fine-grained token).";
+    if (/402|payment|credit|billing|quota|exceeded|rate limit/i.test(msg))
+      return "Out of Inference credits. PRO includes ~$2/mo; add credits at huggingface.co/settings/billing";
+    if (/not support|no provider|not been able to find|404/i.test(msg))
+      return "Model not available on current providers. Try another model in the list.";
+    if (/Failed to fetch|NetworkError|CORS/i.test(msg))
+      return "Network error. Check connection / ad blockers.";
+    return msg.slice(0, 280);
+  }
 
   async function generateImage() {
     var t = token();
@@ -162,80 +204,39 @@
     var status = document.getElementById("imgStatus");
     var result = document.getElementById("imgResult");
     btn.disabled = true;
-    status.textContent = "Generating… (10–40s)";
+    status.textContent = "Generating… (10–60s)";
     result.innerHTML = '<div class="placeholder">Working…</div>';
     document.getElementById("imgActions").style.display = "none";
     lastImgBlob = null;
 
-    var urls = [
-      "https://router.huggingface.co/hf-inference/models/" + model,
-      "https://router.huggingface.co/fal-ai/models/" + model,
-      "https://api-inference.huggingface.co/models/" + model
-    ];
-    var lastErr = "";
-    for (var i = 0; i < urls.length; i++) {
-      try {
-        var res = await fetch(urls[i], {
-          method: "POST",
-          headers: {
-            Authorization: "Bearer " + t,
-            "Content-Type": "application/json",
-            Accept: "image/*"
-          },
-          body: JSON.stringify({ inputs: prompt, parameters: { num_inference_steps: 28 } })
-        });
-        var ct = (res.headers.get("content-type") || "").toLowerCase();
-        if (!res.ok) {
-          var errText = await res.text();
-          try {
-            var j = JSON.parse(errText);
-            lastErr = j.error || j.message || errText.slice(0, 200);
-          } catch (e) {
-            lastErr = errText.slice(0, 200) || ("HTTP " + res.status);
-          }
-          continue;
-        }
-        if (ct.indexOf("application/json") >= 0) {
-          var data = await res.json();
-          if (data.image) {
-            var b64 = data.image.replace(/^data:image\/\w+;base64,/, "");
-            var bin = atob(b64);
-            var arr = new Uint8Array(bin.length);
-            for (var k = 0; k < bin.length; k++) arr[k] = bin.charCodeAt(k);
-            lastImgBlob = new Blob([arr], { type: "image/png" });
-          } else if (data.url || data.output || (data.images && data.images[0])) {
-            var u = data.url || data.output || data.images[0];
-            if (typeof u === "string" && u.indexOf("http") === 0) {
-              var ir = await fetch(u);
-              lastImgBlob = await ir.blob();
-            } else if (typeof u === "string") {
-              var b642 = u.replace(/^data:image\/\w+;base64,/, "");
-              var bin2 = atob(b642);
-              var arr2 = new Uint8Array(bin2.length);
-              for (var k2 = 0; k2 < bin2.length; k2++) arr2[k2] = bin2.charCodeAt(k2);
-              lastImgBlob = new Blob([arr2], { type: "image/png" });
-            }
-          } else {
-            lastErr = JSON.stringify(data).slice(0, 180);
-            continue;
-          }
-        } else {
-          lastImgBlob = await res.blob();
-        }
-        if (lastImgBlob && lastImgBlob.size > 100) {
-          var url = URL.createObjectURL(lastImgBlob);
-          result.innerHTML = '<img src="' + url + '" alt="generated">';
-          document.getElementById("imgActions").style.display = "flex";
-          status.textContent = "Done";
-          btn.disabled = false;
-          return;
-        }
-      } catch (err) {
-        lastErr = err.message || String(err);
+    try {
+      var client = await refreshClient();
+      var out = await client.textToImage({
+        model: model,
+        inputs: prompt,
+        provider: "auto"
+      });
+      if (out instanceof Blob) {
+        lastImgBlob = out;
+      } else if (out && out.arrayBuffer) {
+        lastImgBlob = new Blob([await out.arrayBuffer()], { type: "image/png" });
+      } else if (out instanceof ArrayBuffer) {
+        lastImgBlob = new Blob([out], { type: "image/png" });
+      } else if (typeof out === "string" && out.indexOf("http") === 0) {
+        var r = await fetch(out);
+        lastImgBlob = await r.blob();
+      } else {
+        lastImgBlob = new Blob([out], { type: "image/png" });
       }
+      var url = URL.createObjectURL(lastImgBlob);
+      result.innerHTML = '<img src="' + url + '" alt="generated">';
+      document.getElementById("imgActions").style.display = "flex";
+      status.textContent = "Done";
+    } catch (err) {
+      console.error(err);
+      result.innerHTML = '<div class="err">' + friendlyErr(err) + "</div>";
+      status.textContent = "Failed";
     }
-    result.innerHTML = '<div class="err">Failed: ' + (lastErr || "unknown") + "</div>";
-    status.textContent = "Try another model or check HF credits / token permissions";
     btn.disabled = false;
   }
 
@@ -251,11 +252,9 @@
     if (!lastImgBlob) return;
     var reader = new FileReader();
     reader.onload = function () {
-      var dataUrl = reader.result;
-      var name = "image-" + Date.now() + ".png.txt";
       if (typeof putFile === "function") {
-        putFile(name, dataUrl, true);
-        if (typeof showToast === "function") showToast("Added " + name + " (data URL)");
+        putFile("image-" + Date.now() + ".png.txt", reader.result, true);
+        if (typeof showToast === "function") showToast("Added image data URL to Project");
       }
     };
     reader.readAsDataURL(lastImgBlob);
@@ -274,85 +273,84 @@
       return;
     }
     var model = document.getElementById("vidModel").value;
+    var meta = VIDEO_MODELS.find(function (m) { return m.id === model; }) || { provider: "fal-ai" };
     var btn = document.getElementById("vidGen");
     var status = document.getElementById("vidStatus");
     var result = document.getElementById("vidResult");
     btn.disabled = true;
-    status.textContent = "Generating video… can take 1–3 min";
-    result.innerHTML = '<div class="placeholder">Working…</div>';
+    status.textContent = "Queued on provider… often 1–3 minutes";
+    result.innerHTML = '<div class="placeholder">Generating video… stay on this screen</div>';
     document.getElementById("vidActions").style.display = "none";
+    lastVidBlob = null;
     lastVidUrl = null;
 
-    var endpoints = [
-      "https://router.huggingface.co/fal-ai/" + model,
-      "https://router.huggingface.co/novita/" + model,
-      "https://router.huggingface.co/hf-inference/models/" + model
-    ];
-    var lastErr = "";
-    for (var i = 0; i < endpoints.length; i++) {
+    var providers = [meta.provider, "fal-ai", "replicate", "novita", "auto"];
+    providers = providers.filter(function (p, i, a) { return a.indexOf(p) === i; });
+
+    var lastErr = null;
+    for (var i = 0; i < providers.length; i++) {
       try {
-        var res = await fetch(endpoints[i], {
-          method: "POST",
-          headers: {
-            Authorization: "Bearer " + t,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            inputs: prompt,
-            prompt: prompt,
-            parameters: { num_frames: 25 }
-          })
+        status.textContent = "Trying provider: " + providers[i] + "…";
+        var client = await refreshClient();
+        var out = await client.textToVideo({
+          model: model,
+          inputs: prompt,
+          provider: providers[i]
         });
-        var ct = (res.headers.get("content-type") || "").toLowerCase();
-        if (!res.ok) {
-          var errText = await res.text();
-          try {
-            var j = JSON.parse(errText);
-            lastErr = j.error || j.message || errText.slice(0, 220);
-          } catch (e) {
-            lastErr = errText.slice(0, 220) || ("HTTP " + res.status);
-          }
-          continue;
+        if (typeof out === "string" && out.indexOf("http") === 0) {
+          lastVidUrl = out;
+          result.innerHTML = '<video src="' + out + '" controls autoplay loop playsinline></video>';
+        } else if (out instanceof Blob) {
+          lastVidBlob = out;
+          lastVidUrl = URL.createObjectURL(out);
+          result.innerHTML = '<video src="' + lastVidUrl + '" controls autoplay loop playsinline></video>';
+        } else if (out && out.url) {
+          lastVidUrl = out.url;
+          result.innerHTML = '<video src="' + lastVidUrl + '" controls autoplay loop playsinline></video>';
+        } else if (out && out.arrayBuffer) {
+          lastVidBlob = new Blob([await out.arrayBuffer()], { type: "video/mp4" });
+          lastVidUrl = URL.createObjectURL(lastVidBlob);
+          result.innerHTML = '<video src="' + lastVidUrl + '" controls autoplay loop playsinline></video>';
+        } else {
+          throw new Error("Unexpected video response type");
         }
-        if (ct.indexOf("video/") >= 0 || ct.indexOf("octet-stream") >= 0) {
-          var blob = await res.blob();
-          lastVidUrl = URL.createObjectURL(blob);
-          result.innerHTML = '<video src="' + lastVidUrl + '" controls autoplay loop></video>';
-          document.getElementById("vidActions").style.display = "flex";
-          status.textContent = "Done";
-          btn.disabled = false;
-          return;
-        }
-        var data = await res.json();
-        var url = data.video || data.url || data.output || (data.videos && data.videos[0]);
-        if (typeof url === "string" && url.indexOf("http") === 0) {
-          lastVidUrl = url;
-          result.innerHTML = '<video src="' + url + '" controls autoplay loop></video>';
-          document.getElementById("vidActions").style.display = "flex";
-          status.textContent = "Done";
-          btn.disabled = false;
-          return;
-        }
-        lastErr = JSON.stringify(data).slice(0, 200);
+        document.getElementById("vidActions").style.display = "flex";
+        status.textContent = "Done (" + providers[i] + ")";
+        btn.disabled = false;
+        return;
       } catch (err) {
-        lastErr = err.message || String(err);
+        console.error("video provider", providers[i], err);
+        lastErr = err;
       }
     }
     result.innerHTML =
-      '<div class="err">Video gen failed: ' +
-      (lastErr || "no provider accepted this model") +
-      "<br><br>Video models often need HF Pro credits or a fal/novita-enabled token. Image gen is more reliable on free tier.</div>";
-    status.textContent = "Try Image Generator, or enable provider billing on HF";
+      '<div class="err">' +
+      friendlyErr(lastErr) +
+      "<br><br><strong>Checklist:</strong><br>" +
+      "1. Token has <em>Inference Providers</em> write permission<br>" +
+      "2. Billing has credits left (PRO ≈ $2/mo included)<br>" +
+      "3. At hf.co/settings/inference-providers enable fal-ai<br>" +
+      "4. Try Wan 2.1 1.3B first (cheapest/fastest)" +
+      "</div>";
+    status.textContent = "All providers failed";
     btn.disabled = false;
   }
 
   function downloadVid() {
-    if (!lastVidUrl) return;
-    var a = document.createElement("a");
-    a.href = lastVidUrl;
-    a.download = "siftah-video-" + Date.now() + ".mp4";
-    a.target = "_blank";
-    a.click();
+    if (lastVidBlob) {
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(lastVidBlob);
+      a.download = "siftah-video-" + Date.now() + ".mp4";
+      a.click();
+      return;
+    }
+    if (lastVidUrl) {
+      var a2 = document.createElement("a");
+      a2.href = lastVidUrl;
+      a2.download = "siftah-video-" + Date.now() + ".mp4";
+      a2.target = "_blank";
+      a2.click();
+    }
   }
 
   function boot() {
