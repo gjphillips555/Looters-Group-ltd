@@ -126,12 +126,14 @@
       ".chat-tabs{display:flex;align-items:stretch;gap:0;background:#0c0e12;border-bottom:1px solid var(--border);min-height:36px;flex-shrink:0}" +
       ".chat-tabs-scroll{display:flex;align-items:stretch;overflow-x:auto;flex:1;min-width:0;scrollbar-width:thin}" +
       ".chat-tabs-scroll::-webkit-scrollbar{height:4px}" +
-      ".chat-tab{display:flex;align-items:center;gap:6px;max-width:160px;min-width:72px;padding:0 10px;border:none;border-right:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;font-weight:500;cursor:pointer;position:relative;height:36px}" +
+      ".chat-tab{display:flex;align-items:center;gap:6px;max-width:180px;min-width:72px;padding:0 8px;border:none;border-right:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;font-weight:500;cursor:pointer;position:relative;height:36px}" +
       ".chat-tab:hover{background:rgba(255,255,255,0.04);color:var(--text)}" +
       ".chat-tab.active{background:var(--panel2);color:var(--text)}" +
       ".chat-tab.active::after{content:'';position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--red)}" +
       ".chat-tab .tab-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;text-align:left}" +
-      ".chat-tab .tab-close{width:18px;height:18px;border-radius:50%;border:none;background:transparent;color:var(--muted);font-size:14px;line-height:1;cursor:pointer;flex-shrink:0;display:grid;place-items:center;padding:0}" +
+      ".chat-tab .tab-rename,.chat-tab .tab-close{width:18px;height:18px;border-radius:50%;border:none;background:transparent;color:var(--muted);font-size:12px;line-height:1;cursor:pointer;flex-shrink:0;display:grid;place-items:center;padding:0;opacity:0.55}" +
+      ".chat-tab:hover .tab-rename,.chat-tab.active .tab-rename,.chat-tab:hover .tab-close,.chat-tab.active .tab-close{opacity:1}" +
+      ".chat-tab .tab-rename:hover{background:rgba(255,255,255,0.08);color:var(--text)}" +
       ".chat-tab .tab-close:hover{background:rgba(225,29,46,0.2);color:var(--red)}" +
       ".chat-tab-new{width:36px;border:none;border-left:1px solid var(--border);background:transparent;color:var(--text);font-size:18px;cursor:pointer;flex-shrink:0}" +
       ".chat-tab-new:hover{background:rgba(225,29,46,0.12);color:var(--red)}";
@@ -146,17 +148,29 @@
       var btn = document.createElement("button");
       btn.type = "button";
       btn.className = "chat-tab" + (tab.id === store.activeId ? " active" : "");
-      btn.title = tab.title + " (double-click to rename)";
+      btn.title = tab.title;
       btn.innerHTML =
         '<span class="tab-title"></span>' +
+        '<span class="tab-rename" title="Rename chat">✎</span>' +
         '<span class="tab-close" title="Close">×</span>';
       btn.querySelector(".tab-title").textContent = tab.title;
       btn.onclick = function (e) {
-        if (e.target.closest(".tab-close")) return;
+        if (e.target.closest(".tab-close") || e.target.closest(".tab-rename")) return;
         switchTab(tab.id);
       };
       btn.ondblclick = function (e) {
-        if (e.target.closest(".tab-close")) return;
+        if (e.target.closest(".tab-close") || e.target.closest(".tab-rename")) return;
+        renameTab(tab.id);
+      };
+      var pressTimer = null;
+      btn.addEventListener("touchstart", function (e) {
+        if (e.target.closest(".tab-close") || e.target.closest(".tab-rename")) return;
+        pressTimer = setTimeout(function () { renameTab(tab.id); }, 550);
+      }, { passive: true });
+      btn.addEventListener("touchend", function () { clearTimeout(pressTimer); });
+      btn.addEventListener("touchmove", function () { clearTimeout(pressTimer); });
+      btn.querySelector(".tab-rename").onclick = function (e) {
+        e.stopPropagation();
         renameTab(tab.id);
       };
       btn.querySelector(".tab-close").onclick = function (e) {
@@ -171,7 +185,7 @@
     if (id === store.activeId) return;
     syncHistoryFromGlobal();
     var auto = titleFromHistory(getActive().history);
-    if (auto && /^Chat \d+$/.test(getActive().title)) getActive().title = auto;
+    if (auto && !getActive().userNamed && /^Chat \d+$/.test(getActive().title)) getActive().title = auto;
 
     store.activeId = id;
     var tab = getActive();
@@ -204,6 +218,7 @@
       var only = store.tabs[0];
       only.history = [];
       only.title = "Chat 1";
+      only.userNamed = false;
       store.activeId = only.id;
       applyHistoryToGlobal([]);
       if (typeof renderHistory === "function") renderHistory();
@@ -227,13 +242,18 @@
   function renameTab(id) {
     var tab = store.tabs.find(function (t) { return t.id === id; });
     if (!tab) return;
-    var next = prompt("Rename chat:", tab.title);
+    var next = prompt("Rename this chat:", tab.title);
     if (next == null) return;
-    next = next.trim().slice(0, 40);
-    if (!next) return;
+    next = String(next).replace(/\s+/g, " ").trim().slice(0, 48);
+    if (!next) {
+      if (typeof showToast === "function") showToast("Name can't be empty");
+      return;
+    }
     tab.title = next;
+    tab.userNamed = true;
     saveStore(store);
     renderTabs();
+    if (typeof showToast === "function") showToast('Renamed to "' + next + '"');
   }
 
   function patchHistoryOps() {
@@ -245,7 +265,7 @@
         var tab = getActive();
         if (tab) {
           var auto = titleFromHistory(tab.history);
-          if (auto && /^Chat \d+$/.test(tab.title)) tab.title = auto;
+          if (auto && !tab.userNamed && /^Chat \d+$/.test(tab.title)) tab.title = auto;
         }
         saveStore(store);
         renderTabs();
@@ -293,6 +313,7 @@
     newTab: newTab,
     switchTab: switchTab,
     closeTab: closeTab,
+    renameTab: renameTab,
     getStore: function () { return store; }
   };
 })();
