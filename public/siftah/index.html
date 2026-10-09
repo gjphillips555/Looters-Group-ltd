@@ -80,7 +80,8 @@
         <button type="button" class="google-btn" id="btnGoogleSignIn">
           <span class="g-icon">G</span> Sign in with Google
         </button>
-        <p class="menu-hint">1) Settings → paste Firebase web config<br>2) Firebase Console → enable Google sign-in<br>3) Add this domain under Authorized domains<br>Then tap Sign in.</p>
+        <p class="menu-hint">Guest mode is on — chat works without signing in.<br>Sign in is optional (saves nothing extra yet).</p>
+        <button type="button" class="menu-item" id="btnContinueGuest" style="margin-top:8px">Continue as guest</button>
       </div>
       <div id="menuSignedIn" style="display:none">
         <div class="menu-user-row">
@@ -149,7 +150,7 @@
         <div class="toggle-row"><div class="toggle-label">📁 Auto-add code to active Task</div><label class="toggle"><input type="checkbox" id="autoAddFiles" checked><span class="slider"></span></label></div>
       </div>
       <div class="section">
-        <div class="section-title">🔐 Google / Firebase (optional)</div>
+        <div class="section-title">🔐 Google sign-in (optional — guests skip this)</div>
         <div class="field">
           <textarea id="firebaseConfig" rows="4" placeholder="Paste Firebase web config JSON"></textarea>
           <div class="hint">Firebase Console → Project settings → Your apps → Web config JSON. Also: Authentication → Sign-in method → enable Google, and Authorized domains → add <code>looterscomputas.online</code> and <code>www.looterscomputas.online</code>.</div>

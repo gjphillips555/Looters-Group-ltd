@@ -215,9 +215,7 @@
     if (loading) return;
     var cfg = saveConfigFromTextarea() || loadConfig();
     if (!cfg) {
-      toast("Add Firebase config in Settings first");
-      if (typeof openSettings === "function") openSettings();
-      fillTextarea();
+      toast("Sign-in needs Firebase config in Settings — or just use as guest");
       return;
     }
     loading = true;
@@ -310,6 +308,15 @@
   }
 
   function wireButtons() {
+    var guestBtn = document.getElementById("btnContinueGuest");
+    if (guestBtn && !guestBtn.__auth) {
+      guestBtn.__auth = true;
+      guestBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        if (typeof closeMenu === "function") closeMenu();
+        toast("Using as guest — no sign-in needed");
+      });
+    }
     var signInBtn = document.getElementById("btnGoogleSignIn");
     if (signInBtn && !signInBtn.__auth) {
       signInBtn.__auth = true;
