@@ -109,15 +109,31 @@
       var useAblit = isAbliterated();
       var modelId = currentModel();
       var endpoint = chatCompletionsUrl();
-      var apiKey = local ? localKey() : s.token;
+      var apiKey = local ? localKey() : ((s.token || localStorage.getItem("siftah_token") || "").trim());
+      if (!local && (!apiKey || apiKey === "local-guest")) {
+        if (typeof openSettings === "function") openSettings();
+        toast("Paste a valid HF token in Settings (starts with hf_)");
+        setGenerating(false);
+        return;
+      }
       window.fetch = function (url, opts) {
         opts = opts || {};
         if (typeof url === "string" && (url.indexOf("router.huggingface.co") !== -1 || local)) {
           url = endpoint;
           opts.signal = abortCtrl.signal;
-          opts.headers = opts.headers || {};
-          if (apiKey) opts.headers.Authorization = "Bearer " + apiKey;
-          else if (local) delete opts.headers.Authorization;
+          var h = {};
+          if (opts.headers && typeof opts.headers.forEach === "function") {
+            opts.headers.forEach(function (v, k) { h[k] = v; });
+          } else if (opts.headers) {
+            Object.keys(opts.headers).forEach(function (k) { h[k] = opts.headers[k]; });
+          }
+          opts.headers = h;
+          var key = (apiKey || "").trim();
+          if (key && key !== "local-guest") {
+            opts.headers.Authorization = "Bearer " + key;
+          } else if (local) {
+            delete opts.headers.Authorization;
+          }
           opts.headers["Content-Type"] = "application/json";
           try {
             var body = JSON.parse(opts.body || "{}");
@@ -128,7 +144,23 @@
             opts.body = JSON.stringify(body);
           } catch (e) {}
         }
-        return _fetch.call(this, url, opts);
+        return _fetch.call(this, url, opts).then(function (res) {
+          if (!local && res.status === 401) {
+            return res.text().then(function (txt) {
+              var msg = txt;
+              try {
+                var j = JSON.parse(txt);
+                msg = j.error && (j.error.message || j.error) || j.message || txt;
+              } catch (e) {}
+              msg = String(msg || "");
+              if (/invalid username or password/i.test(msg) || /unauthorized/i.test(msg)) {
+                throw new Error("HF token rejected (401). Create a new fine-grained token with \"Make calls to the Inference Providers\" enabled, paste it in Settings, and ensure you still have Inference credits.");
+              }
+              throw new Error(msg || "HTTP 401 Unauthorized");
+            });
+          }
+          return res;
+        });
       };
       try { await orig.apply(this, arguments); }
       catch (e) {
