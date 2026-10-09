@@ -4,32 +4,25 @@
 
   var PRESETS = [
     {
-      id: "fast",
-      label: "Siftah Fast · 8B uncensored",
-      short: "Fast 8B",
-      model: "huihui-ai/Huihui-Qwen3-8B-abliterated-v2:featherless-ai",
-      blurb: "Quick replies, fully abliterated"
+      id: "coder",
+      label: "Coder 30B \u00b7 Qwen3-Coder",
+      short: "Coder 30B",
+      model: "Qwen/Qwen3-Coder-30B-A3B-Instruct",
+      blurb: "Best coding model"
     },
     {
       id: "pro",
-      label: "Siftah Pro · 14B uncensored",
+      label: "Pro 14B \u00b7 abliterated",
       short: "Pro 14B",
       model: "huihui-ai/Huihui-Qwen3-14B-abliterated-v2:featherless-ai",
-      blurb: "Stronger uncensored general + code"
+      blurb: "Strong uncensored (abliterated)"
     },
     {
-      id: "coder",
-      label: "Coder Strong · Qwen3-Coder 30B",
-      short: "Coder 30B",
-      model: "Qwen/Qwen3-Coder-30B-A3B-Instruct",
-      blurb: "Best coding quality (recommended)"
-    },
-    {
-      id: "coder25",
-      label: "Coder Classic · Qwen2.5-Coder 32B",
-      short: "Coder 32B",
-      model: "Qwen/Qwen2.5-Coder-32B-Instruct",
-      blurb: "Proven large coding model"
+      id: "fast",
+      label: "Fast 8B \u00b7 abliterated",
+      short: "Fast 8B",
+      model: "huihui-ai/Huihui-Qwen3-8B-abliterated-v2:featherless-ai",
+      blurb: "Fast uncensored (abliterated)"
     }
   ];
 
