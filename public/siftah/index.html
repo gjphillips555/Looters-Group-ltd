@@ -68,6 +68,7 @@
     </aside>
   </div>
 </div>
+
 <div class="menu-overlay" id="menuOverlay">
   <div class="menu-drawer" id="menuDrawer">
     <div class="menu-head">
@@ -79,7 +80,7 @@
         <button type="button" class="google-btn" id="btnGoogleSignIn">
           <span class="g-icon">G</span> Sign in with Google
         </button>
-        <p class="menu-hint">Paste Firebase config in Settings once, then sign in.</p>
+        <p class="menu-hint">1) Settings → paste Firebase web config<br>2) Firebase Console → enable Google sign-in<br>3) Add this domain under Authorized domains<br>Then tap Sign in.</p>
       </div>
       <div id="menuSignedIn" style="display:none">
         <div class="menu-user-row">
@@ -101,6 +102,7 @@
     <div class="menu-foot">Siftah Mobile v1.5</div>
   </div>
 </div>
+
 <div class="preview-overlay" id="previewOverlay">
   <div class="preview-card">
     <div class="preview-head">
@@ -113,6 +115,7 @@
     <pre id="previewBody"></pre>
   </div>
 </div>
+
 <div class="overlay" id="overlay">
   <div class="sheet">
     <div class="sheet-header">
@@ -149,7 +152,7 @@
         <div class="section-title">🔐 Google / Firebase (optional)</div>
         <div class="field">
           <textarea id="firebaseConfig" rows="4" placeholder="Paste Firebase web config JSON"></textarea>
-          <div class="hint">Firebase → Authentication → enable Google → paste web config.</div>
+          <div class="hint">Firebase Console → Project settings → Your apps → Web config JSON. Also: Authentication → Sign-in method → enable Google, and Authorized domains → add <code>looterscomputas.online</code> and <code>www.looterscomputas.online</code>.</div>
         </div>
       </div>
       <div class="section">
@@ -171,5 +174,6 @@
 <script src="./reorder.js"></script>
 <script src="./tabs.js"></script>
 <script src="./links.js"></script>
+<script src="./auth.js"></script>
 </body>
 </html>
