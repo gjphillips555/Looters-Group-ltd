@@ -1,1 +1,10 @@
-PLACEHOLDER_WILL_FIX
+/* Siftah modes loader v2.0 */
+(function(){
+  function load(src, next){
+    var s=document.createElement("script");
+    s.src=src; s.onload=function(){ if(next) next(); };
+    s.onerror=function(){ console.error("Failed", src); if(next) next(); };
+    document.head.appendChild(s);
+  }
+  load("./modes_core.js", function(){ load("./modes_studio.js"); });
+})();
