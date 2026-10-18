@@ -1,4 +1,4 @@
-/* Siftah modes studio v2.0 — Create / Edit / Gallery */
+/* Siftah modes studio v2.2 — Create / Edit / Gallery */
 (function () {
   "use strict";
   var lastCreateBlob = null, lastEditBlob = null, editSourceBlob = null;
@@ -58,8 +58,8 @@
       '<div class="studio-pane on" id="paneCreate">' +
       "<label>Prompt</label><textarea id=\"studioCreatePrompt\" placeholder=\"Describe the image: subject, style, lighting, mood\u2026\"></textarea>" +
       "<label>Model</label><select id=\"studioCreateModel\">" +
-      '<option value="black-forest-labs/FLUX.1-schnell">FLUX.1 Schnell</option>' +
-      '<option value="black-forest-labs/FLUX.1-dev">FLUX.1 Dev</option>' +
+      '<option value="black-forest-labs/FLUX.1-dev">FLUX.1 Dev \u2605 best quality</option>' +
+      '<option value="black-forest-labs/FLUX.1-schnell">FLUX.1 Schnell (fast)</option>' +
       '<option value="stabilityai/stable-diffusion-xl-base-1.0">SDXL 1.0</option>' +
       '<option value="Qwen/Qwen-Image">Qwen Image</option></select>' +
       '<div class="studio-actions"><button type="button" class="primary" id="studioCreateBtn">Generate</button></div>' +
