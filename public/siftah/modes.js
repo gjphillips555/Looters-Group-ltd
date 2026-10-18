@@ -1,4 +1,4 @@
-/* Siftah modes loader v2.1 */
+/* Siftah modes loader v2.2 */
 (function(){
   function load(src, next){
     var s=document.createElement("script");
@@ -8,7 +8,9 @@
   }
   load("./modes_core.js", function(){
     load("./modes_studio.js", function(){
-      load("./modes_history.js");
+      load("./modes_history.js", function(){
+        load("./modes_models.js");
+      });
     });
   });
 })();
