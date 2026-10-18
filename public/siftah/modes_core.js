@@ -18,13 +18,13 @@
   function loadGallery() { try { return JSON.parse(localStorage.getItem(GALLERY_KEY) || "[]"); } catch (e) { return []; } }
   function saveGallery(items) {
     try {
-      if (items.length > 40) items = items.slice(0, 40);
+      if (items.length > 60) items = items.slice(0, 60);
       localStorage.setItem(GALLERY_KEY, JSON.stringify(items));
     } catch (e) { toast("Gallery storage full \u2014 delete some images"); }
   }
   function addToGallery(dataUrl, prompt, kind) {
     var items = loadGallery();
-    items.unshift({ id: "g" + Date.now(), prompt: prompt || "", dataUrl: dataUrl, kind: kind || "t2i", created: new Date().toISOString() });
+    items.unshift({ id: "g" + Date.now(), prompt: prompt || "", dataUrl: dataUrl, kind: kind || "t2i", fav: false, created: new Date().toISOString() });
     saveGallery(items);
     if (window.siftahModesStudio) window.siftahModesStudio.renderGallery();
   }
