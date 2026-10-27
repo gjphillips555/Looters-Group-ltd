@@ -10,7 +10,7 @@ type SeatDef = {
   seat: string;
   handle: string;
   blurb: string;
-  provider: "kilo" | "llm7" | "xai";
+  provider: "kilo" | "llm7" | "pollinations" | "xai";
   model: string;
   maxTokens: number;
   timeoutMs: number;
@@ -33,7 +33,7 @@ const FREE_SEATS: SeatDef[] = [
     provider: "kilo",
     model: "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
     maxTokens: 380,
-    timeoutMs: 8000,
+    timeoutMs: 20000,
   },
   {
     seat: "nemo",
@@ -42,16 +42,16 @@ const FREE_SEATS: SeatDef[] = [
     provider: "llm7",
     model: "mistral-Nemo-Instruct-2407",
     maxTokens: 220,
-    timeoutMs: 8000,
+    timeoutMs: 12000,
   },
   {
-    seat: "north",
-    handle: "North Mini",
-    blurb: "Cohere North Mini Code",
-    provider: "kilo",
-    model: "cohere/north-mini-code:free",
+    seat: "gptoss",
+    handle: "GPT-OSS",
+    blurb: "GPT-OSS 20B",
+    provider: "pollinations",
+    model: "openai",
     maxTokens: 220,
-    timeoutMs: 8000,
+    timeoutMs: 15000,
   },
 ];
 
@@ -62,7 +62,7 @@ const GROK: SeatDef = {
   provider: "xai",
   model: "grok-4.5",
   maxTokens: 280,
-  timeoutMs: 9000,
+  timeoutMs: 20000,
 };
 
 function json(data: unknown, status = 200) {
@@ -189,6 +189,8 @@ async function callSeat(seat: SeatDef, lines: Line[], xaiKey: string) {
   if (seat.provider === "llm7") {
     url = "https://api.llm7.io/v1/chat/completions";
     headers.authorization = "Bearer unused";
+  } else if (seat.provider === "pollinations") {
+    url = "https://text.pollinations.ai/openai/v1/chat/completions";
   } else if (seat.provider === "xai") {
     url = "https://api.x.ai/v1/chat/completions";
     headers.authorization = `Bearer ${xaiKey}`;
@@ -208,12 +210,12 @@ async function callSeat(seat: SeatDef, lines: Line[], xaiKey: string) {
     signal: AbortSignal.timeout(seat.timeoutMs),
   });
   if (!response.ok) {
-    throw new Error(response.status === 401 ? "key" : "busy");
+    throw new Error(response.status === 401 ? "key" : `busy ${response.status}`);
   }
   const data = (await response.json()) as {
     choices?: Array<{ message?: { content?: unknown } }>;
   };
-  const text = clean(data.choices?.[0]?.message?.content, 1800);
+  const text = clean(data.choices?.[0]?.message?.content, 1800).replace(/^["“]|["”]$/g, "").trim();
   if (!text) throw new Error("empty");
   return text;
 }
@@ -274,8 +276,9 @@ async function speak(xaiKey: string) {
     return json({ line });
   } catch (error) {
     await easeGate();
-    const keyRejected =
-      chosen.provider === "xai" && error instanceof Error && error.message === "key";
+    const reason = error instanceof Error ? error.message : "busy";
+    console.error("[theroom]", chosen.seat, reason.slice(0, 80));
+    const keyRejected = chosen.provider === "xai" && reason === "key";
     return json(
       {
         error: keyRejected

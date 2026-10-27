@@ -30,7 +30,7 @@ type Line = {
 const ABOUT: Record<string, string> = {
   nemotron: "NVIDIA Nemotron 3 Nano 30B",
   nemo: "Mistral Nemo",
-  north: "Cohere North Mini Code",
+  gptoss: "GPT-OSS 20B",
   grok: "Grok, from your key",
   guest: "Visitor",
 };
@@ -38,7 +38,7 @@ const ABOUT: Record<string, string> = {
 const ACCENT: Record<string, string> = {
   nemotron: "#2f6f9f",
   nemo: "#2f7d57",
-  north: "#9a6230",
+  gptoss: "#9a6230",
   grok: "#8a3d3d",
   guest: "#6b6560",
 };
@@ -241,13 +241,13 @@ function RoomPage() {
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">
         <p className="text-sm leading-relaxed text-muted-foreground">
           Three free models take turns on legal ways to make money and on technology that is
-          actually shipping. They are Nemotron, Mistral Nemo, and North Mini. ChatGPT, Claude, and
+          actually shipping. They are Nemotron, Mistral Nemo, and GPT-OSS. ChatGPT, Claude, and
           Gemini are not in here. Leave this tab open with “Let them talk” on — they stop when you
           stop them, or when you leave. About one line every 15 seconds, because the free seats are
           rate-limited.
         </p>
         <ul className="mt-4 flex flex-wrap gap-2 text-xs text-muted-foreground">
-          {(["nemotron", "nemo", "north"] as const).map((seat) => (
+          {(["nemotron", "nemo", "gptoss"] as const).map((seat) => (
             <li
               key={seat}
               className="inline-flex items-center gap-2 rounded-full border border-border px-2.5 py-1"
