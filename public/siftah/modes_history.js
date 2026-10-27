@@ -6,6 +6,10 @@
     if (typeof showToast === "function") showToast(m);
   }
   function items() {
+    if (window.siftahVault) {
+      var v = window.siftahVault.list();
+      if (v.length) return v;
+    }
     return window.siftahModes ? window.siftahModes.loadGallery() : [];
   }
   function saveItems(list) {
@@ -62,7 +66,7 @@
       var head = document.createElement("div");
       head.id = "studioHead";
       head.className = "studio-head";
-      head.innerHTML = "<h2>\ud83c\udfa8 Image Studio</h2><span class=\"count\" id=\"studioGalleryCount\">0</span>";
+      head.innerHTML = "<h2>Image / Video</h2><span class=\"count\" id=\"studioGalleryCount\">0</span>";
       studio.insertBefore(head, studio.firstChild);
     }
 
@@ -161,6 +165,17 @@
 
     if (window.siftahModes && !window.siftahModes.__histPatch) {
       window.siftahModes.addToGallery = function (dataUrl, prompt, kind) {
+        if (window.siftahVault && dataUrl) {
+          fetch(dataUrl).then(function (r) { return r.blob(); }).then(function (b) {
+            return window.siftahVault.add(b, {
+              kind: kind || "t2i",
+              prompt: prompt || "",
+              name: "siftah-" + Date.now() + ".png",
+              mime: b.type || "image/png"
+            });
+          }).catch(function () {});
+          return;
+        }
         var list = window.siftahModes.loadGallery();
         list.unshift({
           id: "g" + Date.now(),
@@ -189,39 +204,43 @@
     var c = document.getElementById("studioGalleryCount");
     if (c) {
       var n = items().length;
-      c.textContent = n + " image" + (n === 1 ? "" : "s");
+      c.textContent = n + " saved";
     }
   }
 
   function loadIntoEdit(item) {
-    fetch(item.dataUrl)
-      .then(function (r) { return r.blob(); })
-      .then(function (b) {
-        var thumb = document.getElementById("studioEditThumb");
-        if (thumb) {
-          thumb.src = item.dataUrl;
-          thumb.style.display = "block";
+    var src = (window.siftahVault && item.id) ? window.siftahVault.get(item.id) : fetch(item.dataUrl).then(function (r) { return r.blob(); });
+    Promise.resolve(src).then(function (b) {
+      if (!b) return;
+      var thumb = document.getElementById("studioEditThumb");
+      var url = URL.createObjectURL(b);
+      if (thumb) {
+        thumb.src = url;
+        thumb.style.display = "block";
+      }
+      try {
+        var dt = new DataTransfer();
+        dt.items.add(new File([b], "history.png", { type: b.type || "image/png" }));
+        var inp = document.getElementById("studioEditFile");
+        if (inp) {
+          inp.files = dt.files;
+          inp.dispatchEvent(new Event("change"));
         }
-        try {
-          var dt = new DataTransfer();
-          dt.items.add(new File([b], "history.png", { type: b.type || "image/png" }));
-          var inp = document.getElementById("studioEditFile");
-          if (inp) {
-            inp.files = dt.files;
-            inp.dispatchEvent(new Event("change"));
-          }
-        } catch (err) {}
-        toast("Loaded into Edit");
-        document.querySelectorAll(".studio-tabs button").forEach(function (btn) {
-          if ((btn.getAttribute("data-pane") || "") === "edit") btn.click();
-        });
+      } catch (err) {}
+      toast("Loaded into Edit");
+      document.querySelectorAll(".studio-tabs button").forEach(function (btn) {
+        if ((btn.getAttribute("data-pane") || "") === "edit") btn.click();
       });
+    });
   }
 
   function renderStrip(id, mode) {
     var host = document.getElementById(id);
     if (!host) return;
-    var list = items().slice(0, 24);
+    var list = items().filter(function (item) {
+      var k = item.kind || "";
+      return k !== "video" && k !== "file" && (item.dataUrl || item.thumb);
+    }).slice(0, 24);
     if (!list.length) {
       host.innerHTML = '<div class="t" style="padding:6px">No history yet</div>';
       return;
@@ -254,6 +273,7 @@
     if (typeof orig !== "function") return;
     window.siftahModesStudio.renderGallery = function () {
       orig.apply(this, arguments);
+      if (window.siftahVault) return;
       var grid = document.getElementById("galleryGrid");
       if (!grid) return;
       var f = window.__galFilter || "all";

@@ -34,6 +34,11 @@
     var items = loadGallery();
     items.unshift({ id: "g" + Date.now(), prompt: prompt || "", dataUrl: dataUrl, kind: kind || "t2i", fav: false, created: new Date().toISOString() });
     saveGallery(items);
+    if (window.siftahVault && dataUrl) {
+      fetch(dataUrl).then(function (r) { return r.blob(); }).then(function (b) {
+        return window.siftahVault.add(b, { kind: kind || "t2i", prompt: prompt || "", name: "siftah-" + Date.now() + ".png", mime: b.type || "image/png" });
+      }).catch(function () {});
+    }
     if (window.siftahModesStudio) window.siftahModesStudio.renderGallery();
   }
   function injectCSS() {
@@ -73,6 +78,22 @@
       ".gallery-card .g-actions{display:flex;gap:4px;padding:0 6px 8px}" +
       ".gallery-card .g-actions button{flex:1;font-size:10px;padding:4px;border-radius:6px;border:1px solid var(--border,#2a2e38);background:#0c0e12;color:var(--text,#eee);cursor:pointer}" +
       ".gallery-empty{color:var(--muted,#8b909a);text-align:center;padding:40px 12px;font-size:13px}" +
+      ".gallery-card .thumb-wrap{position:relative;background:#0c0e12}" +
+      ".gallery-card .thumb-wrap img,.gallery-card .thumb-wrap video{width:100%;aspect-ratio:1;object-fit:cover;display:block}" +
+      ".gallery-card .wash{position:absolute;inset:0;pointer-events:none}" +
+      ".gallery-card.age-green{box-shadow:inset 0 0 0 3px #1f9d55}" +
+      ".gallery-card.age-green .wash{background:rgba(31,157,85,.20)}" +
+      ".gallery-card.age-orange{box-shadow:inset 0 0 0 3px #e07a1f}" +
+      ".gallery-card.age-orange .wash{background:rgba(224,122,31,.28)}" +
+      ".gallery-card.age-red{box-shadow:inset 0 0 0 3px #e11d2e}" +
+      ".gallery-card.age-red .wash{background:rgba(168,16,32,.58)}" +
+      ".age-badge{position:absolute;left:6px;right:6px;bottom:6px;font-size:9px;font-weight:700;line-height:1.3;padding:3px 6px;border-radius:6px;background:rgba(0,0,0,.78);color:#fff}" +
+      ".file-tile{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;color:#c8ccd4;font-size:12px;font-weight:700}" +
+      ".vault-legend{font-size:11px;color:#8b909a;line-height:1.45;margin:0}" +
+      ".vault-legend .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin:0 2px 0 4px;vertical-align:middle}" +
+      ".vault-legend .dot.g{background:#1f9d55}.vault-legend .dot.o{background:#e07a1f}.vault-legend .dot.r{background:#e11d2e}" +
+      ".studio-preview video{max-width:100%;max-height:420px}" +
+      ".lightbox video{max-width:min(96vw,900px);max-height:85vh;border-radius:8px}" +
       ".upload-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}" +
       ".upload-thumb{width:56px;height:56px;border-radius:8px;object-fit:cover;border:1px solid var(--border,#2a2e38);display:none}" +
       ".lightbox{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px}" +
@@ -86,7 +107,7 @@
     var bar = document.querySelector(".model-bar");
     var host = document.createElement("div");
     host.id = "modeTabs"; host.className = "mode-tabs";
-    host.innerHTML = '<button type="button" data-mode="coding">💻 Coding</button><button type="button" data-mode="knowledge">📚 Knowledge</button><button type="button" data-mode="images">🎨 Images</button>';
+    host.innerHTML = '<button type="button" data-mode="coding">💻 Coding</button><button type="button" data-mode="knowledge">📚 Knowledge</button><button type="button" data-mode="images">🎨 Image/Video</button>';
     if (bar && bar.parentNode) bar.parentNode.insertBefore(host, bar.nextSibling);
     else { var header = document.querySelector("header"); if (header) header.after(host); }
     host.querySelectorAll("button").forEach(function (btn) {
@@ -155,6 +176,15 @@
     if (img) img.onclick = function () {
       if (typeof closeMenu === "function") closeMenu();
       setMode("images");
+    };
+    var vid = document.getElementById("menuVideo");
+    if (vid) vid.onclick = function () {
+      if (typeof closeMenu === "function") closeMenu();
+      setMode("images");
+      setTimeout(function () {
+        var b = document.querySelector('#imageStudio .studio-tabs button[data-pane="video"]');
+        if (b) b.click();
+      }, 250);
     };
   }
   function boot() {

@@ -95,7 +95,7 @@
       b1.type = "button";
       b1.className = "menu-item";
       b1.id = "menuImage";
-      b1.innerHTML = "🎨 Image Generator";
+      b1.innerHTML = "🎨 Image / Video";
       var b2 = document.createElement("button");
       b2.type = "button";
       b2.className = "menu-item";
@@ -353,7 +353,15 @@
       var url = URL.createObjectURL(lastImgBlob);
       result.innerHTML = '<img src="' + url + '" alt="generated">';
       document.getElementById("imgActions").style.display = "flex";
-      if (!status.textContent || status.textContent.indexOf("Note") !== 0) status.textContent = "Done";
+      if (!status.textContent || status.textContent.indexOf("Note") !== 0) status.textContent = "Done — saved in Files for 24 hours";
+      if (window.siftahVault) {
+        window.siftahVault.add(lastImgBlob, {
+          kind: imgUploadBlob ? "i2i" : "t2i",
+          prompt: prompt || "",
+          name: "siftah-" + Date.now() + ".png",
+          mime: lastImgBlob.type || "image/png"
+        });
+      }
     } catch (err) {
       console.error(err);
       result.innerHTML = '<div class="err">' + friendlyErr(err) + "</div>";
@@ -445,6 +453,25 @@
     throw lastErr || new Error("All I2V endpoints failed");
   }
 
+  function rememberVideo(prompt) {
+    var job = Promise.resolve(lastVidBlob || null);
+    if (!lastVidBlob && lastVidUrl) {
+      job = fetch(lastVidUrl).then(function (r) {
+        if (!r.ok) throw new Error("no blob");
+        return r.blob();
+      }).catch(function () { return null; });
+    }
+    job.then(function (blob) {
+      if (!blob || !window.siftahVault) return;
+      window.siftahVault.add(blob, {
+        kind: "video",
+        prompt: prompt || "",
+        name: "siftah-" + Date.now() + ".mp4",
+        mime: blob.type || "video/mp4"
+      });
+    });
+  }
+
   async function generateVideo() {
     var t = token();
     if (!t) {
@@ -481,7 +508,8 @@
           }
           result.innerHTML = '<video src="' + lastVidUrl + '" controls autoplay loop playsinline></video>';
           document.getElementById("vidActions").style.display = "flex";
-          status.textContent = "Done (image→video)";
+          status.textContent = "Done (image→video) — saved in Files for 24 hours";
+          rememberVideo(prompt);
           btn.disabled = false;
           return;
         } catch (i2vErr) {
@@ -516,7 +544,8 @@
           }
           result.innerHTML = '<video src="' + lastVidUrl + '" controls autoplay loop playsinline></video>';
           document.getElementById("vidActions").style.display = "flex";
-          status.textContent = "Done (" + providers[i] + ")";
+          status.textContent = "Done (" + providers[i] + ") — saved in Files for 24 hours";
+          rememberVideo(prompt);
           btn.disabled = false;
           return;
         } catch (err) {
