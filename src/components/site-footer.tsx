@@ -50,6 +50,13 @@ export function SiteFooter({ onOpenCart }: { onOpenCart: () => void }) {
           </span>
         </a>
 
+        <a
+          href="/theroom"
+          className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-700 hover:text-neutral-950"
+        >
+          The Room
+        </a>
+
         <p className="text-center text-xs text-neutral-600">
           &copy; 2026 Looters Computas. Prices in NZD, GST inclusive. Contact:{" "}
           <a

@@ -18,7 +18,9 @@ import { Route as OverlayRouteImport } from './routes/overlay'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as StorepolicyRouteImport } from './routes/storepolicy'
 import { Route as TermsandconditionsRouteImport } from './routes/termsandconditions'
+import { Route as TheroomRouteImport } from './routes/theroom'
 import { Route as ApiSiftahRoomRouteImport } from './routes/api/siftah-room'
+import { Route as ApiTheroomRouteImport } from './routes/api/theroom'
 import { Route as HiddenForumRouteImport } from './routes/hidden.forum'
 import { Route as ListingListingIdRouteImport } from './routes/listing.$listingId'
 import { Route as OrderOrderIdRouteImport } from './routes/order.$orderId'
@@ -72,9 +74,19 @@ const TermsandconditionsRoute = TermsandconditionsRouteImport.update({
   path: '/termsandconditions',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TheroomRoute = TheroomRouteImport.update({
+  id: '/theroom',
+  path: '/theroom',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiSiftahRoomRoute = ApiSiftahRoomRouteImport.update({
   id: '/api/siftah-room',
   path: '/api/siftah-room',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTheroomRoute = ApiTheroomRouteImport.update({
+  id: '/api/theroom',
+  path: '/api/theroom',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HiddenForumRoute = HiddenForumRouteImport.update({
@@ -123,7 +135,9 @@ export interface FileRoutesByFullPath {
   '/shop': typeof ShopRouteWithChildren
   '/storepolicy': typeof StorepolicyRoute
   '/termsandconditions': typeof TermsandconditionsRoute
+  '/theroom': typeof TheroomRoute
   '/api/siftah-room': typeof ApiSiftahRoomRoute
+  '/api/theroom': typeof ApiTheroomRoute
   '/hidden/forum': typeof HiddenForumRoute
   '/listing/$listingId': typeof ListingListingIdRoute
   '/order/$orderId': typeof OrderOrderIdRoute
@@ -141,7 +155,9 @@ export interface FileRoutesByTo {
   '/overlay': typeof OverlayRoute
   '/storepolicy': typeof StorepolicyRoute
   '/termsandconditions': typeof TermsandconditionsRoute
+  '/theroom': typeof TheroomRoute
   '/api/siftah-room': typeof ApiSiftahRoomRoute
+  '/api/theroom': typeof ApiTheroomRoute
   '/hidden/forum': typeof HiddenForumRoute
   '/listing/$listingId': typeof ListingListingIdRoute
   '/order/$orderId': typeof OrderOrderIdRoute
@@ -161,7 +177,9 @@ export interface FileRoutesById {
   '/shop': typeof ShopRouteWithChildren
   '/storepolicy': typeof StorepolicyRoute
   '/termsandconditions': typeof TermsandconditionsRoute
+  '/theroom': typeof TheroomRoute
   '/api/siftah-room': typeof ApiSiftahRoomRoute
+  '/api/theroom': typeof ApiTheroomRoute
   '/hidden/forum': typeof HiddenForumRoute
   '/listing/$listingId': typeof ListingListingIdRoute
   '/order/$orderId': typeof OrderOrderIdRoute
@@ -182,7 +200,9 @@ export interface FileRouteTypes {
     | '/shop'
     | '/storepolicy'
     | '/termsandconditions'
+    | '/theroom'
     | '/api/siftah-room'
+    | '/api/theroom'
     | '/hidden/forum'
     | '/listing/$listingId'
     | '/order/$orderId'
@@ -200,7 +220,9 @@ export interface FileRouteTypes {
     | '/overlay'
     | '/storepolicy'
     | '/termsandconditions'
+    | '/theroom'
     | '/api/siftah-room'
+    | '/api/theroom'
     | '/hidden/forum'
     | '/listing/$listingId'
     | '/order/$orderId'
@@ -219,7 +241,9 @@ export interface FileRouteTypes {
     | '/shop'
     | '/storepolicy'
     | '/termsandconditions'
+    | '/theroom'
     | '/api/siftah-room'
+    | '/api/theroom'
     | '/hidden/forum'
     | '/listing/$listingId'
     | '/order/$orderId'
@@ -239,7 +263,9 @@ export interface RootRouteChildren {
   ShopRoute: typeof ShopRouteWithChildren
   StorepolicyRoute: typeof StorepolicyRoute
   TermsandconditionsRoute: typeof TermsandconditionsRoute
+  TheroomRoute: typeof TheroomRoute
   ApiSiftahRoomRoute: typeof ApiSiftahRoomRoute
+  ApiTheroomRoute: typeof ApiTheroomRoute
   ListingListingIdRoute: typeof ListingListingIdRoute
   OrderOrderIdRoute: typeof OrderOrderIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -310,11 +336,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsandconditionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/theroom': {
+      id: '/theroom'
+      path: '/theroom'
+      fullPath: '/theroom'
+      preLoaderRoute: typeof TheroomRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/siftah-room': {
       id: '/api/siftah-room'
       path: '/api/siftah-room'
       fullPath: '/api/siftah-room'
       preLoaderRoute: typeof ApiSiftahRoomRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/theroom': {
+      id: '/api/theroom'
+      path: '/api/theroom'
+      fullPath: '/api/theroom'
+      preLoaderRoute: typeof ApiTheroomRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/hidden/forum': {
@@ -404,7 +444,9 @@ const rootRouteChildren: RootRouteChildren = {
   ShopRoute: ShopRouteWithChildren,
   StorepolicyRoute: StorepolicyRoute,
   TermsandconditionsRoute: TermsandconditionsRoute,
+  TheroomRoute: TheroomRoute,
   ApiSiftahRoomRoute: ApiSiftahRoomRoute,
+  ApiTheroomRoute: ApiTheroomRoute,
   ListingListingIdRoute: ListingListingIdRoute,
   OrderOrderIdRoute: OrderOrderIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
