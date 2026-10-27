@@ -6,6 +6,8 @@
   function toast(m) { if (window.siftahModes) window.siftahModes.toast(m); else if (typeof showToast === "function") showToast(m); }
   function token() {
     try {
+      var flux = (localStorage.getItem("siftah_flux_token") || "").trim();
+      if (flux) return flux;
       var s = typeof loadSettings === "function" ? loadSettings() : {};
       return (s.token || localStorage.getItem("siftah_token") || "").trim();
     } catch (e) { return ""; }
@@ -62,6 +64,9 @@
       '<option value="black-forest-labs/FLUX.1-schnell">FLUX.1 Schnell (fast)</option>' +
       '<option value="stabilityai/stable-diffusion-xl-base-1.0">SDXL 1.0</option>' +
       '<option value="Qwen/Qwen-Image">Qwen Image</option></select>' +
+      "<label>Hugging Face token for FLUX</label>" +
+      '<input id="studioFluxToken" type="password" placeholder="hf_... leave blank to use the chat token" autocomplete="off" style="width:100%;box-sizing:border-box;background:#12151c;border:1px solid var(--border,#2a2e38);color:#eee;border-radius:8px;padding:10px;font-size:13px">' +
+      '<p class="studio-status">FLUX needs its own Hugging Face token with Inference Providers turned on, or it fails. A second token keeps image credits off the chat token. Blank uses the chat token.</p>' +
       '<div class="studio-actions"><button type="button" class="primary" id="studioCreateBtn">Generate</button></div>' +
       '<div class="studio-status" id="studioCreateStatus"></div>' +
       '<div class="studio-preview" id="studioCreatePreview"><div class="placeholder">Your image will appear here</div></div>' +
@@ -116,10 +121,31 @@
   function wireLogic() {
     if (document.getElementById("studioCreateBtn").__wired) return;
     document.getElementById("studioCreateBtn").__wired = true;
+    var fluxIn = document.getElementById("studioFluxToken");
+    if (fluxIn) {
+      try { fluxIn.value = localStorage.getItem("siftah_flux_token") || ""; } catch (e) {}
+      function saveStudioFlux() {
+        try { localStorage.setItem("siftah_flux_token", fluxIn.value.trim()); } catch (e) {}
+        var settingsFlux = document.getElementById("fluxToken");
+        if (settingsFlux && settingsFlux.value !== fluxIn.value) settingsFlux.value = fluxIn.value;
+      }
+      fluxIn.addEventListener("change", saveStudioFlux);
+      fluxIn.addEventListener("blur", saveStudioFlux);
+    }
 
     document.getElementById("studioCreateBtn").onclick = async function () {
       var t = token();
-      if (!t) { toast("Add HF token in Settings"); if (typeof openSettings === "function") openSettings(); return; }
+      if (!t) {
+        toast("Add a FLUX token in the box above, or a chat token under Advanced");
+        if (typeof openSettings === "function") {
+          openSettings();
+          var sheet = document.querySelector(".sheet-body");
+          if (sheet) sheet.classList.add("show-advanced");
+          var adv = document.getElementById("toggleAdvanced");
+          if (adv) adv.textContent = "Hide advanced";
+        }
+        return;
+      }
       var prompt = (document.getElementById("studioCreatePrompt").value || "").trim();
       if (!prompt) { toast("Enter a prompt"); return; }
       var model = document.getElementById("studioCreateModel").value;

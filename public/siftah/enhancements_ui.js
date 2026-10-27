@@ -8,7 +8,7 @@
     s.id = "enhCSS";
     s.textContent =
       ".model-pick{display:flex;align-items:center;gap:6px;flex-wrap:wrap;max-width:100%}" +
-      ".model-pick select{max-width:min(140px,36vw);background:#12151c;color:var(--text);border:1px solid var(--border);border-radius:8px;padding:4px 8px;font-size:11px}" +
+      ".model-pick select{max-width:min(220px,54vw);background:#12151c;color:var(--text);border:1px solid var(--border);border-radius:8px;padding:4px 8px;font-size:11px}" +
       ".model-pick .model-blurb{font-size:10px;color:var(--muted);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}" +
       ".ablit-toggle,.source-toggle{display:inline-flex;align-items:center;border:1px solid var(--border);border-radius:999px;overflow:hidden;font-size:10px;font-weight:600}" +
       ".ablit-toggle button,.source-toggle button{border:none;background:transparent;color:var(--muted);padding:4px 9px;cursor:pointer;font-size:10px;font-weight:600}" +
@@ -23,7 +23,9 @@
       ".composer-tools button#stopGen.show{display:inline-flex}" +
       ".local-settings{margin-top:8px;padding:10px;border:1px solid var(--border);border-radius:10px;background:#0c0e12}" +
       ".local-settings label{display:block;font-size:11px;color:var(--muted);margin:6px 0 3px}" +
-      ".local-settings input{width:100%;box-sizing:border-box;background:#12151c;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px;font-size:12px}";
+      ".local-settings input{width:100%;box-sizing:border-box;background:#12151c;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px;font-size:12px}" +
+      ".sheet-body:not(.show-advanced) .siftah-advanced{display:none}" +
+      ".sheet-body:not(.show-advanced) #model,.sheet-body:not(.show-advanced) #model+.hint{display:none}";
     document.head.appendChild(s);
   }
   function renderModelBar() {
@@ -39,7 +41,7 @@
       (local
         ? '<span class="model-blurb" id="modelBlurb"></span>'
         : '<select id="modelPreset"></select><div class="ablit-toggle">' +
-          '<button type="button" id="btnAblit"' + (ablit ? ' class="on"' : "") + ">Ablit</button>" +
+          '<button type="button" id="btnAblit"' + (ablit ? ' class="on"' : "") + ">Uncensored</button>" +
           '<button type="button" id="btnFull"' + (!ablit ? ' class="on"' : "") + ">Full</button></div>" +
           '<span class="model-blurb" id="modelBlurb"></span>');
     if (local) host.querySelector("#modelBlurb").textContent = "Local \u00b7 " + enh.localModel();
@@ -55,9 +57,9 @@
         enh.setPresetId(sel.value);
         var pr = enh.PRESETS.find(function (x) { return x.id === sel.value; }) || enh.PRESETS[0];
         enh.setModel(enh.modelForPreset(pr), true);
-        enh.toast(pr.short + " \u00b7 " + (enh.isAbliterated() ? "Abliterated" : "Full"));
+        enh.toast(pr.short + " \u00b7 " + (enh.isAbliterated() ? "Uncensored" : "Full"));
       };
-      host.querySelector("#btnAblit").onclick = function () { enh.setAbliterated(true); enh.toast("Abliterated (uncensored)"); };
+      host.querySelector("#btnAblit").onclick = function () { enh.setAbliterated(true); enh.toast("Uncensored"); };
       host.querySelector("#btnFull").onclick = function () { enh.setAbliterated(false); enh.toast("Full (standard)"); };
     }
     host.querySelector("#btnCloud").onclick = function () { enh.setSource("cloud"); enh.toast("Cloud \u00b7 Hugging Face"); };
@@ -75,7 +77,7 @@
       '<div id="cloudSettingsBlock"><label style="font-size:12px;color:var(--muted)">Quick pick</label>' +
       '<select id="settingsModelPreset" style="width:100%;margin-top:4px;background:#0c0e12;color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px"></select>' +
       '<div style="margin-top:8px;display:flex;align-items:center;gap:8px"><span style="font-size:12px;color:var(--muted)">Weights</span>' +
-      '<div class="ablit-toggle"><button type="button" id="setBtnAblit">Ablit</button><button type="button" id="setBtnFull">Full</button></div></div></div>' +
+      '<div class="ablit-toggle"><button type="button" id="setBtnAblit">Uncensored</button><button type="button" id="setBtnFull">Full</button></div></div></div>' +
       '<div class="local-settings" id="localSettingsBlock" style="display:none">' +
       "<label>Local API base (OpenAI-compatible)</label><input id=\"localBaseInput\" placeholder=\"http://127.0.0.1:11434/v1\" />" +
       "<label>Local model name</label><input id=\"localModelInput\" placeholder=\"llama3.2 or qwen2.5-coder\" />" +
@@ -152,6 +154,28 @@
     };
     window.openSettings.__enh = true;
   }
+  function wireAdvanced() {
+    var btn = document.getElementById("toggleAdvanced");
+    var body = document.querySelector(".sheet-body");
+    if (!btn || !body || btn.__wired) return;
+    btn.__wired = true;
+    btn.onclick = function () {
+      body.classList.toggle("show-advanced");
+      btn.textContent = body.classList.contains("show-advanced") ? "Hide advanced" : "Advanced";
+    };
+    var flux = document.getElementById("fluxToken");
+    if (flux && !flux.__wired) {
+      flux.__wired = true;
+      try { flux.value = localStorage.getItem("siftah_flux_token") || ""; } catch (e) {}
+      function saveFlux() {
+        try { localStorage.setItem("siftah_flux_token", flux.value.trim()); } catch (e) {}
+        var studio = document.getElementById("studioFluxToken");
+        if (studio && studio.value !== flux.value) studio.value = flux.value;
+      }
+      flux.addEventListener("change", saveFlux);
+      flux.addEventListener("blur", saveFlux);
+    }
+  }
   function boot() {
     if (!E()) { setTimeout(boot, 50); return; }
     injectCSS();
@@ -165,6 +189,7 @@
     E().currentModel();
     renderModelBar();
     ensureTools();
+    wireAdvanced();
     patchOpenSettings();
     E().patchSend();
     setTimeout(function () { E().patchSend(); renderModelBar(); }, 400);

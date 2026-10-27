@@ -63,6 +63,9 @@
     chips.id = "promptChips";
     chips.className = "prompt-chips";
     var list = [
+      ["Fix this code", "Look at the code I paste and fix it. Explain the bug in one line, then give the corrected full file."],
+      ["Explain this", "Explain this in plain language. Say what it does, then what I should change."],
+      ["Write a script", "Write a complete script I can run. Put the filename in the code fence header."],
       ["Full app", "Build a complete small web app with HTML/CSS/JS. Put each file in its own code fence with the filename in the header."],
       ["Debug", "Find the bug, explain the root cause in one line, then give the fixed full file."],
       ["Refactor", "Refactor this for clarity and performance. Return complete updated files only."],

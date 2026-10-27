@@ -35,13 +35,23 @@
 
   function token() {
     try {
+      var flux = (localStorage.getItem("siftah_flux_token") || "").trim();
+      if (flux) {
+        if (token._last !== flux) { hfClient = null; hfClientLoading = null; token._last = flux; }
+        return flux;
+      }
       if (typeof loadSettings === "function") {
         var s = loadSettings();
-        if (s && s.token) return s.token;
+        if (s && s.token) {
+          if (token._last !== s.token) { hfClient = null; hfClientLoading = null; token._last = s.token; }
+          return s.token;
+        }
       }
     } catch (e) {}
     var el = document.getElementById("token");
-    return (el && el.value) || "";
+    var fallback = (el && el.value) || "";
+    if (token._last !== fallback) { hfClient = null; hfClientLoading = null; token._last = fallback; }
+    return fallback;
   }
 
   function loadHFClient() {
@@ -120,7 +130,7 @@
       '<div class="media-sheet-body">' +
       "<label>Prompt</label>" +
       '<textarea id="imgPrompt" placeholder="Describe the image (or how to edit the upload)..."></textarea>' +
-      '<p class="media-hint">Optional upload = image-to-image. No upload = text-to-image. Uses your HF token.</p>' +
+      '<p class="media-hint">Optional upload = image-to-image. No upload = text-to-image. Uses the FLUX token if you set one, otherwise the chat token.</p>' +
       "<label>Reference image (optional)</label>" +
       '<div class="media-upload-row">' +
       '<input type="file" id="imgFile" accept="image/*" style="display:none">' +

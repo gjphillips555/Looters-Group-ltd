@@ -93,7 +93,8 @@
       btn.onclick = function () { setMode(btn.getAttribute("data-mode")); };
     });
   }
-  function applyMode(mode) {
+  function applyMode(mode, opts) {
+    var lockModel = opts && opts.lockModel;
     document.body.classList.remove("mode-coding", "mode-knowledge", "mode-images");
     document.body.classList.add("mode-" + mode);
     var tabs = document.getElementById("modeTabs");
@@ -104,7 +105,7 @@
 
     try {
       var mid = MODE_MODELS[mode];
-      if (mid) {
+      if (!lockModel && mid) {
         try { localStorage.setItem("siftah_model", mid); } catch (e) {}
         var inp = document.getElementById("model");
         if (inp) inp.value = mid;
@@ -159,7 +160,7 @@
   function boot() {
     injectCSS(); ensureModeTabs(); patchSystemPrompt();
     setTimeout(patchSystemPrompt, 500); setTimeout(wireMenu, 400);
-    applyMode(getMode());
+    applyMode(getMode(), { lockModel: true });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { setTimeout(boot, 180); });
   else setTimeout(boot, 180);
