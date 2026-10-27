@@ -56,40 +56,7 @@
   }
 
   function wireChips() {
-    if (document.getElementById("promptChips")) return;
-    var wrap = document.querySelector(".composer-wrap");
-    if (!wrap) return;
-    var chips = document.createElement("div");
-    chips.id = "promptChips";
-    chips.className = "prompt-chips";
-    var list = [
-      ["Fix this code", "Look at the code I paste and fix it. Explain the bug in one line, then give the corrected full file."],
-      ["Explain this", "Explain this in plain language. Say what it does, then what I should change."],
-      ["Write a script", "Write a complete script I can run. Put the filename in the code fence header."],
-      ["Full app", "Build a complete small web app with HTML/CSS/JS. Put each file in its own code fence with the filename in the header."],
-      ["Debug", "Find the bug, explain the root cause in one line, then give the fixed full file."],
-      ["Refactor", "Refactor this for clarity and performance. Return complete updated files only."],
-      ["API", "Design a REST API with example requests and a minimal working server implementation."],
-      ["Tests", "Write unit tests covering edge cases. Include how to run them."]
-    ];
-    list.forEach(function (pair) {
-      var b = document.createElement("button");
-      b.type = "button";
-      b.textContent = pair[0];
-      b.title = pair[1];
-      b.onclick = function () {
-        var input = document.getElementById("input");
-        if (!input) return;
-        input.value = (input.value ? input.value + "\n\n" : "") + pair[1];
-        input.dispatchEvent(new Event("input"));
-        input.focus();
-        if (typeof resizeInput === "function") resizeInput();
-      };
-      chips.appendChild(b);
-    });
-    var composer = wrap.querySelector(".composer");
-    if (composer) wrap.insertBefore(chips, composer);
-    else wrap.prepend(chips);
+    return;
   }
 
   function attachToolbar(wrap, role, content) {
