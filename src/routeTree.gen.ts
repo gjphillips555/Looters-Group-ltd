@@ -18,6 +18,7 @@ import { Route as OverlayRouteImport } from './routes/overlay'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as StorepolicyRouteImport } from './routes/storepolicy'
 import { Route as TermsandconditionsRouteImport } from './routes/termsandconditions'
+import { Route as ApiSiftahRoomRouteImport } from './routes/api/siftah-room'
 import { Route as HiddenForumRouteImport } from './routes/hidden.forum'
 import { Route as ListingListingIdRouteImport } from './routes/listing.$listingId'
 import { Route as OrderOrderIdRouteImport } from './routes/order.$orderId'
@@ -71,6 +72,11 @@ const TermsandconditionsRoute = TermsandconditionsRouteImport.update({
   path: '/termsandconditions',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSiftahRoomRoute = ApiSiftahRoomRouteImport.update({
+  id: '/api/siftah-room',
+  path: '/api/siftah-room',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HiddenForumRoute = HiddenForumRouteImport.update({
   id: '/forum',
   path: '/forum',
@@ -117,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/shop': typeof ShopRouteWithChildren
   '/storepolicy': typeof StorepolicyRoute
   '/termsandconditions': typeof TermsandconditionsRoute
+  '/api/siftah-room': typeof ApiSiftahRoomRoute
   '/hidden/forum': typeof HiddenForumRoute
   '/listing/$listingId': typeof ListingListingIdRoute
   '/order/$orderId': typeof OrderOrderIdRoute
@@ -134,6 +141,7 @@ export interface FileRoutesByTo {
   '/overlay': typeof OverlayRoute
   '/storepolicy': typeof StorepolicyRoute
   '/termsandconditions': typeof TermsandconditionsRoute
+  '/api/siftah-room': typeof ApiSiftahRoomRoute
   '/hidden/forum': typeof HiddenForumRoute
   '/listing/$listingId': typeof ListingListingIdRoute
   '/order/$orderId': typeof OrderOrderIdRoute
@@ -153,6 +161,7 @@ export interface FileRoutesById {
   '/shop': typeof ShopRouteWithChildren
   '/storepolicy': typeof StorepolicyRoute
   '/termsandconditions': typeof TermsandconditionsRoute
+  '/api/siftah-room': typeof ApiSiftahRoomRoute
   '/hidden/forum': typeof HiddenForumRoute
   '/listing/$listingId': typeof ListingListingIdRoute
   '/order/$orderId': typeof OrderOrderIdRoute
@@ -173,6 +182,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/storepolicy'
     | '/termsandconditions'
+    | '/api/siftah-room'
     | '/hidden/forum'
     | '/listing/$listingId'
     | '/order/$orderId'
@@ -190,6 +200,7 @@ export interface FileRouteTypes {
     | '/overlay'
     | '/storepolicy'
     | '/termsandconditions'
+    | '/api/siftah-room'
     | '/hidden/forum'
     | '/listing/$listingId'
     | '/order/$orderId'
@@ -208,6 +219,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/storepolicy'
     | '/termsandconditions'
+    | '/api/siftah-room'
     | '/hidden/forum'
     | '/listing/$listingId'
     | '/order/$orderId'
@@ -227,6 +239,7 @@ export interface RootRouteChildren {
   ShopRoute: typeof ShopRouteWithChildren
   StorepolicyRoute: typeof StorepolicyRoute
   TermsandconditionsRoute: typeof TermsandconditionsRoute
+  ApiSiftahRoomRoute: typeof ApiSiftahRoomRoute
   ListingListingIdRoute: typeof ListingListingIdRoute
   OrderOrderIdRoute: typeof OrderOrderIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -295,6 +308,13 @@ declare module '@tanstack/react-router' {
       path: '/termsandconditions'
       fullPath: '/termsandconditions'
       preLoaderRoute: typeof TermsandconditionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/siftah-room': {
+      id: '/api/siftah-room'
+      path: '/api/siftah-room'
+      fullPath: '/api/siftah-room'
+      preLoaderRoute: typeof ApiSiftahRoomRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/hidden/forum': {
@@ -384,6 +404,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShopRoute: ShopRouteWithChildren,
   StorepolicyRoute: StorepolicyRoute,
   TermsandconditionsRoute: TermsandconditionsRoute,
+  ApiSiftahRoomRoute: ApiSiftahRoomRoute,
   ListingListingIdRoute: ListingListingIdRoute,
   OrderOrderIdRoute: OrderOrderIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
