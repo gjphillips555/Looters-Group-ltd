@@ -8,7 +8,7 @@
     s.id = "enhCSS";
     s.textContent =
       ".model-pick{display:flex;align-items:center;gap:6px;flex-wrap:wrap;max-width:100%}" +
-      ".model-pick select{max-width:min(220px,54vw);background:#12151c;color:var(--text);border:1px solid var(--border);border-radius:8px;padding:4px 8px;font-size:11px}" +
+      ".model-pick select{max-width:min(280px,70vw);background:#12151c;color:var(--text);border:1px solid var(--border);border-radius:8px;padding:4px 8px;font-size:11px}" +
       ".model-pick .model-blurb{font-size:10px;color:var(--muted);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}" +
       ".ablit-toggle,.source-toggle{display:inline-flex;align-items:center;border:1px solid var(--border);border-radius:999px;overflow:hidden;font-size:10px;font-weight:600}" +
       ".ablit-toggle button,.source-toggle button{border:none;background:transparent;color:var(--muted);padding:4px 9px;cursor:pointer;font-size:10px;font-weight:600}" +
