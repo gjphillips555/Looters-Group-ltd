@@ -6,14 +6,12 @@
     { id: "black-forest-labs/FLUX.1-schnell", label: "FLUX.1 Schnell (T2I)", mode: "t2i" },
     { id: "black-forest-labs/FLUX.1-dev", label: "FLUX.1 Dev (T2I)", mode: "t2i" },
     { id: "stabilityai/stable-diffusion-xl-base-1.0", label: "SDXL 1.0 (T2I / I2I)", mode: "both" },
-    { id: "stabilityai/stable-diffusion-xl-refiner-1.0", label: "SDXL Refiner (I2I)", mode: "i2i" },
     { id: "Qwen/Qwen-Image", label: "Qwen Image (T2I)", mode: "t2i" }
   ];
 
   var VIDEO_MODELS = [
     { id: "Wan-AI/Wan2.1-T2V-1.3B", label: "Wan 2.1 T2V 1.3B (text→video)", mode: "t2v", provider: "fal-ai" },
-    { id: "Wan-AI/Wan2.1-I2V-14B-480P", label: "Wan 2.1 I2V 14B (image→video)", mode: "i2v", provider: "fal-ai" },
-    { id: "Lightricks/LTX-Video", label: "LTX Video (text→video)", mode: "t2v", provider: "fal-ai" },
+    { id: "Wan-AI/Wan2.1-I2V-14B-480P", label: "Wan 2.1 I2V 14B (image→video)", mode: "i2v", provider: "wavespeed" },
     { id: "tencent/HunyuanVideo", label: "HunyuanVideo (text→video)", mode: "t2v", provider: "fal-ai" },
     { id: "Wan-AI/Wan2.1-T2V-14B", label: "Wan 2.1 T2V 14B (text→video)", mode: "t2v", provider: "fal-ai" }
   ];

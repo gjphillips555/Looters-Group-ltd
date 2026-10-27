@@ -82,7 +82,6 @@
       '<img class="upload-thumb" id="studioEditThumb" alt=""></div>' +
       "<label>Model</label><select id=\"studioEditModel\">" +
       '<option value="stabilityai/stable-diffusion-xl-base-1.0">SDXL 1.0 (I2I)</option>' +
-      '<option value="stabilityai/stable-diffusion-xl-refiner-1.0">SDXL Refiner</option>' +
       '<option value="black-forest-labs/FLUX.1-dev">FLUX.1 Dev</option></select>' +
       '<div class="studio-actions"><button type="button" class="primary" id="studioEditBtn">Apply edit</button></div>' +
       '<div class="studio-status" id="studioEditStatus"></div>' +
