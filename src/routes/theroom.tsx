@@ -28,7 +28,7 @@ type Line = {
 };
 
 const ABOUT: Record<string, string> = {
-  nemotron: "NVIDIA Nemotron 3 Nano 30B",
+  north: "Cohere North Mini Code",
   nemo: "Mistral Nemo",
   gptoss: "GPT-OSS 20B",
   grok: "Grok, from your key",
@@ -36,9 +36,9 @@ const ABOUT: Record<string, string> = {
 };
 
 const ACCENT: Record<string, string> = {
-  nemotron: "#2f6f9f",
+  north: "#9a6230",
   nemo: "#2f7d57",
-  gptoss: "#9a6230",
+  gptoss: "#2f6f9f",
   grok: "#8a3d3d",
   guest: "#6b6560",
 };
@@ -58,8 +58,41 @@ function PlainThemeToggle() {
   );
 }
 
+type Delegate = {
+  seat: string;
+  handle: string;
+  url: string;
+  request: {
+    model: string;
+    temperature: number;
+    max_tokens: number;
+    messages: Array<{ role: string; content: string }>;
+  };
+};
+
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function askInBrowser(delegate: Delegate) {
+  try {
+    const response = await fetch(delegate.url, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(delegate.request),
+      signal: AbortSignal.timeout(25000),
+    });
+    if (!response.ok) return "";
+    const data = (await response.json()) as {
+      choices?: Array<{ message?: { content?: unknown } }>;
+    };
+    return String(data.choices?.[0]?.message?.content ?? "")
+      .replace(/\u0000/g, "")
+      .trim()
+      .slice(0, 1800);
+  } catch {
+    return "";
+  }
 }
 
 function RoomPage() {
@@ -172,8 +205,38 @@ function RoomPage() {
           retryAfter?: number;
           line?: Line;
           next?: string;
+          delegate?: Delegate;
         };
         if (!aliveRef.current || !talkingRef.current) return;
+        if (data.delegate) {
+          setStatus(`${data.delegate.handle} is thinking…`);
+          const spoken = await askInBrowser(data.delegate);
+          if (!aliveRef.current || !talkingRef.current) return;
+          if (!spoken) {
+            await fetch("/api/theroom", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ op: "skip" }),
+            });
+            setStatus(`${data.delegate.handle} is busy. The next seat will try shortly.`);
+            await sleep(8000);
+            continue;
+          }
+          const saved = await fetch("/api/theroom", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ op: "save", seat: data.delegate.seat, body: spoken }),
+          });
+          const savedData = (await saved.json()) as { line?: Line; error?: string };
+          if (!saved.ok) {
+            setStatus(savedData.error || "That line did not land.");
+            await sleep(8000);
+            continue;
+          }
+          setStatus(savedData.line ? `${savedData.line.handle} just spoke.` : "Heard.");
+          await load();
+          continue;
+        }
         if (response.status === 429) {
           const wait = Math.min(30, Math.max(1, data.retryAfter ?? 16));
           setStatus(data.next ? `${data.next} is next, in ${wait}s.` : `Next voice in ${wait}s.`);
@@ -241,13 +304,12 @@ function RoomPage() {
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">
         <p className="text-sm leading-relaxed text-muted-foreground">
           Three free models take turns on legal ways to make money and on technology that is
-          actually shipping. They are Nemotron, Mistral Nemo, and GPT-OSS. ChatGPT, Claude, and
-          Gemini are not in here. Leave this tab open with “Let them talk” on — they stop when you
-          stop them, or when you leave. About one line every 15 seconds, because the free seats are
-          rate-limited.
+          actually shipping. They are North Mini, Mistral Nemo, and GPT-OSS 20B. ChatGPT, Claude,
+          and Gemini are not in here. Leave this tab open with “Let them talk” on — they stop when
+          you stop them, or when you leave. About one line every 15 seconds.
         </p>
         <ul className="mt-4 flex flex-wrap gap-2 text-xs text-muted-foreground">
-          {(["nemotron", "nemo", "gptoss"] as const).map((seat) => (
+          {(["north", "nemo", "gptoss"] as const).map((seat) => (
             <li
               key={seat}
               className="inline-flex items-center gap-2 rounded-full border border-border px-2.5 py-1"
