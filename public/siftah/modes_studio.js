@@ -97,6 +97,72 @@
     });
   }
 
+  function hordeKey() {
+    try {
+      var k = (localStorage.getItem("siftah_horde_key") || "").trim();
+      return k || "0000000000";
+    } catch (e) { return "0000000000"; }
+  }
+  function sniffImage(bytes) {
+    if (bytes.length > 3 && bytes[0] === 0x89 && bytes[1] === 0x50) return "image/png";
+    if (bytes.length > 2 && bytes[0] === 0xff && bytes[1] === 0xd8) return "image/jpeg";
+    if (bytes.length > 12 && bytes[0] === 0x52 && bytes[1] === 0x49) return "image/webp";
+    return "image/webp";
+  }
+  function b64ToBlob(b64) {
+    var bin = atob(b64.replace(/\s/g, ""));
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new Blob([bytes], { type: sniffImage(bytes) });
+  }
+  function generateHorde(prompt, modelName, onStatus) {
+    var headers = {
+      "Content-Type": "application/json",
+      "apikey": hordeKey(),
+      "Client-Agent": "Siftah:1.0:looterscomputas.online"
+    };
+    return fetch("https://stablehorde.net/api/v2/generate/async", {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({
+        prompt: prompt,
+        params: { sampler_name: "k_euler", cfg_scale: 7, width: 512, height: 512, steps: 20, n: 1 },
+        nsfw: true,
+        censor_nsfw: false,
+        models: [modelName],
+        r2: false,
+        shared: false
+      })
+    }).then(function (r) {
+      return r.json().then(function (j) {
+        if (!r.ok || !j.id) throw new Error(j.message || ("AI Horde " + r.status));
+        return j.id;
+      });
+    }).then(function (id) {
+      var started = Date.now();
+      function poll() {
+        if (Date.now() - started > 180000) throw new Error("AI Horde timed out. Try again, or paste a personal key under Advanced.");
+        return fetch("https://stablehorde.net/api/v2/generate/check/" + id, { headers: headers }).then(function (r) {
+          return r.json();
+        }).then(function (c) {
+          if (c.faulted) throw new Error(c.message || "AI Horde worker failed");
+          if (onStatus) onStatus(c);
+          if (!c.done) return new Promise(function (res) { setTimeout(res, 3000); }).then(poll);
+          return fetch("https://stablehorde.net/api/v2/generate/status/" + id, { headers: headers }).then(function (r) {
+            return r.json();
+          }).then(function (st) {
+            var g = st && st.generations && st.generations[0];
+            if (!g || !g.img) throw new Error((st && st.message) || "AI Horde returned no image");
+            if (g.censored) throw new Error("AI Horde censored this one. A personal key helps.");
+            if (g.img.indexOf("http") === 0) return fetch(g.img).then(function (r) { return r.blob(); });
+            return b64ToBlob(g.img);
+          });
+        });
+      }
+      return poll();
+    });
+  }
+
   function ensureStudio() {
     if (document.getElementById("imageStudio")) return;
     var chatCol = document.querySelector(".chat-col");
@@ -115,10 +181,13 @@
       '<option value="black-forest-labs/FLUX.1-dev">FLUX.1 Dev \u2605 best quality</option>' +
       '<option value="black-forest-labs/FLUX.1-schnell">FLUX.1 Schnell (fast)</option>' +
       '<option value="stabilityai/stable-diffusion-xl-base-1.0">SDXL 1.0</option>' +
-      '<option value="Qwen/Qwen-Image">Qwen Image</option></select>' +
+      '<option value="Qwen/Qwen-Image">Qwen Image</option>' +
+      '<option value="horde:stable_diffusion">AI Horde · Stable Diffusion (free)</option>' +
+      '<option value="horde:Deliberate">AI Horde · Deliberate (free)</option>' +
+      '<option value="horde:AlbedoBase XL (SDXL)">AI Horde · AlbedoBase XL (free)</option></select>' +
       "<label>Hugging Face token for FLUX</label>" +
       '<input id="studioFluxToken" type="password" placeholder="hf_... leave blank to use the chat token" autocomplete="off" style="width:100%;box-sizing:border-box;background:#12151c;border:1px solid var(--border,#2a2e38);color:#eee;border-radius:8px;padding:10px;font-size:13px">' +
-      '<p class="studio-status">FLUX needs its own Hugging Face token with Inference Providers turned on, or it fails. A second token keeps image credits off the chat token. Blank uses the chat token.</p>' +
+      '<p class="studio-status">FLUX needs a Hugging Face token. AI Horde models are free: leave the key blank for the slow anonymous queue, or paste a personal key under Settings → Advanced.</p>' +
       '<div class="studio-actions"><button type="button" class="primary" id="studioCreateBtn">Generate</button></div>' +
       '<div class="studio-status" id="studioCreateStatus"></div>' +
       '<div class="studio-preview" id="studioCreatePreview"><div class="placeholder">Your image will appear here</div></div>' +
@@ -210,8 +279,12 @@
     }
 
     document.getElementById("studioCreateBtn").onclick = async function () {
+      var prompt = (document.getElementById("studioCreatePrompt").value || "").trim();
+      if (!prompt) { toast("Enter a prompt"); return; }
+      var model = document.getElementById("studioCreateModel").value;
+      var isHorde = model.indexOf("horde:") === 0;
       var t = token();
-      if (!t) {
+      if (!isHorde && !t) {
         toast("Add a FLUX token in the box above, or a chat token under Advanced");
         if (typeof openSettings === "function") {
           openSettings();
@@ -222,19 +295,24 @@
         }
         return;
       }
-      var prompt = (document.getElementById("studioCreatePrompt").value || "").trim();
-      if (!prompt) { toast("Enter a prompt"); return; }
-      var model = document.getElementById("studioCreateModel").value;
       var btn = document.getElementById("studioCreateBtn");
       var status = document.getElementById("studioCreateStatus");
       var preview = document.getElementById("studioCreatePreview");
-      btn.disabled = true; status.textContent = "Generating\u2026 (10\u201360s)";
+      btn.disabled = true;
+      status.textContent = isHorde ? "Queued on AI Horde\u2026 free, so it can take a minute" : "Generating\u2026 (10\u201360s)";
       preview.innerHTML = '<div class="placeholder">Working\u2026</div>';
       document.getElementById("studioCreateActions").style.display = "none";
       try {
-        var client = await loadHFClient(t);
-        var out = await client.textToImage({ model: model, inputs: prompt });
-        lastCreateBlob = await normalizeOut(out);
+        if (isHorde) {
+          lastCreateBlob = await generateHorde(prompt, model.slice(6), function (c) {
+            var pos = c && c.queue_position ? " \u00b7 position " + c.queue_position : "";
+            status.textContent = (c && c.processing) ? "A free worker is drawing\u2026" : ("Waiting in the free queue" + pos);
+          });
+        } else {
+          var client = await loadHFClient(t);
+          var out = await client.textToImage({ model: model, inputs: prompt });
+          lastCreateBlob = await normalizeOut(out);
+        }
         showPreview(preview, lastCreateBlob);
         document.getElementById("studioCreateActions").style.display = "flex";
         status.textContent = "Done";

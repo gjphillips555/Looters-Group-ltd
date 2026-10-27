@@ -175,6 +175,17 @@
       flux.addEventListener("change", saveFlux);
       flux.addEventListener("blur", saveFlux);
     }
+    var horde = document.getElementById("hordeToken");
+    if (horde && !horde.__wired) {
+      horde.__wired = true;
+      try { horde.value = localStorage.getItem("siftah_horde_key") || ""; } catch (e) {}
+      function saveHorde() {
+        try { localStorage.setItem("siftah_horde_key", horde.value.trim()); } catch (e) {}
+      }
+      horde.addEventListener("input", saveHorde);
+      horde.addEventListener("change", saveHorde);
+      horde.addEventListener("blur", saveHorde);
+    }
   }
   function boot() {
     if (!E()) { setTimeout(boot, 50); return; }
