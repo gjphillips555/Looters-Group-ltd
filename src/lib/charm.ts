@@ -1,11 +1,10 @@
-/** Round up to the next price ending in 4.99 or 9.99. Never rounds down. */
+/** Round up to the next price ending in .49 or .99. Never rounds down. */
 export function charmUp(amount: number) {
   const cents = Math.ceil(amount * 100 - 1e-6);
-  const base = Math.floor(cents / 1000) * 1000;
-  for (const tail of [499, 999, 1499]) {
-    if (base + tail >= cents) return (base + tail) / 100;
-  }
-  return (base + 1499) / 100;
+  const dollars = Math.floor(cents / 100);
+  const rem = cents - dollars * 100;
+  if (rem === 0 || rem <= 49) return dollars + 0.49;
+  return dollars + 0.99;
 }
 
 /**
@@ -17,7 +16,7 @@ export function clearCost(cost: number, profit = 0) {
   return Math.ceil(ask * 100 - 1e-6) / 100;
 }
 
-/** Shop shelf: $1 clear of cost and PayPal, then charm-rounded up. Never rounds down. */
+/** Shop shelf: $1 clear of cost and PayPal, then rounded up to .49 or .99. Never rounds down. */
 export function markedUp(cost: number) {
   return charmUp(clearCost(cost, 1));
 }

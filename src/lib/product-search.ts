@@ -11,6 +11,8 @@ export type ShopCategoryId =
   | "digital"
   | "batteries"
   | "ink"
+  | "screens"
+  | "cases"
   | "all";
 
 export const SHOP_CATEGORIES: { id: ShopCategoryId; label: string }[] = [
@@ -23,6 +25,8 @@ export const SHOP_CATEGORIES: { id: ShopCategoryId; label: string }[] = [
   { id: "digital", label: "Digital" },
   { id: "batteries", label: "Batteries" },
   { id: "ink", label: "Ink" },
+  { id: "screens", label: "Screens" },
+  { id: "cases", label: "Cases" },
   { id: "all", label: "All products" },
 ];
 
@@ -36,6 +40,8 @@ export const SHOP_CATEGORY_PAGES = [
   "digital",
   "batteries",
   "ink",
+  "screens",
+  "cases",
 ] as const;
 export type ShopCategoryPage = (typeof SHOP_CATEGORY_PAGES)[number];
 
@@ -44,6 +50,8 @@ export type ShopCategoryPage = (typeof SHOP_CATEGORY_PAGES)[number];
  * Laptops LA→L4, Desktops DE→D3, Components CO→C0,
  * Monitors MO→M0, Cables CA→C4, Gift cards GI→G1,
  * Batteries BA→B4. Ink has no digit-like second letter, so I1.
+ * Screens: phone has no digit-like second letter, so P4.
+ * Cases would be CA, which is already Cables, so A4.
  */
 export const TITLE_CATEGORY_CODES: {
   id: ShopCategoryPage;
@@ -59,6 +67,8 @@ export const TITLE_CATEGORY_CODES: {
   { id: "digital", label: "Digital", sample: "D1" },
   { id: "batteries", label: "Batteries", sample: "B4" },
   { id: "ink", label: "Ink", sample: "I1" },
+  { id: "screens", label: "Screens", sample: "P4" },
+  { id: "cases", label: "Cases", sample: "A4" },
 ];
 
 const TITLE_STAMP: Record<string, ShopCategoryPage> = {
@@ -71,6 +81,8 @@ const TITLE_STAMP: Record<string, ShopCategoryPage> = {
   D1: "digital",
   B4: "batteries",
   I1: "ink",
+  P4: "screens",
+  A4: "cases",
 };
 
 export function categoryFromTitleCode(title: string): ShopCategoryPage | null {

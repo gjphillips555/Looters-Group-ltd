@@ -6,7 +6,7 @@ const SHIP: ShippingOption[] = [
   { id: "south", label: "South Island courier", price: 18 },
 ];
 
-type Kind = "batteries" | "ink" | "components" | "cables" | "monitors" | "digital";
+type Kind = "batteries" | "ink" | "components" | "cables" | "monitors" | "digital" | "screens" | "cases";
 
 type Row = {
   id: string;
@@ -20,6 +20,9 @@ type Row = {
   shipping?: ShippingOption[];
   /** Fixed shelf price. Digital keys use this so we keep the spread over the key site. */
   shelf?: number;
+  /** Supplier couriers straight to the customer. No freight into Wellington. */
+  direct?: boolean;
+  maxQty?: number;
 };
 
 const PHOTO = {
@@ -67,6 +70,38 @@ const PHOTO = {
   winHome: "/artwork/sourced/digital-windows-home.svg",
   winPro: "/artwork/sourced/digital-windows-pro.svg",
   officeKey: "/artwork/sourced/digital-office.svg",
+  screen11: "/artwork/sourced/screen-11.webp",
+  screen12: "/artwork/sourced/screen-12.webp",
+  screen13: "/artwork/sourced/screen-13.webp",
+  screenA05: "/artwork/sourced/screen-a05.webp",
+  screenA06: "/artwork/sourced/screen-a06.webp",
+  screenA04: "/artwork/sourced/screen-a04.webp",
+  screenA17: "/artwork/sourced/screen-a17.webp",
+  caseFungya: "/artwork/sourced/case-fungya.jpg",
+  caseMika: "/artwork/sourced/case-mika.webp",
+  caseMiro: "/artwork/sourced/case-miro.webp",
+  bat11: "/artwork/sourced/bat-11.webp",
+  bat12: "/artwork/sourced/bat-12.webp",
+  bat13: "/artwork/sourced/bat-13.webp",
+  batX: "/artwork/sourced/bat-x.webp",
+  bat7: "/artwork/sourced/bat-7.webp",
+  batXr: "/artwork/sourced/bat-xr.webp",
+  batS23u: "/artwork/sourced/bat-s23u.webp",
+  batS22: "/artwork/sourced/bat-s22.webp",
+  batS21: "/artwork/sourced/bat-s21.webp",
+  chg61: "/artwork/sourced/chg-61w.webp",
+  chg87: "/artwork/sourced/chg-87w.webp",
+  chgMag45: "/artwork/sourced/chg-magsafe45.webp",
+  chg30: "/artwork/sourced/chg-30w.webp",
+  chgAcer45: "/artwork/sourced/chg-acer45.webp",
+  chgAcer90: "/artwork/sourced/chg-acer90.webp",
+  chgAcer180: "/artwork/sourced/chg-acer180.webp",
+  chgAsus90: "/artwork/sourced/chg-asus90.webp",
+  chgToshiba65: "/artwork/sourced/chg-toshiba65.webp",
+  chgHp90: "/artwork/sourced/chg-hp90.webp",
+  chgDell65: "/artwork/sourced/chg-dell65.webp",
+  chgLenovo90: "/artwork/sourced/chg-lenovo90.webp",
+  lightning: "/artwork/sourced/cable-lightning.webp",
 } as const;
 
 const GPU_SHIP: ShippingOption[] = [
@@ -85,7 +120,7 @@ const MON_SHIP: ShippingOption[] = [
 
 /**
  * Cheap NZ lines we can reorder (Sunny Way Tech batteries/chargers, Good Egg ink).
- * Costs are their advertised inc-GST prices. Shelf is $1 clear after PayPal, charm-rounded up.
+ * Costs are their advertised inc-GST prices. Shelf is $1 clear after PayPal, then rounded up to .49 or .99.
  */
 const ROWS: Row[] = [
   { id: "src-9401", kind: "batteries", cost: 36, photo: "hpBat", brand: "HP", fit: "HP 240 / 245 / 255 G4", title: "Compatible Laptop Battery for HP 240 245 255 G4 – HS04 HSTNN-LB6V" },
@@ -156,9 +191,53 @@ const ROWS: Row[] = [
   { id: "src-9907", kind: "components", cost: 290, photo: "kingstonFury", brand: "Kingston", fit: "16GB DDR4 kit", title: "Kingston Fury Beast 16GB DDR4 RGB Memory" },
   { id: "src-9908", kind: "components", cost: 205.85, photo: "msiB550", brand: "MSI", fit: "AM4 motherboard", title: "MSI B550M PRO-VDH WIFI Motherboard" },
 
-  { id: "src-9301", kind: "digital", cost: 25, shelf: 49.95, photo: "winHome", brand: "Microsoft", fit: "1 PC", title: "Windows 11 Home digital key", shipping: EMAIL },
-  { id: "src-9302", kind: "digital", cost: 30, shelf: 64.95, photo: "winPro", brand: "Microsoft", fit: "1 PC", title: "Windows 11 Pro digital key", shipping: EMAIL },
-  { id: "src-9303", kind: "digital", cost: 40, shelf: 79.95, photo: "officeKey", brand: "Microsoft", fit: "Word, Excel and PowerPoint on 1 PC", title: "Office apps digital key — Word, Excel and PowerPoint", shipping: EMAIL },
+  { id: "src-9301", kind: "digital", cost: 25, shelf: 49.99, photo: "winHome", brand: "Microsoft", fit: "1 PC", title: "Windows 11 Home digital key", shipping: EMAIL },
+  { id: "src-9302", kind: "digital", cost: 30, shelf: 64.99, photo: "winPro", brand: "Microsoft", fit: "1 PC", title: "Windows 11 Pro digital key", shipping: EMAIL },
+  { id: "src-9303", kind: "digital", cost: 40, shelf: 79.99, photo: "officeKey", brand: "Microsoft", fit: "Word, Excel and PowerPoint on 1 PC", title: "Office apps digital key — Word, Excel and PowerPoint", shipping: EMAIL },
+
+  { id: "src-9101", kind: "screens", direct: true, maxQty: 2, cost: 31.2, photo: "screen11", brand: "JH", fit: "iPhone 11", title: "Aftermarket JH iPhone 11 FHD Incell LCD Screen – True Original Resolution" },
+  { id: "src-9102", kind: "screens", direct: true, maxQty: 2, cost: 40.8, photo: "screen12", brand: "JH", fit: "iPhone 12 and iPhone 12 Pro", title: "Aftermarket JH Apple iPhone 12 / 12 Pro FHD Incell LCD Screen" },
+  { id: "src-9103", kind: "screens", direct: true, maxQty: 2, cost: 45, photo: "screen13", brand: "JH", fit: "iPhone 13", title: "Aftermarket JH Apple iPhone 13 FHD Incell LCD Screen" },
+  { id: "src-9104", kind: "screens", direct: true, maxQty: 2, cost: 19.8, photo: "screenA05", brand: "Samsung", fit: "Samsung Galaxy A05 A055F/DS", title: "Aftermarket LCD for Samsung A05 A055F/DS No Frame" },
+  { id: "src-9105", kind: "screens", direct: true, maxQty: 2, cost: 20.4, photo: "screenA06", brand: "Samsung", fit: "Samsung Galaxy A06 SM-A065F/DS", title: "Aftermarket LCD for Samsung A06 SM-A065F/DS A065M/DS No Frame" },
+  { id: "src-9106", kind: "screens", direct: true, maxQty: 2, cost: 19.2, photo: "screenA04", brand: "Samsung", fit: "Samsung Galaxy A04 A045", title: "Aftermarket LCD for Samsung A04 A045 No Frame" },
+  { id: "src-9107", kind: "screens", direct: true, maxQty: 2, cost: 19.2, photo: "screenA17", brand: "OPPO", fit: "OPPO A17 CPH2477", title: "Aftermarket LCD Screen For OPPO A17 CPH2477 Without Frame" },
+
+  { id: "src-9201", kind: "cases", direct: true, maxQty: 4, cost: 9, photo: "caseFungya", brand: "FUNG-YA", fit: "iPhone 13", title: "FUNG-YA Lens Protection MagSafe Case for iPhone 13 (Black)" },
+  { id: "src-9202", kind: "cases", direct: true, maxQty: 4, cost: 9, photo: "caseFungya", brand: "FUNG-YA", fit: "iPhone 14", title: "FUNG-YA Lens Protection MagSafe Case for iPhone 14 (Black)" },
+  { id: "src-9203", kind: "cases", direct: true, maxQty: 4, cost: 9, photo: "caseFungya", brand: "FUNG-YA", fit: "iPhone 14 Pro Max", title: "FUNG-YA Lens Protection MagSafe Case for iPhone 14 Pro Max (Black)" },
+  { id: "src-9204", kind: "cases", direct: true, maxQty: 4, cost: 9, photo: "caseFungya", brand: "FUNG-YA", fit: "iPhone 15 Pro Max", title: "FUNG-YA Lens Protection MagSafe Case for iPhone 15 Pro Max (Black)" },
+  { id: "src-9205", kind: "cases", direct: true, maxQty: 4, cost: 9, photo: "caseFungya", brand: "FUNG-YA", fit: "iPhone 16 Pro Max", title: "FUNG-YA Lens Protection MagSafe Case for iPhone 16 Pro Max (Black)" },
+  { id: "src-9206", kind: "cases", direct: true, maxQty: 4, cost: 9, photo: "caseFungya", brand: "FUNG-YA", fit: "iPhone 16e and iPhone 17e", title: "FUNG-YA Lens Protection MagSafe Case for iPhone 16e / iPhone 17e (Black)" },
+  { id: "src-9207", kind: "cases", direct: true, maxQty: 4, cost: 9, photo: "caseFungya", brand: "FUNG-YA", fit: "iPhone 17 Pro Max and iPhone 18 Pro Max", title: "FUNG-YA Lens Protection MagSafe Case for iPhone 17 Pro Max / iPhone 18 Pro Max (Black)" },
+  { id: "src-9208", kind: "cases", direct: true, maxQty: 4, cost: 9, photo: "caseMika", brand: "Hanman", fit: "Samsung Galaxy S26", title: "Samsung S26 wallet stand case hanman Mika Series black" },
+  { id: "src-9209", kind: "cases", direct: true, maxQty: 4, cost: 9, photo: "caseMika", brand: "Hanman", fit: "Samsung Galaxy S26", title: "Samsung S26 wallet stand case hanman Mika Series rose gold" },
+  { id: "src-9210", kind: "cases", direct: true, maxQty: 4, cost: 13.92, photo: "caseMiro", brand: "Hanman", fit: "Samsung Galaxy S26", title: "Samsung S26 Magnetic Detachable Wallet Stand Case – Hanman Miro Series black" },
+  { id: "src-9211", kind: "cases", direct: true, maxQty: 4, cost: 13.92, photo: "caseMiro", brand: "Hanman", fit: "Samsung Galaxy S26", title: "Samsung S26 Magnetic Detachable Wallet Stand Case – Hanman Miro Series rose gold" },
+
+  { id: "src-9121", kind: "batteries", direct: true, maxQty: 4, cost: 16.8, photo: "bat11", brand: "Apple", fit: "iPhone 11", title: "Aftermarket Battery For Apple iPhone 11" },
+  { id: "src-9122", kind: "batteries", direct: true, maxQty: 4, cost: 16.8, photo: "bat12", brand: "Apple", fit: "iPhone 12 and iPhone 12 Pro", title: "Aftermarket Battery For Apple iPhone 12 / 12 Pro" },
+  { id: "src-9123", kind: "batteries", direct: true, maxQty: 4, cost: 17.4, photo: "bat13", brand: "Apple", fit: "iPhone 13", title: "Aftermarket Battery For Apple iPhone 13" },
+  { id: "src-9124", kind: "batteries", direct: true, maxQty: 4, cost: 19.2, photo: "batX", brand: "Apple", fit: "iPhone X", title: "Aftermarket Battery For Apple iPhone X" },
+  { id: "src-9125", kind: "batteries", direct: true, maxQty: 4, cost: 12, photo: "bat7", brand: "Apple", fit: "iPhone 7", title: "Aftermarket Battery For Apple iPhone 7" },
+  { id: "src-9126", kind: "batteries", direct: true, maxQty: 4, cost: 16.2, photo: "batXr", brand: "Apple", fit: "iPhone XR", title: "Aftermarket Battery For Apple iPhone XR" },
+  { id: "src-9127", kind: "batteries", direct: true, maxQty: 4, cost: 16.8, photo: "batS23u", brand: "Samsung", fit: "Samsung Galaxy S23 Ultra 5G SM-S918", title: "Aftermarket Battery For Samsung Galaxy S23 Ultra 5G SM-S918" },
+  { id: "src-9128", kind: "batteries", direct: true, maxQty: 4, cost: 14.4, photo: "batS22", brand: "Samsung", fit: "Samsung Galaxy S22", title: "Aftermarket Battery For Samsung Galaxy S22" },
+  { id: "src-9129", kind: "batteries", direct: true, maxQty: 4, cost: 14.4, photo: "batS21", brand: "Samsung", fit: "Samsung Galaxy S21", title: "Aftermarket Battery For Samsung Galaxy S21" },
+
+  { id: "src-9141", kind: "cables", direct: true, maxQty: 4, cost: 46.8, photo: "chg61", brand: "Apple", fit: "MacBook 61W USB-C", title: "Replacement 61W Type-C Charger For Apple MacBook" },
+  { id: "src-9142", kind: "cables", direct: true, maxQty: 4, cost: 48, photo: "chg87", brand: "Apple", fit: "MacBook 87W USB-C", title: "Replacement 87W Type-C Charger For Apple MacBook" },
+  { id: "src-9143", kind: "cables", direct: true, maxQty: 4, cost: 40.8, photo: "chgMag45", brand: "Apple", fit: "MacBook 45W MagSafe 2", title: "Replacement 45W MagSafe 2 Charger For Apple MacBook" },
+  { id: "src-9144", kind: "cables", direct: true, maxQty: 4, cost: 42, photo: "chg30", brand: "Apple", fit: "MacBook, iPad or iPhone 30W USB-C", title: "Replacement 30W Type-C Charger For Apple MacBook / iPad / iPhone" },
+  { id: "src-9145", kind: "cables", direct: true, maxQty: 4, cost: 25.2, photo: "chgAcer45", brand: "Acer", fit: "Acer 45W 19V 2.37A 3.0×1.1mm", title: "Aftermarket Laptop Charger For Acer 45W 19V 2.37A 3.0×1.1mm" },
+  { id: "src-9146", kind: "cables", direct: true, maxQty: 4, cost: 26.4, photo: "chgAcer90", brand: "Acer", fit: "Acer 90W 19V 4.74A 5.5×1.7mm", title: "Aftermarket Laptop Charger For Acer 90W 19V 4.74A 5.5×1.7mm" },
+  { id: "src-9147", kind: "cables", direct: true, maxQty: 4, cost: 54, photo: "chgAcer180", brand: "Acer", fit: "Acer 180W 19.5V 9.23A 5.5×1.7mm", title: "Aftermarket Laptop Charger For Acer 180W 19.5V 9.23A 5.5×1.7mm" },
+  { id: "src-9148", kind: "cables", direct: true, maxQty: 4, cost: 28.8, photo: "chgAsus90", brand: "Asus", fit: "Asus 90W 19.5V 4.74A 5.5×2.5mm", title: "Aftermarket Laptop Charger For Asus 90W 19.5V 4.74A 5.5×2.5mm" },
+  { id: "src-9149", kind: "cables", direct: true, maxQty: 4, cost: 27.6, photo: "chgToshiba65", brand: "Toshiba", fit: "Toshiba 65W 19V 3.42A 5.5×2.5mm", title: "Aftermarket Laptop Charger For Toshiba 65W 19V 3.42A 5.5×2.5mm" },
+  { id: "src-9150", kind: "cables", direct: true, maxQty: 4, cost: 26.4, photo: "chgHp90", brand: "HP", fit: "HP 90W 19.5V 4.74A 7.4×5.0mm", title: "Aftermarket Laptop Charger For HP 90W 19.5V 4.74A 7.4×5.0mm" },
+  { id: "src-9152", kind: "cables", direct: true, maxQty: 4, cost: 25.2, photo: "chgDell65", brand: "Dell", fit: "Dell 65W 19.5V 3.34A 4.5×3.0mm", title: "Aftermarket Laptop Charger For Dell 65W 19.5V 3.34A 4.5×3.0mm" },
+  { id: "src-9153", kind: "cables", direct: true, maxQty: 4, cost: 27.6, photo: "chgLenovo90", brand: "Lenovo", fit: "Lenovo 90W 20V 4.5A rectangle", title: "Aftermarket Laptop Charger For Lenovo 90W 20V 4.5A Rectangle Port" },
+  { id: "src-9151", kind: "cables", direct: true, maxQty: 4, cost: 6, photo: "lightning", brand: "Apple", fit: "iPhone Lightning", title: "USB To Lightning Cable For Apple iPhone 1 Meter" },
 ];
 
 const PATH = {
@@ -198,14 +277,46 @@ const PATH = {
     name: "Digital",
     stamp: "D1",
   },
+  screens: {
+    path: "/Computers/Phone-Screens",
+    number: "0002-screen",
+    name: "Screens",
+    stamp: "P4",
+  },
+  cases: {
+    path: "/Computers/Phone-Cases",
+    number: "0002-case",
+    name: "Cases",
+    stamp: "A4",
+  },
 } as const;
+
+function directCopy(row: Row) {
+  const ship =
+    "Ordered from our New Zealand parts supplier when you pay. They courier it to the address on the order. We do not keep it on the shelf. Mainland New Zealand address. If the courier quote is higher than the shipping on the order, we message you before it ships.";
+  if (row.kind === "screens") {
+    return `Aftermarket replacement screen for ${row.fit}. Not fitted. You or a repairer fit it. ${ship} Full refund if that exact part is gone.`;
+  }
+  if (row.kind === "cases") {
+    return `Aftermarket case for ${row.fit}. ${ship} Full refund if that exact case is gone.`;
+  }
+  if (row.kind === "batteries") {
+    return `Compatible battery for ${row.fit}. Not a genuine OEM battery. ${ship} Full refund if that exact part is gone.`;
+  }
+  if (/lightning/i.test(row.title)) {
+    return `USB to Lightning cable, 1 metre, for ${row.fit}. ${ship} Full refund if that exact cable is gone.`;
+  }
+  return `Replacement charger for ${row.fit}. Not a genuine Apple or OEM retail adapter. ${ship} Full refund if that exact charger is gone.`;
+}
 
 function toProduct(row: Row): Product {
   const cat = PATH[row.kind];
   // Batteries and chargers: NZ seller price did not include the courier to us.
   // Ink is a small mailer. GPUs are a small box from another island if the Wellington shop is out.
   // Cables, the monitor and the branded gear already include that freight in cost.
-  const inbound = row.kind === "digital" || row.id.startsWith("src-97") || row.id.startsWith("src-98") || row.id.startsWith("src-99")
+  const inbound = row.direct
+    ? 0
+    : row.kind === "digital" || row.id.startsWith("src-97") || row.id.startsWith("src-98") || row.id.startsWith("src-99")
     ? 0
     : row.id.startsWith("src-95")
       ? 6
@@ -230,9 +341,10 @@ function toProduct(row: Row): Product {
     listingUrl: "",
     isNew: false,
     shipping: row.shipping ?? SHIP,
-    maxQty: row.kind === "digital" ? 5 : row.kind === "ink" ? 12 : row.kind === "cables" ? 10 : row.kind === "monitors" ? 2 : 4,
-    description:
-      row.kind === "digital"
+    maxQty: row.maxQty ?? (row.kind === "digital" ? 5 : row.kind === "ink" ? 12 : row.kind === "cables" ? 10 : row.kind === "monitors" ? 2 : row.kind === "screens" ? 2 : 4),
+    description: row.direct
+      ? directCopy(row)
+      : row.kind === "digital"
         ? `Digital key for ${row.fit}. We buy it in after you pay and email the key to the address on the order. This is a third-party digital licence, not a boxed Microsoft shop copy and not a Microsoft 365 subscription. The shelf price is what you pay us. If the key will not activate, you get a full refund.`
         : row.kind === "components" && /graphics card/i.test(row.title)
         ? `New ${row.brand} card, bought in from a New Zealand shop when you order and posted from Wellington. ${row.id === "src-9601" ? "This is a basic display card for an extra screen or an old PC, not for modern games. " : ""}If that exact card has already sold there, you get a full refund before it ships.`

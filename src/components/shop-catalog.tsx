@@ -58,6 +58,16 @@ export function ShopCatalog({
           Emailed after you pay. Third-party digital licences, not a Microsoft shop box and not Microsoft 365. Full refund if the key will not activate.
         </p>
       ) : null}
+      {category === "screens" ? (
+        <p className="mb-3 max-w-2xl text-sm text-muted-foreground">
+          Replacement screens, not fitted. Ordered when you pay and couriered to your address by our New Zealand parts supplier. Full refund if that exact screen is gone.
+        </p>
+      ) : null}
+      {category === "cases" ? (
+        <p className="mb-3 max-w-2xl text-sm text-muted-foreground">
+          Phone cases ordered when you pay and couriered to your address. We do not keep these on the shelf. Full refund if that exact case is gone.
+        </p>
+      ) : null}
       <RefineBar products={products} />
       <ProductGrid
         key={category}

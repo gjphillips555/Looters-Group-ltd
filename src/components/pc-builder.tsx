@@ -21,9 +21,9 @@ import {
 
 const ghost = Object.fromEntries(SLOTS.map((slot) => [slot.id, PARTS.find((part) => part.slot === slot.id)?.photo])) as Record<Slot, string>;
 
-export const ASSEMBLY = 149.95;
-export const WIN_HOME = 49.95;
-export const WIN_PRO = 64.95;
+export const ASSEMBLY = 149.99;
+export const WIN_HOME = 49.99;
+export const WIN_PRO = 64.99;
 
 const DONE = {
   case: { id: "done-case" },

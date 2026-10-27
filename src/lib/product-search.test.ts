@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { afterpayEach, afterpayLabel } from "./afterpay.ts";
+import { charmUp } from "./charm.ts";
 import { productBrand, productKind } from "./product-search.ts";
 import type { Product } from "./products.ts";
 
@@ -145,4 +146,22 @@ test("monitors, cables and gift cards use their own stamps", () => {
 test("Afterpay splits the price into four instalments", () => {
   assert.equal(afterpayEach(199.95), 49.99);
   assert.equal(afterpayLabel(199.95), "Pay 4 instalments of $49.99");
+});
+
+test("shelf prices round up to .49 or .99", () => {
+  assert.equal(charmUp(10.23), 10.49);
+  assert.equal(charmUp(10.42), 10.49);
+  assert.equal(charmUp(10.49), 10.49);
+  assert.equal(charmUp(10.5), 10.99);
+  assert.equal(charmUp(10.82), 10.99);
+  assert.equal(charmUp(10.99), 10.99);
+  assert.equal(charmUp(11), 11.49);
+  assert.equal(charmUp(33.8), 33.99);
+});
+
+test("phone screens and cases use their own stamps", () => {
+  assert.equal(kind('Aftermarket JH iPhone 11 FHD Incell LCD Screen | "P4"'), "screens");
+  assert.equal(kind('FUNG-YA Lens Protection MagSafe Case for iPhone 13 (Black) | "A4"'), "cases");
+  assert.equal(kind("Samsung A04"), "components");
+  assert.equal(kind("iPhone 14 Pro"), "components");
 });
