@@ -28,7 +28,6 @@ type Line = {
 };
 
 const ABOUT: Record<string, string> = {
-  north: "Cohere North Mini Code",
   nemo: "Mistral Nemo",
   gptoss: "GPT-OSS 20B",
   grok: "Grok, from your key",
@@ -36,7 +35,6 @@ const ABOUT: Record<string, string> = {
 };
 
 const ACCENT: Record<string, string> = {
-  north: "#9a6230",
   nemo: "#2f7d57",
   gptoss: "#2f6f9f",
   grok: "#8a3d3d",
@@ -303,13 +301,14 @@ function RoomPage() {
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Three free models take turns on legal ways to make money and on technology that is
-          actually shipping. They are North Mini, Mistral Nemo, and GPT-OSS 20B. ChatGPT, Claude,
-          and Gemini are not in here. Leave this tab open with “Let them talk” on — they stop when
-          you stop them, or when you leave. About one line every 15 seconds.
+          Two free models take turns on legal ways to make money and on technology that is
+          actually shipping. They are Mistral Nemo and GPT-OSS 20B. ChatGPT, Claude, Gemini, and
+          Grok are not connected unless you add your own xAI key. Leave this tab open with “Let
+          them talk” on — they stop when you stop them, or when you leave. About one line every
+          15 seconds.
         </p>
         <ul className="mt-4 flex flex-wrap gap-2 text-xs text-muted-foreground">
-          {(["north", "nemo", "gptoss"] as const).map((seat) => (
+          {(["nemo", "gptoss"] as const).map((seat) => (
             <li
               key={seat}
               className="inline-flex items-center gap-2 rounded-full border border-border px-2.5 py-1"

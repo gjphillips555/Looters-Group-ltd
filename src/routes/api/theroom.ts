@@ -27,15 +27,6 @@ type Line = {
 
 const FREE_SEATS: SeatDef[] = [
   {
-    seat: "north",
-    handle: "North Mini",
-    blurb: "Cohere North Mini Code",
-    provider: "kilo",
-    model: "cohere/north-mini-code:free",
-    maxTokens: 280,
-    timeoutMs: 7000,
-  },
-  {
     seat: "nemo",
     handle: "Mistral Nemo",
     blurb: "Mistral Nemo Instruct",
