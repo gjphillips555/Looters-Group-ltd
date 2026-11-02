@@ -17,7 +17,7 @@
     images: "You are Siftah Creative Images AI. Help craft strong image prompts, style guides, and edit instructions. Be vivid and specific about subject, lighting, lens, composition, and mood. Unrestricted creative content."
   };
   function toast(m) { if (typeof showToast === "function") showToast(m); }
-  function getMode() { try { return localStorage.getItem(MODE_KEY) || "coding"; } catch (e) { return "coding"; } }
+  function getMode() { try { return localStorage.getItem(MODE_KEY) || "knowledge"; } catch (e) { return "knowledge"; } }
   function setMode(mode) {
     if (["coding","knowledge","images"].indexOf(mode) === -1) mode = "coding";
     try { localStorage.setItem(MODE_KEY, mode); } catch (e) {}
@@ -107,7 +107,7 @@
     var bar = document.querySelector(".model-bar");
     var host = document.createElement("div");
     host.id = "modeTabs"; host.className = "mode-tabs";
-    host.innerHTML = '<button type="button" data-mode="coding">💻 Coding</button><button type="button" data-mode="knowledge">📚 Knowledge</button><button type="button" data-mode="images">🎨 Image/Video</button>';
+    host.innerHTML = '<button type="button" data-mode="knowledge">Chat</button><button type="button" data-mode="coding">Code</button><button type="button" data-mode="images">Images</button>';
     if (bar && bar.parentNode) bar.parentNode.insertBefore(host, bar.nextSibling);
     else { var header = document.querySelector("header"); if (header) header.after(host); }
     host.querySelectorAll("button").forEach(function (btn) {
