@@ -206,6 +206,7 @@
   }
 
   function closeTab(id) {
+    if (store.tabs.length > 1) syncHistoryFromGlobal();
     if (store.tabs.length <= 1) {
       if (!confirm("Clear this chat?")) return;
       var only = store.tabs[0];
