@@ -143,6 +143,7 @@
       '<div class="media-result" id="imgResult"><div class="placeholder">Result will appear here</div></div>' +
       '<div class="media-actions" id="imgActions" style="display:none">' +
       '<button type="button" id="imgDl">⬇ Download</button>' +
+      '<button type="button" id="imgCopy">Copy image</button>' +
       '<button type="button" id="imgToProject">+ Project</button>' +
       "</div></div></div>";
     document.body.appendChild(img);
@@ -195,6 +196,7 @@
     document.getElementById("imgGen").onclick = generateImage;
     document.getElementById("vidGen").onclick = generateVideo;
     document.getElementById("imgDl").onclick = downloadImg;
+    document.getElementById("imgCopy").onclick = copyImg;
     document.getElementById("imgToProject").onclick = addImgToProject;
     document.getElementById("vidDl").onclick = downloadVid;
 
@@ -354,7 +356,7 @@
       var url = URL.createObjectURL(lastImgBlob);
       result.innerHTML = '<img src="' + url + '" alt="generated">';
       document.getElementById("imgActions").style.display = "flex";
-      if (!status.textContent || status.textContent.indexOf("Note") !== 0) status.textContent = "Done — saved in Files for 24 hours";
+      if (!status.textContent || status.textContent.indexOf("Note") !== 0) status.textContent = "Done — saved to your Gallery for 30 days";
       if (window.siftahVault) {
         window.siftahVault.add(lastImgBlob, {
           kind: imgUploadBlob ? "i2i" : "t2i",
@@ -373,10 +375,35 @@
 
   function downloadImg() {
     if (!lastImgBlob) return;
+    var url = URL.createObjectURL(lastImgBlob);
     var a = document.createElement("a");
-    a.href = URL.createObjectURL(lastImgBlob);
+    a.href = url;
     a.download = "siftah-image-" + Date.now() + ".png";
     a.click();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 3000);
+  }
+
+  async function copyImg() {
+    if (!lastImgBlob) return;
+    if (!navigator.clipboard || !window.ClipboardItem || typeof createImageBitmap !== "function") {
+      if (typeof showToast === "function") showToast("Image clipboard is unavailable here — use Download");
+      return;
+    }
+    try {
+      var bitmap = await createImageBitmap(lastImgBlob);
+      var canvas = document.createElement("canvas");
+      canvas.width = bitmap.width;
+      canvas.height = bitmap.height;
+      canvas.getContext("2d").drawImage(bitmap, 0, 0);
+      if (bitmap.close) bitmap.close();
+      var png = await new Promise(function (resolve, reject) {
+        canvas.toBlob(function (blob) { if (blob) resolve(blob); else reject(new Error("Could not prepare image")); }, "image/png");
+      });
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": png })]);
+      if (typeof showToast === "function") showToast("Image copied to clipboard");
+    } catch (err) {
+      if (typeof showToast === "function") showToast((err && err.message) || "Could not copy image — use Download");
+    }
   }
 
   function addImgToProject() {
