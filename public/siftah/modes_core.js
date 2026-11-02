@@ -31,15 +31,33 @@
     } catch (e) { toast("Gallery storage full \u2014 delete some images"); }
   }
   function addToGallery(dataUrl, prompt, kind) {
+    var itemKind = kind || "t2i";
+    if (window.siftahVault && dataUrl) {
+      return fetch(dataUrl).then(function (r) {
+        if (!r.ok) throw new Error("Could not read generated image");
+        return r.blob();
+      }).then(function (blob) {
+        return window.siftahVault.add(blob, {
+          kind: itemKind,
+          prompt: prompt || "",
+          name: "siftah-" + Date.now() + (blob.type === "image/jpeg" ? ".jpg" : blob.type === "image/webp" ? ".webp" : ".png"),
+          mime: blob.type || "image/png"
+        });
+      }).then(function (saved) {
+        if (window.siftahModesStudio) window.siftahModesStudio.renderGallery();
+        return saved;
+      }).catch(function () {
+        return saveLegacyGalleryItem(dataUrl, prompt, itemKind);
+      });
+    }
+    return saveLegacyGalleryItem(dataUrl, prompt, itemKind);
+  }
+  function saveLegacyGalleryItem(dataUrl, prompt, kind) {
     var items = loadGallery();
     items.unshift({ id: "g" + Date.now(), prompt: prompt || "", dataUrl: dataUrl, kind: kind || "t2i", fav: false, created: new Date().toISOString() });
     saveGallery(items);
-    if (window.siftahVault && dataUrl) {
-      fetch(dataUrl).then(function (r) { return r.blob(); }).then(function (b) {
-        return window.siftahVault.add(b, { kind: kind || "t2i", prompt: prompt || "", name: "siftah-" + Date.now() + ".png", mime: b.type || "image/png" });
-      }).catch(function () {});
-    }
     if (window.siftahModesStudio) window.siftahModesStudio.renderGallery();
+    return items[0];
   }
   function injectCSS() {
     if (document.getElementById("modesCSS")) return;
@@ -107,7 +125,7 @@
     var bar = document.querySelector(".model-bar");
     var host = document.createElement("div");
     host.id = "modeTabs"; host.className = "mode-tabs";
-    host.innerHTML = '<button type="button" data-mode="knowledge">Chat</button><button type="button" data-mode="coding">Code</button><button type="button" data-mode="images">Images</button>';
+    host.innerHTML = '<button type="button" data-mode="knowledge">Chat</button><button type="button" data-mode="coding">Code</button><button type="button" data-mode="images">Image</button>';
     if (bar && bar.parentNode) bar.parentNode.insertBefore(host, bar.nextSibling);
     else { var header = document.querySelector("header"); if (header) header.after(host); }
     host.querySelectorAll("button").forEach(function (btn) {
