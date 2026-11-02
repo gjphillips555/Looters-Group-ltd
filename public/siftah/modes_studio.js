@@ -187,7 +187,7 @@
       '<option value="horde:AlbedoBase XL (SDXL)">AI Horde · AlbedoBase XL (free)</option></select>' +
       "<label>Hugging Face token for FLUX</label>" +
       '<input id="studioFluxToken" type="password" placeholder="hf_... leave blank to use the chat token" autocomplete="off" style="width:100%;box-sizing:border-box;background:#12151c;border:1px solid var(--border,#2a2e38);color:#eee;border-radius:8px;padding:10px;font-size:13px">' +
-      '<p class="studio-status">FLUX needs a Hugging Face token. AI Horde models are free: leave the key blank for the slow anonymous queue, or paste a personal key under Settings → Advanced.</p>' +
+      '<p class="studio-status">Uses Hugging Face Inference Providers with an HF token that has Make calls to Inference Providers permission. Krea Dev is the default quality pick; model/provider availability can vary. AI Horde models are free: leave the key blank for the slow anonymous queue, or paste a personal key under Settings → Advanced.</p>' +
       '<div class="studio-actions"><button type="button" class="primary" id="studioCreateBtn">Generate</button></div>' +
       '<div class="studio-status" id="studioCreateStatus"></div>' +
       '<div class="studio-preview" id="studioCreatePreview"><div class="placeholder">Your image will appear here</div></div>' +
@@ -310,7 +310,7 @@
           });
         } else {
           var client = await loadHFClient(t);
-          var out = await client.textToImage({ model: model, inputs: prompt });
+          var out = await client.textToImage({ model: model, inputs: prompt, provider: "auto" });
           lastCreateBlob = await normalizeOut(out);
         }
         showPreview(preview, lastCreateBlob);
