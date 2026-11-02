@@ -131,10 +131,10 @@
       ".chat-tab.active{background:var(--panel2);color:var(--text)}" +
       ".chat-tab.active::after{content:'';position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--red)}" +
       ".chat-tab .tab-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;text-align:left}" +
-      ".chat-tab .tab-rename,.chat-tab .tab-close{width:18px;height:18px;border-radius:50%;border:none;background:transparent;color:var(--muted);font-size:12px;line-height:1;cursor:pointer;flex-shrink:0;display:grid;place-items:center;padding:0;opacity:0.55}" +
-      ".chat-tab:hover .tab-rename,.chat-tab.active .tab-rename,.chat-tab:hover .tab-close,.chat-tab.active .tab-close{opacity:1}" +
+      ".chat-tab .tab-rename,.chat-tab .tab-close{width:22px;height:22px;border-radius:7px;border:1px solid transparent;background:transparent;color:var(--muted);font-size:13px;line-height:1;cursor:pointer;flex-shrink:0;display:grid;place-items:center;padding:0;opacity:1}" +
+      ".chat-tab .tab-close{color:#c7cbd3;font-size:16px;font-weight:700}" +
       ".chat-tab .tab-rename:hover{background:rgba(255,255,255,0.08);color:var(--text)}" +
-      ".chat-tab .tab-close:hover{background:rgba(225,29,46,0.2);color:var(--red)}" +
+      ".chat-tab .tab-close:hover{background:rgba(225,29,46,0.2);border-color:rgba(225,29,46,.45);color:#ff6472}" +
       ".chat-tab-new{width:36px;border:none;border-left:1px solid var(--border);background:transparent;color:var(--text);font-size:18px;cursor:pointer;flex-shrink:0}" +
       ".chat-tab-new:hover{background:rgba(225,29,46,0.12);color:var(--red)}";
     document.head.appendChild(s);
@@ -152,7 +152,7 @@
       btn.innerHTML =
         '<span class="tab-title"></span>' +
         '<span class="tab-rename" title="Rename chat">✎</span>' +
-        '<span class="tab-close" title="Close">×</span>';
+        '<span class="tab-close" role="button" aria-label="Close conversation" title="Close conversation">×</span>';
       btn.querySelector(".tab-title").textContent = tab.title;
       btn.onclick = function (e) {
         if (e.target.closest(".tab-close") || e.target.closest(".tab-rename")) return;
