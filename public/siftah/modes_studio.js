@@ -81,22 +81,54 @@
   function showPreview(el, blob) {
     blobToDataUrl(blob).then(function (url) { el.innerHTML = '<img src="' + url + '" alt="result">'; });
   }
-  var hfClientPromise = null;
+  var hfClientPromise = null, hfClientToken = null;
   function loadHFClient(t) {
     if (!t) return Promise.reject(new Error("Add a Hugging Face token with Inference Providers permission."));
-    if (!hfClientPromise) {
-      hfClientPromise = import("https://cdn.jsdelivr.net/npm/@huggingface/inference@3/+esm")
-        .then(function (mod) {
-          var Client = mod.InferenceClient || mod.HfInference || mod.default;
-          if (!Client) throw new Error("Hugging Face InferenceClient could not be loaded.");
-          return new Client(t);
-        })
-        .catch(function (err) {
-          hfClientPromise = null;
-          throw err;
-        });
-    }
+    if (hfClientPromise && hfClientToken === t) return hfClientPromise;
+    hfClientToken = t;
+    hfClientPromise = import("https://cdn.jsdelivr.net/npm/@huggingface/inference@3/+esm")
+      .then(function (mod) {
+        var Client = mod.InferenceClient || mod.HfInference || mod.default;
+        if (!Client) throw new Error("Hugging Face InferenceClient could not be loaded.");
+        return new Client(t);
+      })
+      .catch(function (err) {
+        hfClientPromise = null;
+        hfClientToken = null;
+        throw err;
+      });
     return hfClientPromise;
+  }
+
+  async function imageBlobAsPng(blob) {
+    if (!blob) throw new Error("No image to copy.");
+    if (blob.type === "image/png") return blob;
+    if (typeof createImageBitmap !== "function") throw new Error("Image clipboard is unavailable. Use Download instead.");
+    var bitmap = await createImageBitmap(blob);
+    var canvas = document.createElement("canvas");
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    canvas.getContext("2d").drawImage(bitmap, 0, 0);
+    if (bitmap.close) bitmap.close();
+    return new Promise(function (resolve, reject) {
+      canvas.toBlob(function (png) { if (png) resolve(png); else reject(new Error("Could not prepare image for clipboard.")); }, "image/png");
+    });
+  }
+  async function copyImageBlob(blob) {
+    if (!navigator.clipboard || !window.ClipboardItem) throw new Error("Image clipboard needs a secure browser context. Use Download instead.");
+    await navigator.clipboard.write([new window.ClipboardItem({ "image/png": await imageBlobAsPng(blob) })]);
+    toast("Image copied");
+  }
+  async function copyPromptText(prompt) {
+    if (!prompt) throw new Error("No prompt saved for this item.");
+    if (!navigator.clipboard || !navigator.clipboard.writeText) throw new Error("Clipboard access is unavailable in this browser.");
+    await navigator.clipboard.writeText(prompt);
+    toast("Prompt copied");
+  }
+  function getGalleryBlob(item, usingVault) {
+    if (usingVault && window.siftahVault) return window.siftahVault.get(item.id);
+    if (item.dataUrl) return fetch(item.dataUrl).then(function (r) { return r.blob(); });
+    return Promise.resolve(null);
   }
 
   function hordeKey() {
@@ -176,11 +208,13 @@
       '<button type="button" data-pane="create" class="on">Create</button>' +
       '<button type="button" data-pane="video">Video</button>' +
       '<button type="button" data-pane="edit">Edit</button>' +
-      '<button type="button" data-pane="gallery">Files</button></div>' +
+      '<button type="button" data-pane="gallery">Gallery</button></div>' +
       '<div class="studio-pane on" id="paneCreate">' +
       "<label>Prompt</label><textarea id=\"studioCreatePrompt\" placeholder=\"Describe the image: subject, style, lighting, mood\u2026\"></textarea>" +
       "<label>Model</label><select id=\"studioCreateModel\">" +
-      '<option value="black-forest-labs/FLUX.1-dev">FLUX.1 Dev \u2605 best quality</option>' +
+      '<option value="black-forest-labs/FLUX.1-Krea-dev">FLUX.1 Krea Dev \u2605 quality pick</option>' +
+      '<option value="Qwen/Qwen-Image">Qwen Image · detail focused</option>' +
+      '<option value="black-forest-labs/FLUX.1-dev">FLUX.1 Dev</option>' +
       '<option value="black-forest-labs/FLUX.1-schnell">FLUX.1 Schnell (fast)</option>' +
       '<option value="stabilityai/stable-diffusion-xl-base-1.0">SDXL 1.0</option>' +
       '<option value="Qwen/Qwen-Image">Qwen Image</option>' +
@@ -194,7 +228,9 @@
       '<div class="studio-status" id="studioCreateStatus"></div>' +
       '<div class="studio-preview" id="studioCreatePreview"><div class="placeholder">Your image will appear here</div></div>' +
       '<div class="studio-actions" id="studioCreateActions" style="display:none">' +
-      '<button type="button" id="studioCreateDl">Download</button>' +
+      '<button type="button" id="studioCreateDl">⬇ Download</button>' +
+      '<button type="button" id="studioCreateCopy">Copy image</button>' +
+      '<button type="button" id="studioCreatePromptCopy">Copy prompt</button>' +
       '<button type="button" id="studioCreateEdit">Use in Edit</button></div></div>' +
       '<div class="studio-pane" id="paneEdit">' +
       "<label>Edit instruction</label><textarea id=\"studioEditPrompt\" placeholder=\"How should the image change?\"></textarea>" +
@@ -210,7 +246,9 @@
       '<div class="studio-status" id="studioEditStatus"></div>' +
       '<div class="studio-preview" id="studioEditPreview"><div class="placeholder">Edited image will appear here</div></div>' +
       '<div class="studio-actions" id="studioEditActions" style="display:none">' +
-      '<button type="button" id="studioEditDl">Download</button>' +
+      '<button type="button" id="studioEditDl">⬇ Download</button>' +
+      '<button type="button" id="studioEditCopy">Copy image</button>' +
+      '<button type="button" id="studioEditPromptCopy">Copy prompt</button>' +
       '<button type="button" id="studioEditReedit">Edit again</button></div></div>' +
       '<div class="studio-pane" id="paneVideo">' +
       "<label>Prompt</label><textarea id=\"studioVidPrompt\" placeholder=\"What should the video show? Subject, motion, camera, mood\u2026\"></textarea>" +
@@ -218,16 +256,17 @@
       '<option value="Wan-AI/Wan2.1-T2V-1.3B">Wan 2.1 1.3B (faster)</option>' +
       '<option value="Wan-AI/Wan2.1-T2V-14B">Wan 2.1 14B</option>' +
       '<option value="tencent/HunyuanVideo">HunyuanVideo</option></select>' +
-      '<p class="studio-status">Video uses the FLUX token if you set one, otherwise the chat token. It is saved in Files for 24 hours on this device.</p>' +
+      '<p class="studio-status">Video uses the FLUX token if you set one, otherwise the chat token. It is saved in your on-device Gallery for 30 days.</p>' +
       '<div class="studio-actions"><button type="button" class="primary" id="studioVidBtn">Generate video</button></div>' +
       '<div class="studio-status" id="studioVidStatus"></div>' +
       '<div class="studio-preview" id="studioVidPreview"><div class="placeholder">Your video will appear here</div></div>' +
       '<div class="studio-actions" id="studioVidActions" style="display:none">' +
       '<button type="button" id="studioVidDl">Download</button></div></div>' +
       '<div class="studio-pane" id="paneGallery">' +
-      '<p class="vault-legend" id="vaultLegend">Saved on this device only, free, for 24 hours. Nothing is uploaded. <span class="dot g"></span>green = just made. <span class="dot o"></span>orange after 12 hours. <span class="dot r"></span>red wash = under 2 hours left, then it is deleted. Download anything you want to keep.</p>' +
+      '<p class="vault-legend" id="vaultLegend">Saved privately in this browser for 30 days. Nothing is uploaded to a Siftah gallery server. <span class="dot g"></span>recent <span class="dot o"></span>older than 15 days <span class="dot r"></span>less than 24 hours left. Download anything you want to keep.</p>' +
       '<div class="gallery-toolbar">' +
-      '<input type="search" id="gallerySearch" placeholder="Search files\u2026">' +
+      '<span id="studioGalleryCount" class="gallery-count">0 saved</span>' +
+      '<input type="search" id="gallerySearch" placeholder="Search gallery…">' +
       '<div class="gallery-filters" id="vaultFilters">' +
       '<button type="button" data-f="all" class="on">All</button>' +
       '<button type="button" data-f="image">Images</button>' +
@@ -317,7 +356,7 @@
         }
         showPreview(preview, lastCreateBlob);
         document.getElementById("studioCreateActions").style.display = "flex";
-        status.textContent = "Done";
+        status.textContent = "Done · saved to Gallery for 30 days";
         var url = await blobToDataUrl(lastCreateBlob);
         if (window.siftahModes) window.siftahModes.addToGallery(url, prompt, "t2i");
       } catch (e) {
@@ -329,8 +368,16 @@
 
     document.getElementById("studioCreateDl").onclick = function () {
       if (!lastCreateBlob) return;
-      var a = document.createElement("a"); a.href = URL.createObjectURL(lastCreateBlob);
+      var url = URL.createObjectURL(lastCreateBlob);
+      var a = document.createElement("a"); a.href = url;
       a.download = "siftah-" + Date.now() + ".png"; a.click();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 3000);
+    };
+    document.getElementById("studioCreateCopy").onclick = async function () {
+      try { await copyImageBlob(lastCreateBlob); } catch (e) { toast(e.message || String(e)); }
+    };
+    document.getElementById("studioCreatePromptCopy").onclick = async function () {
+      try { await copyPromptText(document.getElementById("studioCreatePrompt").value.trim()); } catch (e) { toast(e.message || String(e)); }
     };
     document.getElementById("studioCreateEdit").onclick = function () {
       if (!lastCreateBlob) return;
@@ -375,7 +422,7 @@
         lastEditBlob = await normalizeOut(out);
         showPreview(preview, lastEditBlob);
         document.getElementById("studioEditActions").style.display = "flex";
-        status.textContent = "Done";
+        status.textContent = "Done · saved to Gallery for 30 days";
         var url = await blobToDataUrl(lastEditBlob);
         if (window.siftahModes) window.siftahModes.addToGallery(url, prompt, "i2i");
       } catch (e) {
@@ -387,8 +434,16 @@
 
     document.getElementById("studioEditDl").onclick = function () {
       if (!lastEditBlob) return;
-      var a = document.createElement("a"); a.href = URL.createObjectURL(lastEditBlob);
+      var url = URL.createObjectURL(lastEditBlob);
+      var a = document.createElement("a"); a.href = url;
       a.download = "siftah-edit-" + Date.now() + ".png"; a.click();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 3000);
+    };
+    document.getElementById("studioEditCopy").onclick = async function () {
+      try { await copyImageBlob(lastEditBlob); } catch (e) { toast(e.message || String(e)); }
+    };
+    document.getElementById("studioEditPromptCopy").onclick = async function () {
+      try { await copyPromptText(document.getElementById("studioEditPrompt").value.trim()); } catch (e) { toast(e.message || String(e)); }
     };
     document.getElementById("studioEditReedit").onclick = function () {
       if (!lastEditBlob) return;
@@ -512,7 +567,7 @@
       count.textContent = n + " saved";
     }
     if (!items.length) {
-      grid.innerHTML = '<div class="gallery-empty">Nothing saved yet. Create an image or video, or add a file. It stays on this device for 24 hours.</div>';
+      grid.innerHTML = '<div class="gallery-empty">Your gallery is ready. Generate an image or video, edit an upload, or add files to start building your collection. Items stay on this device for 30 days.</div>';
       return;
     }
     grid.innerHTML = "";
@@ -531,9 +586,9 @@
         var mark = g === "video" ? "VIDEO" : (g === "file" ? "FILE" : "IMG");
         visual = '<div class="thumb-wrap"><div class="file-tile">' + mark + "<span>" + esc(item.name || item.kind || "") + '</span></div><div class="wash"></div><div class="age-badge">' + esc(label) + "</div></div>";
       }
-      var actions = '<button type="button" data-act="view">View</button><button type="button" data-act="dl">Download</button>';
-      if (g === "image") actions += '<button type="button" data-act="edit">Edit</button>';
-      actions += '<button type="button" data-act="del">Del</button>';
+      var actions = '<button type="button" data-act="view">View</button><button type="button" data-act="dl">Download</button><button type="button" data-act="prompt">Copy prompt</button>';
+      if (g === "image") actions += '<button type="button" data-act="copy">Copy image</button><button type="button" data-act="edit">Edit</button>';
+      actions += '<button type="button" data-act="del">Delete</button>';
       card.innerHTML = visual + '<div class="meta">' + esc(item.prompt || item.name || item.kind || "file") + "</div>" + '<div class="g-actions">' + actions + "</div>";
       card.querySelector('[data-act="view"]').onclick = function (e) {
         e.stopPropagation();
@@ -543,6 +598,16 @@
           if (box) box.innerHTML = '<img id="lbImg" src="' + item.dataUrl + '" alt="">';
           document.getElementById("siftahLightbox").classList.add("on");
         }
+      };
+      var promptBtn = card.querySelector('[data-act="prompt"]');
+      if (promptBtn) promptBtn.onclick = function (e) {
+        e.stopPropagation();
+        copyPromptText(item.prompt || "").catch(function (err) { toast(err.message || String(err)); });
+      };
+      var copyBtn = card.querySelector('[data-act="copy"]');
+      if (copyBtn) copyBtn.onclick = function (e) {
+        e.stopPropagation();
+        getGalleryBlob(item, usingVault).then(copyImageBlob).catch(function (err) { toast(err.message || String(err)); });
       };
       var editBtn = card.querySelector('[data-act="edit"]');
       if (editBtn) editBtn.onclick = function (e) {
