@@ -98,3 +98,40 @@
 .media-upload-btn.secondary { flex: 0 0 auto; border-style: solid; opacity: 0.85; }
 .media-upload-preview { margin-bottom: 12px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); max-height: 160px; background: #0c0e12; }
 .media-upload-preview img { display: block; max-width: 100%; max-height: 160px; margin: 0 auto; object-fit: contain; }
+
+
+/* Siftah menu polish */
+.menu-drawer {
+  background: linear-gradient(155deg, rgba(24,27,34,.98), rgba(10,10,12,.99));
+  backdrop-filter: blur(18px);
+}
+.menu-head {
+  min-height: 62px;
+  background: rgba(10,10,12,.35);
+}
+.menu-nav { padding: 12px 10px 18px; gap: 5px; }
+.menu-section-label {
+  padding: 12px 12px 5px;
+  color: #7f8795;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .14em;
+}
+.menu-item {
+  min-height: 44px;
+  border: 1px solid transparent;
+  transition: background .16s ease, border-color .16s ease, transform .16s ease;
+}
+.menu-item:hover {
+  background: rgba(225,29,46,.09);
+  border-color: rgba(225,29,46,.18);
+  transform: translateX(2px);
+}
+#menuChat, #menuCode, #menuImages {
+  background: rgba(255,255,255,.025);
+}
+#menuChat:active, #menuCode:active, #menuImages:active { transform: scale(.985); }
+@media (max-width: 480px) {
+  .menu-drawer { width: min(340px, 90vw); }
+  .menu-item { min-height: 48px; font-size: 14px; }
+}
