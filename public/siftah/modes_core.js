@@ -172,6 +172,13 @@
     };
   }
   function wireMenu() {
+    [["menuChat", "knowledge"], ["menuCode", "coding"], ["menuImages", "images"]].forEach(function (entry) {
+      var item = document.getElementById(entry[0]);
+      if (item) item.onclick = function () {
+        if (typeof closeMenu === "function") closeMenu();
+        setMode(entry[1]);
+      };
+    });
     var img = document.getElementById("menuImage");
     if (img) img.onclick = function () {
       if (typeof closeMenu === "function") closeMenu();
