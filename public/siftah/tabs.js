@@ -126,15 +126,14 @@
       ".chat-tabs{display:flex;align-items:stretch;gap:0;background:#0c0e12;border-bottom:1px solid var(--border);min-height:36px;flex-shrink:0}" +
       ".chat-tabs-scroll{display:flex;align-items:stretch;overflow-x:auto;flex:1;min-width:0;scrollbar-width:thin}" +
       ".chat-tabs-scroll::-webkit-scrollbar{height:4px}" +
-      ".chat-tab{display:flex;align-items:center;gap:6px;max-width:180px;min-width:72px;padding:0 8px;border:none;border-right:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;font-weight:500;cursor:pointer;position:relative;height:36px}" +
-      ".chat-tab:hover{background:rgba(255,255,255,0.04);color:var(--text)}" +
+      ".chat-tab{display:flex;align-items:center;gap:4px;max-width:220px;min-width:112px;padding:0 5px;border:none;border-right:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;font-weight:500;position:relative;height:40px;flex-shrink:0}" +
       ".chat-tab.active{background:var(--panel2);color:var(--text)}" +
       ".chat-tab.active::after{content:'';position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--red)}" +
-      ".chat-tab .tab-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;text-align:left}" +
-      ".chat-tab .tab-rename,.chat-tab .tab-close{width:22px;height:22px;border-radius:7px;border:1px solid transparent;background:transparent;color:var(--muted);font-size:13px;line-height:1;cursor:pointer;flex-shrink:0;display:grid;place-items:center;padding:0;opacity:1}" +
-      ".chat-tab .tab-close{color:#c7cbd3;font-size:16px;font-weight:700}" +
-      ".chat-tab .tab-rename:hover{background:rgba(255,255,255,0.08);color:var(--text)}" +
-      ".chat-tab .tab-close:hover{background:rgba(225,29,46,0.2);border-color:rgba(225,29,46,.45);color:#ff6472}" +
+      ".chat-tab .tab-open{flex:1;min-width:0;height:100%;border:0;background:transparent;color:inherit;padding:0 5px;text-align:left;font:inherit;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}" +
+      ".chat-tab .tab-rename,.chat-tab .tab-close{width:26px;height:26px;border-radius:7px;border:1px solid transparent;background:rgba(255,255,255,.045);color:#e6e9ef;font-size:13px;line-height:1;cursor:pointer;flex-shrink:0;display:grid;place-items:center;padding:0;opacity:1}" +
+      ".chat-tab .tab-rename:hover{background:rgba(80,140,255,.16);border-color:rgba(80,140,255,.35);color:#fff}" +
+      ".chat-tab .tab-close{background:rgba(225,29,46,.13);border-color:rgba(225,29,46,.28);color:#fff;font-size:18px;font-weight:700}" +
+      ".chat-tab .tab-close:hover{background:rgba(225,29,46,.34);border-color:#ff6472;color:#fff}" +
       ".chat-tab-new{width:36px;border:none;border-left:1px solid var(--border);background:transparent;color:var(--text);font-size:18px;cursor:pointer;flex-shrink:0}" +
       ".chat-tab-new:hover{background:rgba(225,29,46,0.12);color:var(--red)}";
     document.head.appendChild(s);
@@ -145,39 +144,33 @@
     if (!scroll) return;
     scroll.innerHTML = "";
     store.tabs.forEach(function (tab) {
-      var btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "chat-tab" + (tab.id === store.activeId ? " active" : "");
-      btn.title = tab.title;
-      btn.innerHTML =
-        '<span class="tab-title"></span>' +
-        '<span class="tab-rename" title="Rename chat">✎</span>' +
-        '<span class="tab-close" role="button" aria-label="Close conversation" title="Close conversation">×</span>';
-      btn.querySelector(".tab-title").textContent = tab.title;
-      btn.onclick = function (e) {
-        if (e.target.closest(".tab-close") || e.target.closest(".tab-rename")) return;
-        switchTab(tab.id);
-      };
-      btn.ondblclick = function (e) {
-        if (e.target.closest(".tab-close") || e.target.closest(".tab-rename")) return;
-        renameTab(tab.id);
-      };
+      var item = document.createElement("div");
+      item.className = "chat-tab" + (tab.id === store.activeId ? " active" : "");
+      item.title = tab.title;
+      item.innerHTML =
+        '<button type="button" class="tab-open" aria-label="Open conversation"></button>' +
+        '<button type="button" class="tab-rename" title="Rename chat" aria-label="Rename conversation">✎</button>' +
+        '<button type="button" class="tab-close" title="Close conversation" aria-label="Close conversation">×</button>';
+      var openBtn = item.querySelector(".tab-open");
+      openBtn.textContent = tab.title;
+      openBtn.setAttribute("aria-current", tab.id === store.activeId ? "page" : "false");
+      openBtn.onclick = function () { switchTab(tab.id); };
+      openBtn.ondblclick = function (e) { e.preventDefault(); renameTab(tab.id); };
       var pressTimer = null;
-      btn.addEventListener("touchstart", function (e) {
-        if (e.target.closest(".tab-close") || e.target.closest(".tab-rename")) return;
-        pressTimer = setTimeout(function () { renameTab(tab.id); }, 550);
+      openBtn.addEventListener("touchstart", function () {
+        pressTimer = setTimeout(function () { renameTab(tab.id); }, 600);
       }, { passive: true });
-      btn.addEventListener("touchend", function () { clearTimeout(pressTimer); });
-      btn.addEventListener("touchmove", function () { clearTimeout(pressTimer); });
-      btn.querySelector(".tab-rename").onclick = function (e) {
+      openBtn.addEventListener("touchend", function () { clearTimeout(pressTimer); });
+      openBtn.addEventListener("touchmove", function () { clearTimeout(pressTimer); });
+      item.querySelector(".tab-rename").onclick = function (e) {
         e.stopPropagation();
         renameTab(tab.id);
       };
-      btn.querySelector(".tab-close").onclick = function (e) {
+      item.querySelector(".tab-close").onclick = function (e) {
         e.stopPropagation();
         closeTab(tab.id);
       };
-      scroll.appendChild(btn);
+      scroll.appendChild(item);
     });
   }
 
