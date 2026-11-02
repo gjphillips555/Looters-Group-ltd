@@ -20,9 +20,12 @@ jobs:
         with:
           persist-credentials: true
       - name: Resolve patched TanStack dependencies
-        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+        run: npm install @tanstack/react-start@^1.168.60 --package-lock-only --ignore-scripts --no-audit --no-fund --prefer-online
+        working-directory: ${{ github.workspace }}
       - name: Commit updated lockfile
+        working-directory: ${{ github.workspace }}
         run: |
+          cd "$GITHUB_WORKSPACE"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add package-lock.json
