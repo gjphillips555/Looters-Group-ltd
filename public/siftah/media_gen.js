@@ -3,10 +3,11 @@
   "use strict";
 
   var IMAGE_MODELS = [
-    { id: "black-forest-labs/FLUX.1-schnell", label: "FLUX.1 Schnell (T2I)", mode: "t2i" },
+    { id: "black-forest-labs/FLUX.1-Krea-dev", label: "FLUX.1 Krea Dev - quality pick (T2I)", mode: "t2i" },
+    { id: "Qwen/Qwen-Image", label: "Qwen Image - prompt/detail (T2I)", mode: "t2i" },
     { id: "black-forest-labs/FLUX.1-dev", label: "FLUX.1 Dev (T2I)", mode: "t2i" },
-    { id: "stabilityai/stable-diffusion-xl-base-1.0", label: "SDXL 1.0 (T2I / I2I)", mode: "both" },
-    { id: "Qwen/Qwen-Image", label: "Qwen Image (T2I)", mode: "t2i" }
+    { id: "black-forest-labs/FLUX.1-schnell", label: "FLUX.1 Schnell - fast (T2I)", mode: "t2i" },
+    { id: "stabilityai/stable-diffusion-xl-base-1.0", label: "SDXL 1.0 (T2I / I2I)", mode: "both" }
   ];
 
   var VIDEO_MODELS = [
@@ -128,7 +129,7 @@
       '<div class="media-sheet-body">' +
       "<label>Prompt</label>" +
       '<textarea id="imgPrompt" placeholder="Describe the image (or how to edit the upload)..."></textarea>' +
-      '<p class="media-hint">Optional upload = image-to-image. No upload = text-to-image. Uses the FLUX token if you set one, otherwise the chat token.</p>' +
+      '<p class="media-hint">Optional upload = image-to-image. No upload = text-to-image. Uses Hugging Face Inference Providers. Krea Dev is the default quality pick; switch models if a provider is unavailable.</p>' +
       "<label>Reference image (optional)</label>" +
       '<div class="media-upload-row">' +
       '<input type="file" id="imgFile" accept="image/*" style="display:none">' +
@@ -315,7 +316,7 @@
     var status = document.getElementById("imgStatus");
     var result = document.getElementById("imgResult");
     btn.disabled = true;
-    status.textContent = imgUploadBlob ? "Image-to-image… (20–90s)" : "Text-to-image… (10–60s)";
+    status.textContent = imgUploadBlob ? "Image-to-image via Hugging Face… (20–90s)" : "Generating via Hugging Face Inference Providers…";
     result.innerHTML = '<div class="placeholder">Working…</div>';
     document.getElementById("imgActions").style.display = "none";
     lastImgBlob = null;
