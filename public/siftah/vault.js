@@ -1,12 +1,12 @@
 /* On-device gallery. Free. Nothing is uploaded.
-   Kept 24 hours: green while fresh, orange after 12 hours, red wash in the last 2 hours. */
+   Kept for 30 days: green while fresh, orange after 15 days, red wash in the last 24 hours. */
 (function () {
   "use strict";
   var DB = "siftah_vault";
   var STORE = "files";
-  var KEEP = 24 * 60 * 60 * 1000;
-  var FRESH = 12 * 60 * 60 * 1000;
-  var WARN = 2 * 60 * 60 * 1000;
+  var KEEP = 30 * 24 * 60 * 60 * 1000;
+  var FRESH = 15 * 24 * 60 * 60 * 1000;
+  var WARN = 24 * 60 * 60 * 1000;
   var dbp = null;
   var cache = [];
   var listeners = [];
