@@ -81,20 +81,22 @@
   function showPreview(el, blob) {
     blobToDataUrl(blob).then(function (url) { el.innerHTML = '<img src="' + url + '" alt="result">'; });
   }
+  var hfClientPromise = null;
   function loadHFClient(t) {
-    return new Promise(function (resolve, reject) {
-      function make() {
-        var C = window.InferenceClient || (window.HuggingFaceInference && window.HuggingFaceInference.InferenceClient);
-        if (!C) return reject(new Error("InferenceClient missing"));
-        resolve(new C(t));
-      }
-      if (window.InferenceClient || (window.HuggingFaceInference && window.HuggingFaceInference.InferenceClient)) return make();
-      var sc = document.createElement("script");
-      sc.src = "https://cdn.jsdelivr.net/npm/@huggingface/inference@3.0.0/dist/index.min.js";
-      sc.onload = make;
-      sc.onerror = function () { reject(new Error("Failed to load HF client")); };
-      document.head.appendChild(sc);
-    });
+    if (!t) return Promise.reject(new Error("Add a Hugging Face token with Inference Providers permission."));
+    if (!hfClientPromise) {
+      hfClientPromise = import("https://cdn.jsdelivr.net/npm/@huggingface/inference@3/+esm")
+        .then(function (mod) {
+          var Client = mod.InferenceClient || mod.HfInference || mod.default;
+          if (!Client) throw new Error("Hugging Face InferenceClient could not be loaded.");
+          return new Client(t);
+        })
+        .catch(function (err) {
+          hfClientPromise = null;
+          throw err;
+        });
+    }
+    return hfClientPromise;
   }
 
   function hordeKey() {
