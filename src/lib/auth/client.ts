@@ -39,11 +39,30 @@ function setBearerToken(token: string | null): void {
   }
 }
 
+const CANONICAL_ORIGIN = "https://www.looterscomputas.online";
+
 function inLivePreview(): boolean {
   if (typeof window === "undefined") return false;
   return (
     window.location.hostname.endsWith(".grok-sandbox.com")
   );
+}
+
+/** Vercel deploy URLs are not in the Google OAuth client. Sign in on the real site. */
+function sendToCanonicalSite(): boolean {
+  if (typeof window === "undefined" || inLivePreview()) return false;
+  const host = window.location.hostname;
+  if (host === "www.looterscomputas.online") return false;
+  if (host === "localhost" || host === "127.0.0.1" || host === "[::1]") return false;
+  if (host.endsWith(".vercel.app") || host === "looterscomputas.online") {
+    const dest = new URL(
+      window.location.pathname + window.location.search + window.location.hash,
+      CANONICAL_ORIGIN,
+    );
+    window.location.replace(dest.toString());
+    return true;
+  }
+  return false;
 }
 
 type PopupMessage = { source: "grok-auth-popup"; token: string | null; error?: string };
@@ -84,11 +103,12 @@ export async function signIn(
     return;
   }
 
-  // Always use genericOAuth via the Grok broker. Provider ids are "grok-google"
-  // / "grok-x". Calling social({ provider: "google" }) hits PROVIDER_NOT_FOUND
-  // because this app does not register the built-in social Google provider.
-  const { data, error } = await authClient.signIn.oauth2({
-    providerId,
+  if (sendToCanonicalSite()) return;
+
+  // Production talks to Google directly. The redirect URI is always
+  // https://www.looterscomputas.online/api/auth/callback/google
+  const { data, error } = await authClient.signIn.social({
+    provider: "google",
     callbackURL,
     errorCallbackURL,
   });

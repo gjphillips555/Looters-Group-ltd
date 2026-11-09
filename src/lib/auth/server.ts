@@ -55,6 +55,8 @@ export const authConfigured =
   !authDisabled &&
   (googleConfigured || Boolean(grokClientId && grokClientSecret));
 
+const CANONICAL_ORIGIN = "https://www.looterscomputas.online";
+
 const explicitBaseURL = env("BETTER_AUTH_URL");
 const previewAllowedHosts: string[] = [...PREVIEW_ALLOWED_HOSTS];
 const LOCAL_DEV_ORIGINS: string[] = [
@@ -63,15 +65,26 @@ const LOCAL_DEV_ORIGINS: string[] = [
   "http://[::1]:8080",
 ];
 
+// OAuth may only use the public site. A *.vercel.app deployment URL is not
+// registered with Google, and every new deploy changes it (redirect_uri_mismatch).
 const PRODUCTION_HOSTS: string[] = [
-  "looters-group-ltd.vercel.app",
   "looterscomputas.online",
   "www.looterscomputas.online",
-  "*.vercel.app",
 ];
 const PRODUCTION_ORIGINS: string[] = PRODUCTION_HOSTS.map(
   (h) => `https://${h}`,
 );
+
+function oauthFallback(): string {
+  if (!explicitBaseURL) return CANONICAL_ORIGIN;
+  try {
+    const host = new URL(explicitBaseURL).hostname;
+    if (host === "vercel.app" || host.endsWith(".vercel.app")) return CANONICAL_ORIGIN;
+  } catch {
+    return CANONICAL_ORIGIN;
+  }
+  return explicitBaseURL;
+}
 
 const baseURL = {
   allowedHosts: [
@@ -82,7 +95,7 @@ const baseURL = {
     "[::1]",
   ],
   protocol: "auto" as const,
-  fallback: explicitBaseURL ?? "https://www.looterscomputas.online",
+  fallback: oauthFallback(),
 };
 
 const trustedOrigins: string[] = Array.from(
